@@ -85,7 +85,7 @@ int main ()
 }
 
 
-/* OK Build & Link: 
+/* OK Build & Link (TESTED ON LINUX): 
 g++ -o hello hello.cpp  -Iinc -L../glew-2.0.0/lib/  -L../glfw-build/src -lGL  -lglfw3  -lGLEW -ldl -lX11 -lXrandr -lpthread -lXinerama -lXcursor
 */
 
