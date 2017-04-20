@@ -79,6 +79,7 @@ int main ()
 
 
  	std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
+    std::cout << "Press R / G / B keys!!" << std::endl;
 
 
 	/* Window characteristics OpenGL 3.3 */
@@ -134,7 +135,7 @@ int main ()
             glClearColor(color.r,color.g,color.b,1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             dirty = false;
-            
+
         
         }
         // Swap the screen buffers
