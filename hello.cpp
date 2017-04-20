@@ -30,7 +30,7 @@ static struct {
 
 
 static bool dirty = true;
-
+static bool killmainloop = false;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
     if (key == GLFW_KEY_R && action == GLFW_REPEAT){
@@ -66,7 +66,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             speed.b *= -1;
         } 
     }
-        
+    if (key == GLFW_KEY_ESCAPE){
+        killmainloop = true;
+    }
 }
 
 
@@ -140,6 +142,8 @@ int main ()
         }
         // Swap the screen buffers
         glfwSwapBuffers(pwindow);
+
+        if (killmainloop) break;
     }
 
 
