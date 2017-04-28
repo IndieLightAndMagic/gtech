@@ -91,7 +91,7 @@ int main ()
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     /* Create a GLFWwindow object that we can use for GLFW's functions */
-    GLFWwindow * pwindow = glfwCreateWindow(WinSZ::width, WinSZ::height, "LearnOpenGL",nullptr, nullptr);
+    GLFWwindow * pwindow = glfwCreateWindow(WinSZ::width, WinSZ::height, "Window - 01",nullptr, nullptr);
 
     if (pwindow == nullptr)
     {
@@ -156,6 +156,6 @@ int main ()
 
 
 /* OK Build & Link (TESTED ON LINUX): 
-g++ -o hello hello.cpp  -Iinc -L../glew-2.0.0/lib/  -L../glfw-build/src -lGL  -lglfw3  -lGLEW -ldl -lX11 -lXrandr -lpthread -lXinerama -lXcursor
+g++ -o hello hello.cpp  -I../inc -L../glew-2.0.0/lib/  -L../../glfw-build/src -lGL  -lglfw3  -lGLEW -ldl -lX11 -lXrandr -lpthread -lXinerama -lXcursor
 */
 

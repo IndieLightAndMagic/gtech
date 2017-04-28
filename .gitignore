@@ -1,2 +1,6 @@
 *.o
 hello
+00/
+camera_mouse/
+inc/
+lib/
