@@ -103,18 +103,30 @@ int main()
     GLfloat vertices[] = {
         -0.5f, -0.5f, 0.0f, // Left  
          0.5f, -0.5f, 0.0f, // Right 
-         0.5f,  0.5f, 0.0f  // Top   
+         0.5f,  0.5f, 0.0f, // Top
+        -0.5f,  0.5f, 0.0f    
     };
     GLuint VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     // Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
     glBindVertexArray(VAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    
+    //Copy vertices in buffer data.
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    //This function indicates the way memory is organized.
+    glVertexAttribPointer(
+        0,                      //Vertex Attribute ID 
+        3,                      //3D Vertex (so it uses 3 components) 
+        GL_FLOAT,               //Vertex Data Type 
+        GL_FALSE,               //Do not normalize data 
+        3 * sizeof(GLfloat),    //Stride Vertex Size (Eache Vertex has a Size of 3 times the size of a GLfloat) 
+        (GLvoid*)0              //Pointer to the offset inside the data.
+        );
+
+
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
