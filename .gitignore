@@ -1,5 +1,7 @@
 *.o
 hello
+hellotriangle
+hellotriangleEBO
 00/
 camera_mouse/
 inc/
