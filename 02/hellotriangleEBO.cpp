@@ -8,6 +8,8 @@
 #include <GLFW/glfw3.h>
 
 
+static bool wireframe_mode_toggle = true;
+GLenum wireframe_mode = GL_LINE;
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
@@ -31,6 +33,8 @@ const GLchar* fragmentShaderSource = "#version 330 core\n"
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
+
+	fprintf (stdout,"Press W to toggle wireframe mode ON/OFF. Esc to exit.\n");
 	// Init GLFW
 	glfwInit();
 	// Set all the required options for GLFW
@@ -149,9 +153,16 @@ int main()
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
+
+
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 
+		if (wireframe_mode_toggle){
+			wireframe_mode_toggle = false;
+			wireframe_mode = wireframe_mode == GL_LINE ? GL_FILL : GL_LINE;
+			glPolygonMode(GL_FRONT_AND_BACK, wireframe_mode);
+		}
 		// Render
 		// Clear the colorbuffer
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -186,6 +197,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	if (key == GLFW_KEY_W && action == GLFW_PRESS && wireframe_mode_toggle == false)
+		wireframe_mode_toggle = true; 
 }
 
 /* OK Build & Link (TESTED ON LINUX): 
