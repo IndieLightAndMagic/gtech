@@ -8,6 +8,8 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
+typedef enum {RED, GREEN, BLUE} ActiveColor ;
+static ActiveColor activeColor = GREEN;
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -36,6 +38,9 @@ const GLchar* fragmentShaderSource = "#version 330 core\n"
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
+
+	std::cout <<"Press R or G or B to change color."<<std::endl;
+	
 	// Init GLFW
 	glfwInit();
 	// Set all the required options for GLFW
@@ -142,8 +147,20 @@ int main()
 		GLfloat timeValue = glfwGetTime();
 		GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
 		GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		switch (activeColor) {
+			case RED:
+				glUniform4f(vertexColorLocation, greenValue, 0.0f, 0.0f, 1.0f);
+			break;
+			case GREEN:
+				glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+			break;
+			case BLUE:
+				glUniform4f(vertexColorLocation, 0.0f, 0.0f, greenValue, 1.0f);
+			break;
 
+		}
+
+		
 		// Draw the triangle
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -165,6 +182,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+	if (key == GLFW_KEY_R && action == GLFW_PRESS)
+		activeColor = RED;
+	if (key == GLFW_KEY_G && action == GLFW_PRESS)
+		activeColor = GREEN;
+	if (key == GLFW_KEY_B && action == GLFW_PRESS)
+		activeColor = BLUE;
 }
 
 /* OK Build & Link (TESTED ON MAC):
