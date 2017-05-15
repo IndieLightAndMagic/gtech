@@ -188,6 +188,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 /* OK Build & Link (TESTED ON MAC):
-g++ -o hellotriangleUniform hellotriangleUniform.cpp  -I../inc -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -L/opt/X11/lib -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
+g++ -o hellotriangleUniform hellotriangleUniform.cpp  -I../inc -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
  */
 

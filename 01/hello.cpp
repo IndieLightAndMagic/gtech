@@ -161,5 +161,5 @@ int main ()
 g++ -o hello hello.cpp  -I../inc -L../glew-2.0.0/lib/  -L../../glfw-build/src -lGL  -lglfw3  -lGLEW -ldl -lX11 -lXrandr -lpthread -lXinerama -lXcursor
 */
 /* OK Build & Link (TESTED ON MAC): 
-g++ -o hello hello.cpp  -I../inc -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -L/opt/X11/lib -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
+g++ -o hello hello.cpp  -I../inc -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
 */
