@@ -26,6 +26,8 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     // Create a GLFWwindow object that we can use for GLFW's functions
@@ -45,10 +47,14 @@ int main()
 
 
     // Build and compile our shader program
-    ShaderSource shaderSource("vs.vs");
-    Shader shader(&shaderSource);
+    ShaderSource vss("vs.vs");
+    Shader vs(&vss);
+    ShaderSource fss("fs.fs");
+    Shader fs(&fss);
+
     Program program;
-    program.pushShader(&shader);
+    program.pushShader(&vs);
+    program.pushShader(&fs);
     program.link();
 
     // Set up vertex data (and buffer(s)) and attribute pointers

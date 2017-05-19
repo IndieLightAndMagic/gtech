@@ -35,7 +35,6 @@ class Shader{
 
 public:
 	Shader(ShaderSource*shaderSource, GLenum shaderType=GL_VERTEX_SHADER);
-	virtual ~Shader();
 	const GLuint operator()();
 private:
 	enum ShaderState{
@@ -55,7 +54,6 @@ class Program {
 	
 public:
 	Program();
-	virtual ~Program();
 	
 	void use();
 	/*! 
