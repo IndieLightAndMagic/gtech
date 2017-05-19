@@ -57,7 +57,7 @@ public:
 	Program();
 	virtual ~Program();
 	
-	void Use();
+	void use();
 	/*! 
 		Shader will not be pushed in if shader is already attached to this program
 	
@@ -71,7 +71,7 @@ public:
 	GL_INVALID_OPERATION is generated if shader is not a shader object.
 	GL_INVALID_OPERATION is generated if shader is already attached to program.
 	*/
-	void PushShader(Shader * s);
+	void pushShader(Shader * s);
 	/*!
 		Description
 	
@@ -113,7 +113,7 @@ public:
 	If the link operation is unsuccessful, any information about a previous link operation on program is lost (i.e., a failed link does not restore the old state of program ). Certain information can still be retrieved from program even after an unsuccessful link operation. See for instance glGetActiveAttrib and glGetActiveUniform.
 
 	*/
-	void Link();
+	void link();
 	const GLuint operator()();
 
 
