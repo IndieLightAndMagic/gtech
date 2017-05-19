@@ -6,7 +6,7 @@
 #include <sstream>
 #include <iostream>
 
-ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrSrc(nullptr),m_shdrPath(new std::string(shdrPath)) {
+ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr) {
 	
 	std::ifstream shaderFile;
 

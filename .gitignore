@@ -8,4 +8,4 @@ triangle
 00/
 camera_mouse/
 lib/
-buildout/
+*.a
