@@ -18,9 +18,9 @@ struct WinSZ {
 GLuint WinSZ::width	= 800;
 GLuint WinSZ::height = 600;
 
-static struct {
+/*static struct {
     bool r,g,b;
-}active = { false, false, false};
+}active = { false, false, false};*/
 static struct {
     float r,g,b;
 }speed = { 0.01f, 0.01f, 0.01f };
