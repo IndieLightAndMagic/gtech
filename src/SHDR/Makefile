@@ -8,7 +8,7 @@ CC := g++
 AR := AR
 AFLAGS := rcs
 CFLAGS := -Wall -g -I../inc
-TARGET := libsdhr.a
+TARGET := libshdr.a
 LFLAGS := -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
 
 

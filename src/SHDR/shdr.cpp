@@ -32,7 +32,7 @@ Shader::Shader(ShaderSource * shaderSource, GLenum shaderType){
     {	
     	GLchar infoLog[1024];
 		glGetShaderInfoLog(m_shader, 1024, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout<< "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl << shaderSource[0]() << std::endl;
 		glDeleteShader(m_shader);
 		return;
 	}

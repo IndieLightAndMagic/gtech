@@ -7,7 +7,7 @@ OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 CC := g++
 CFLAGS := -Wall -g -I../inc
 TARGET := $(patsubst %.cpp,%,$(SRCS))
-LFLAGS := -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
+LFLAGS := -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -L../src/SHDR/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread -lshdr 
 
 
 
