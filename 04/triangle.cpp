@@ -50,7 +50,7 @@ int main()
     ShaderSource vss("vs.vs");
     Shader vs(&vss);
     ShaderSource fss("fs.fs");
-    Shader fs(&fss);
+    Shader fs(&fss, GL_FRAGMENT_SHADER);
 
     Program program;
     program.pushShader(&vs);
