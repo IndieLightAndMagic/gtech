@@ -16,6 +16,7 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 	try {
 		/* Open files */
 		shaderFile.open(shdrPath);
+	
 
 		/* Read Files into streams */
 		std::stringstream shaderStream;
@@ -26,7 +27,8 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 
 		/* Ste stream into strings */
 		m_shaderCode = shaderStream.str();
-		
+		std::cout << "@@@@" << "SHADER LOADED" << std::endl;
+		std::cout << m_shaderCode << std::endl;			
 		/* C character string shader source */
 		m_shdrSrc = m_shaderCode.c_str();
 
@@ -41,7 +43,7 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 
 }
 const GLchar * ShaderSource::operator()(){ return m_shdrSrc; }
-
+ShaderSource::ShaderSourceState ShaderSource::state(){ return m_state; }
 
 
 
@@ -53,6 +55,25 @@ const GLchar * ShaderSource::operator()(){ return m_shdrSrc; }
 #ifndef SHDR_CPP_NOTEST
 #define PASSED TRUE
 #define NOT_PASSED NOT_TRUE
+
+
+unsigned int shaderSource(const GLchar*shdrPath){
+
+	ShaderSource ss(shdrPath);
+	if (ss.state()==ShaderSource::SOURCE_STATE_VALID) return 1;
+	return 0;
+
+}
+
+int main (int argc, char ** argv){
+
+	bool _0k = true;
+	std::cout <<_0k << std::endl;
+	_0k = _0k & (shaderSource("../../04/vsx.vs"));
+	std::cout <<_0k << std::endl;
+	return _0k == true ? 1 : 0;
+
+}
 
 #endif
 #endif

@@ -7,12 +7,14 @@
 
 
 class ShaderSource{
-private:
+public:
 	/* Shader State */
 	enum ShaderSourceState{
 		SOURCE_STATE_INVALID,
 		SOURCE_STATE_VALID
 	};
+	
+private:
 	ShaderSourceState m_state;
 
 	/* Shader Path */
@@ -27,6 +29,7 @@ public:
 	ShaderSource(const GLchar*shdrPath);
 	const GLchar* operator()();
 	GLenum getShaderType();
+	ShaderSourceState state();
 };
 
 
