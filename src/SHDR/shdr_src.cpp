@@ -60,7 +60,7 @@ unsigned int shaderSource(const GLchar*shdrPath){
 
 	if (ss.state()==ShaderSource::SOURCE_STATE_VALID){
 	
-		sdt::cout << ss(); << std::endl; 
+		std::cout << ss() << std::endl; 
 		return UINT_TEST_OK;
 	
 	}
@@ -73,6 +73,9 @@ int main (int argc, char ** argv){
 
 	bool _0k = true;
 	TEST_INT(_0k, shaderSource("../../04/vs.vs"));
+	TEST_INT(_0k, shaderSource("../../04/fs.fs"));
+	TEST_INT(_0k, shaderSource("../../04/fs.fsx"));
+	
 	TEST_RESULT(_0k);
 
 }
