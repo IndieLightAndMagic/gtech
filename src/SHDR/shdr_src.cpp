@@ -10,13 +10,15 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 	
 	std::ifstream shaderFile;
 
-/* exceptions flag checks for read/write operations on i/o operations */
+	/* exceptions flag checks for read/write operations on i/o operations */
 	shaderFile.exceptions(std::ifstream::badbit);
-
 	try {
 		/* Open files */
 		shaderFile.open(shdrPath);
-	
+		if (!shaderFile.good()){
+			std::cout << "ifstream.good() = false" << std::endl;
+			throw 1;
+		} 
 
 		/* Read Files into streams */
 		std::stringstream shaderStream;
@@ -27,8 +29,7 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 
 		/* Ste stream into strings */
 		m_shaderCode = shaderStream.str();
-		std::cout << "@@@@" << "SHADER LOADED" << std::endl;
-		std::cout << m_shaderCode << std::endl;			
+
 		/* C character string shader source */
 		m_shdrSrc = m_shaderCode.c_str();
 
@@ -36,10 +37,10 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 		m_state = SOURCE_STATE_VALID;
 
 	}
-	catch (std::ifstream::failure e){
+	catch (int error){
 		/* Warn error */
-		std::cout << m_shdrSrc << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-	}
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl; 
+	} 
 
 }
 const GLchar * ShaderSource::operator()(){ return m_shdrSrc; }
@@ -56,22 +57,37 @@ ShaderSource::ShaderSourceState ShaderSource::state(){ return m_state; }
 #define PASSED TRUE
 #define NOT_PASSED NOT_TRUE
 
+#define UINT_TEST_OK 1
+#define UINT_TEST_FAIL 0 
+#define BOOL_TEST_OK true
+#define BOOL_TEST_FAIL false 
 
+
+#define TEST_INT(prb,xpr) prb = prb &(xpr==1?true:false) \
+	std::cout << __FILE__ << ":" << __LINE__ << ":[TST]" << (prb ? "OK":"FAILED") <<std::endl
+
+#define	TEST_RESULT(tr) std::cout << (tr?"TEST_PASSED":"TEST_NOT_PASSED") << std::endl; \
+		return (tr==true?0:1);
 unsigned int shaderSource(const GLchar*shdrPath){
 
 	ShaderSource ss(shdrPath);
-	if (ss.state()==ShaderSource::SOURCE_STATE_VALID) return 1;
-	return 0;
+
+	if (ss.state()==ShaderSource::SOURCE_STATE_VALID){
+	
+		sdt::cout << ss(); << std::endl; 
+		return UINT_TEST_OK;
+	
+	}
+	
+	return UINT_TEST_FAIL;
 
 }
 
 int main (int argc, char ** argv){
 
 	bool _0k = true;
-	std::cout <<_0k << std::endl;
-	_0k = _0k & (shaderSource("../../04/vsx.vs"));
-	std::cout <<_0k << std::endl;
-	return _0k == true ? 1 : 0;
+	TEST_INT(_0k, shaderSource("../../04/vs.vs"));
+	TEST_RESULT(_0k);
 
 }
 
