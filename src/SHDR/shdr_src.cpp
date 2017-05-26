@@ -54,7 +54,7 @@ ShaderSource::ShaderSourceState ShaderSource::state(){ return m_state; }
 #ifdef TEST_BENCH
 #include <TEST/tbench.h>
 
-unsigned int shaderSource(const GLchar*shdrPath){
+unsigned int shaderSourceTest(const GLchar*shdrPath){
 
 	ShaderSource ss(shdrPath);
 
@@ -72,9 +72,9 @@ unsigned int shaderSource(const GLchar*shdrPath){
 int main (int argc, char ** argv){
 
 	bool _0k = true;
-	TEST_INT(_0k, shaderSource("../../04/vs.vs"));
-	TEST_INT(_0k, shaderSource("../../04/fs.fs"));
-	TEST_INT(_0k, shaderSource("../../04/fs.fsx"));
+	TEST_INT(_0k, shaderSourceTest("../../04/vs.vs"));
+	TEST_INT(_0k, shaderSourceTest("../../04/fs.fs"));
+	TEST_INT(_0k, shaderSourceTest("../../04/fs.fsx"));
 	
 	TEST_RESULT(_0k);
 

@@ -37,13 +37,15 @@ public:
 class Shader{
 
 public:
-	Shader(ShaderSource*shaderSource, GLenum shaderType=GL_VERTEX_SHADER);
-	const GLuint operator()();
-private:
 	enum ShaderState{
 		SHADER_STATE_INVALID,
+		SHADER_STATE_CREATED,
 		SHADER_STATE_COMPILED,
 	};
+	Shader(ShaderSource*shaderSource, GLenum shaderType=GL_VERTEX_SHADER);
+	const GLuint operator()();
+	ShaderState state();
+private:
 	GLuint m_shader;
 	Shader::ShaderState m_state;
 	/*! Shader Assasination will not occur until it is not detached */

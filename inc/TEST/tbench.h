@@ -7,7 +7,7 @@
 #define BOOL_TEST_FAIL false 
 
 
-#define TEST_INT(prb,xpr) prb = prb &(xpr==1?true:false); \
+#define TEST_INT(prb,xpr) prb = prb &(xpr==UINT_TEST_OK?true:false); \
 	std::cout << __FILE__ << " @ " << __LINE__ << " : [TST] " << (prb ? "OK":"FAILED") <<std::endl
 
 #define	TEST_RESULT(tr) std::cout << (tr?"TEST_PASSED":"TEST_NOT_PASSED") << std::endl; \
