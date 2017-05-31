@@ -93,6 +93,30 @@ int main()
 
 
 	// vertex shader
+	
+	Shader vtx_s(&vtx_ss);	
+	if (vtx_s.state() ==  Shader::SHADER_STATE_INVALID) {
+		std::cout << "VTX SHADER INVALID" << std::endl;
+	}
+	if (vtx_s.state() ==  Shader::SHADER_STATE_CREATED) {
+		std::cout << "VTX SHADER CREATED" << std::endl;
+	}
+	if (vtx_s.state() ==  Shader::SHADER_STATE_COMPILED) {
+		std::cout << "VTX SHADER COMPILED" << std::endl;
+	}
+
+	Shader frg_s(&frg_ss);	
+	if (frg_s.state() ==  Shader::SHADER_STATE_INVALID) {
+		std::cout << "FRG SHADER INVALID" << std::endl;
+	}
+	if (frg_s.state() ==  Shader::SHADER_STATE_CREATED) {
+		std::cout << "VTX SHADER CREATED" << std::endl;
+	}
+	if (frg_s.state() ==  Shader::SHADER_STATE_COMPILED) {
+		std::cout << "FRG SHADER COMPILED" << std::endl;
+	}
+
+	/*
 	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	std::cout << "VTX Shader Created..." << std::endl;
 
@@ -101,23 +125,23 @@ int main()
 	
 	glCompileShader(vertexShader);
 	std::cout << "VTX Shader Compiled..." << std::endl;
-	
+	*/
 	// check for shader compile errors
 	int success;
 	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	/*glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 	std::cout << "OK::SHADER::VERTEX::COMPILATION_PASSED\n" << infoLog << std::endl;
-	
+	*/
 
 	
 
 	// fragment shader
-	int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	/*int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &frgSource, NULL);
 	glCompileShader(fragmentShader);
 	// check for shader compile errors
@@ -126,11 +150,11 @@ int main()
 	{
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
+	}*/
 	// link shaders
 	int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
+	glAttachShader(shaderProgram, vtx_s());
+	glAttachShader(shaderProgram, frg_s());
 	glLinkProgram(shaderProgram);
 	// check for linking errors
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
@@ -138,8 +162,8 @@ int main()
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	glDeleteShader(vtx_s());
+	glDeleteShader(frg_s());
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
