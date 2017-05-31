@@ -5,7 +5,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
 ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr) {
 	
 	std::ifstream shaderFile;
@@ -47,13 +46,8 @@ const GLchar * ShaderSource::operator()(){ return m_shdrSrc; }
 ShaderSource::ShaderSourceState ShaderSource::state(){ return m_state; }
 
 
-
-
-
-
 #ifdef TEST_BENCH
 #include <TEST/tbench.h>
-
 unsigned int shaderSourceTest(const GLchar*shdrPath){
 
 	ShaderSource ss(shdrPath);
