@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 
 // Other includes
-//#include <SHDR/shdr.h>
+#include <SHDR/shdr.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -69,12 +69,34 @@ int main()
 		return -1;
 	}
 
-	
+	ShaderSource vtx_ss("vs.vs");
+	ShaderSource frg_ss("fs.fs");
+	const GLchar * vtxSource;
+	const GLchar * frgSource;
+	if (vtx_ss.state() == ShaderSource::SOURCE_STATE_VALID) {
+		std::cout << "################################" << std::endl;
+		std::cout << "Vertex Shader Source loaded [Ok]" << std::endl;
+		std::cout << "Code: " << std::endl;
+		vtxSource = vtx_ss();
+		std::cout << vtxSource << std::endl;
+		std::cout << "################################" << std::endl;
+	} 
+	if (frg_ss.state() == ShaderSource::SOURCE_STATE_VALID) {
+		std::cout << "################################" << std::endl;
+		std::cout << "Fragment Shader Source loaded [Ok]" << std::endl;
+		std::cout << "Code: " << std::endl;
+		frgSource = frg_ss();
+		std::cout << frgSource << std::endl;
+		std::cout << "################################" << std::endl;
+					
+	} 
+
+
 	// vertex shader
 	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	std::cout << "VTX Shader Created..." << std::endl;
 
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glShaderSource(vertexShader, 1, &vtxSource, NULL);
 	std::cout << "VTX Shader Sourced..." << std::endl;
 	
 	glCompileShader(vertexShader);
@@ -96,7 +118,7 @@ int main()
 
 	// fragment shader
 	int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glShaderSource(fragmentShader, 1, &frgSource, NULL);
 	glCompileShader(fragmentShader);
 	// check for shader compile errors
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
