@@ -1,7 +1,7 @@
 CC := g++
-CFLAGS := -Wall -g -I../inc
+CFLAGS := -Wall -g -I../../inc
 TARGET := hello
-LFLAGS := -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
+LFLAGS := -L../../../glew-2.0.0/build/lib/  -L../../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
 
 
 # $(wildcard *.cpp /xxx/xxx/*.cpp): get all .cpp files from the current directory and dir "/xxx/xxx/"
