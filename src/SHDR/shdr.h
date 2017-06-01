@@ -42,8 +42,17 @@ public:
 		SHADER_STATE_CREATED,
 		SHADER_STATE_COMPILED,
 	};
+	/*!
+		@brief Will create a shader out of valid ShaderSource object
+		@param shaderSource Pointer to a ShaderSource object. 
+		@param shaderType For a Vertex Shader: GL_VERTEX_SHADER, for a fragment shader: GL_FRAGMENT_SHADER, for a geometry shader: GL_GEOMETRY_SHADER.
+	*/
 	Shader(ShaderSource*shaderSource, GLenum shaderType);
 	const GLuint operator()();
+
+	/*! @brief State of the Shader
+		@return Shader::SHADER_STATE_INVALID for invalid shader usually when shader creation fails. Shader::SHADER_STATE_CREATED Shader was created but the source was not loaded properly. Shader::SHADER_STATE_COMPILED the shader was created, loaded from source properly and compiled OK. 
+	*/
 	ShaderState state();
 private:
 	GLuint m_shader;

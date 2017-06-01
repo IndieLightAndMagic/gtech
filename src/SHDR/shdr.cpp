@@ -54,10 +54,6 @@ Shader::Shader(ShaderSource * shaderSource, GLenum shaderType){
 		
 		}	
 	}
-
-	
-	
-
 }
 
 const GLuint Shader::operator()(){
