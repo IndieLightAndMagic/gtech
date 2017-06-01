@@ -42,7 +42,7 @@ public:
 		SHADER_STATE_CREATED,
 		SHADER_STATE_COMPILED,
 	};
-	Shader(ShaderSource*shaderSource, GLenum shaderType=GL_VERTEX_SHADER);
+	Shader(ShaderSource*shaderSource, GLenum shaderType);
 	const GLuint operator()();
 	ShaderState state();
 private:

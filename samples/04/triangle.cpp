@@ -73,8 +73,8 @@ int main()
 	ShaderSource frg_ss("fs.fs");
 	const GLchar * vtxSource;
 	const GLchar * frgSource;
+	std::cout << "################################" << std::endl;
 	if (vtx_ss.state() == ShaderSource::SOURCE_STATE_VALID) {
-		std::cout << "################################" << std::endl;
 		std::cout << "Vertex Shader Source loaded [Ok]" << std::endl;
 		std::cout << "Code: " << std::endl;
 		vtxSource = vtx_ss();
@@ -82,7 +82,6 @@ int main()
 		std::cout << "################################" << std::endl;
 	} 
 	if (frg_ss.state() == ShaderSource::SOURCE_STATE_VALID) {
-		std::cout << "################################" << std::endl;
 		std::cout << "Fragment Shader Source loaded [Ok]" << std::endl;
 		std::cout << "Code: " << std::endl;
 		frgSource = frg_ss();
@@ -94,7 +93,8 @@ int main()
 
 	// vertex shader
 	
-	Shader vtx_s(&vtx_ss);	
+	std::cout << "################################" << std::endl;
+	Shader vtx_s(&vtx_ss, GL_VERTEX_SHADER);	
 	if (vtx_s.state() ==  Shader::SHADER_STATE_INVALID) {
 		std::cout << "VTX SHADER INVALID" << std::endl;
 	}
@@ -102,55 +102,27 @@ int main()
 		std::cout << "VTX SHADER CREATED" << std::endl;
 	}
 	if (vtx_s.state() ==  Shader::SHADER_STATE_COMPILED) {
-		std::cout << "VTX SHADER COMPILED" << std::endl;
+		std::cout << "VTX SHADER COMPILED " << vtx_s() << std::endl;
 	}
 
-	Shader frg_s(&frg_ss);	
+	// fragment shader 
+
+	std::cout << "################################" << std::endl;
+	Shader frg_s(&frg_ss, GL_FRAGMENT_SHADER);	
 	if (frg_s.state() ==  Shader::SHADER_STATE_INVALID) {
 		std::cout << "FRG SHADER INVALID" << std::endl;
 	}
 	if (frg_s.state() ==  Shader::SHADER_STATE_CREATED) {
-		std::cout << "VTX SHADER CREATED" << std::endl;
+		std::cout << "FRG SHADER CREATED" << std::endl;
 	}
 	if (frg_s.state() ==  Shader::SHADER_STATE_COMPILED) {
-		std::cout << "FRG SHADER COMPILED" << std::endl;
+		std::cout << "FRG SHADER COMPILED " << frg_s() << std::endl;
 	}
+	std::cout << "################################" << std::endl;
 
-	/*
-	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	std::cout << "VTX Shader Created..." << std::endl;
-
-	glShaderSource(vertexShader, 1, &vtxSource, NULL);
-	std::cout << "VTX Shader Sourced..." << std::endl;
 	
-	glCompileShader(vertexShader);
-	std::cout << "VTX Shader Compiled..." << std::endl;
-	*/
-	// check for shader compile errors
 	int success;
 	char infoLog[512];
-	/*glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	std::cout << "OK::SHADER::VERTEX::COMPILATION_PASSED\n" << infoLog << std::endl;
-	*/
-
-	
-
-	// fragment shader
-	/*int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &frgSource, NULL);
-	glCompileShader(fragmentShader);
-	// check for shader compile errors
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}*/
 	// link shaders
 	int shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vtx_s());
