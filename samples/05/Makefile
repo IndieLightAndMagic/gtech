@@ -14,7 +14,7 @@ MV := mv
 
 #Flags
 CFLAGS := -Wall -g -I$(INCDIR)
-LFLAGS := -L$(LIBDIR)  -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread -lshdr 
+LFLAGS := -L$(LIBDIR)  -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread -lshdr -lstb
 
 
 ################################################
