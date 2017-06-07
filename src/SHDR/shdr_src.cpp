@@ -26,7 +26,7 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 		/* Close files */
 		shaderFile.close();
 
-		/* Ste stream into strings */
+		/* Set stream into strings */
 		m_shaderCode = shaderStream.str();
 
 		/* C character string shader source */

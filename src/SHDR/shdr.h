@@ -27,6 +27,7 @@ private:
 
 public:
 	ShaderSource(const GLchar*shdrPath);
+	virtual ~ShaderSource(){};
 	const GLchar* operator()();
 	GLenum getShaderType();
 	ShaderSourceState state();
@@ -47,7 +48,7 @@ public:
 		@param shaderSource Pointer to a ShaderSource object. 
 		@param shaderType For a Vertex Shader: GL_VERTEX_SHADER, for a fragment shader: GL_FRAGMENT_SHADER, for a geometry shader: GL_GEOMETRY_SHADER.
 	*/
-	Shader(ShaderSource*shaderSource, GLenum shaderType);
+	Shader(ShaderSource*pxShaderSource, GLenum shaderType);
 	const GLuint operator()();
 
 	/*! @brief State of the Shader
@@ -82,8 +83,36 @@ public:
 	GL_INVALID_OPERATION is generated if program is not a program object.
 	GL_INVALID_OPERATION is generated if shader is not a shader object.
 	GL_INVALID_OPERATION is generated if shader is already attached to program.
+	
+	On Pushing Non Compiled Shaders.
+	--------------------------------
+
+	Shaders can have one of three states: SHADER_STATE_s, where s is one of INVALID, CREATED or COMPILED. Shaders may be pushed into program only when they are in COMPILED state. Any attempt of pushing a shader in other state rather than COMPILED, will break the Program Shader and will invalidate it. 
+	
+
+	
 	*/
 	void pushShader(Shader * s);
+	
+	/*!
+		
+		A shader of type shaderType will be compiled out of source ss and on success will be pushed and linked into Shader program.
+
+	On Pushing Invalid Sources.
+	---------------------------
+
+	Shader sources may have one of two states: SOURCE_STATE_s, where s is one of VALID or INVALID. Sources may be pushed into the program only when they are on a VALID state. Any attempt of pushing an invalid source will break the shader program.  
+
+	*/
+	void pushShader(ShaderSource * ss, GLenum shaderType);
+
+	/*!
+		
+		A shader of type shaderType will be compiled usign glsl shader source code within a file whose name is stored in a character string pointed by pfilename. The function will also attempt to compile the shader, push it and link it into the program. On failure the whole Program will fail. 
+
+	*/
+
+	void pushShader(const char * pfilename, GLenum shaderType);
 	/*!
 		Description
 	
@@ -126,6 +155,8 @@ public:
 
 	*/
 	void link();
+
+	void invalidateProgram();
 	const GLuint operator()();
 
 

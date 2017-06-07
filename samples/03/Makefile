@@ -3,14 +3,22 @@ SRCS := $(wildcard *.cpp)
 # $(patsubst %.cpp,%.o,$(SRCS)): substitute all ".cpp" file name strings to ".o" file name strings
 OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 
+#Lib and Header directory
+LIBDIR := ../../lib
+INCDIR := ../../inc
 
+#Tools
 CC := g++
-CFLAGS := -Wall -g -I../inc
+AR := ar
+MV := mv
+
+#Flags
+CFLAGS := -Wall -g -I$(INCDIR)
+LFLAGS := -L$(LIBDIR)  -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread -lshdr 
+
+
+################################################
 TARGET := $(patsubst %.cpp,%,$(SRCS))
-LFLAGS := -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
-
-
-
 all: $(TARGET)
 $(TARGET): $(OBJS)
 # $< is for each obj ITS a for loop.
