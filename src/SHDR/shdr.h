@@ -155,7 +155,8 @@ public:
 
 	*/
 	void link();
-
+	bool isLinked();
+	
 	void invalidateProgram();
 	const GLuint operator()();
 
@@ -170,7 +171,8 @@ private:
 		PROGRAM_STATE_LINKED_AND_USED,	//The program shaders are linked and are used.
 	};
 	ProgramState m_state;
-
+public:
+	ProgramState state();
 };
 
 

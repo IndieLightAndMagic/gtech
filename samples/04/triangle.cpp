@@ -124,13 +124,15 @@ int main()
 	int success;
 	char infoLog[512];
 	// link shaders
-	int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vtx_s());
-	glAttachShader(shaderProgram, frg_s());
-	glLinkProgram(shaderProgram);
+	Program p;
+	p.pushShader(&vtx_s);
+	p.pushShader(&frg_s);
+	int shaderProgram = p();
+	p.link();
+	//glLinkProgram(shaderProgram);
 	// check for linking errors
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
+	if (p.isLinked()==GL_FALSE) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
@@ -168,7 +170,8 @@ int main()
 	// glBindVertexArray(0);
 
 	// as we only have a single shader, we could also just activate our shader once beforehand if we want to 
-	glUseProgram(shaderProgram);
+	p.use();
+	//glUseProgram(shaderProgram);
 
 	// render loop
 	// -----------
