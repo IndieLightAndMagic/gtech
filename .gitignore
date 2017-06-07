@@ -6,6 +6,7 @@ hellotriangleUniform
 hellotriangleFragInterpol
 triangle
 testbench
+texture
 00/
 camera_mouse/
 *.a
