@@ -18,8 +18,12 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-int main()
+int main(int argc, char ** argv)
 {
+
+	int index;
+	for (index = 0 ; index < argc ; index++) std::cout << argv[index] << std::endl;
+
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -30,7 +34,7 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Texture Example", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Texture Units", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -40,6 +44,7 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
@@ -48,17 +53,13 @@ int main()
 		std::cout << "Failed to initialize GLEW" << std::endl;
 		return -1;
 	}
-   
 
 	// build and compile our shader zprogram
 	// ------------------------------------
-	std::cout << "Attempting to create Shader Program " << std::endl;
 	Program shaderProgram;
-	std::cout << "Attempting Program Created " << std::endl;
-	
-	shaderProgram.pushShader("vs.vs", GL_VERTEX_SHADER);
-	shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
-	shaderProgram.link();
+	shaderProgram.pushShader("vs.vs",				GL_VERTEX_SHADER);
+	shaderProgram.pushShader("fs_textureUnits.fs",	GL_FRAGMENT_SHADER);
+	shaderProgram.link(); 
 	std::cout << "Shading Program State: " << shaderProgram.state() << std::endl;
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
@@ -70,7 +71,7 @@ int main()
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
 	};
-	unsigned int indices[] = {  
+	unsigned int indices[] = {
 		0, 1, 3, // first triangle
 		1, 2, 3  // second triangle
 	};
@@ -100,21 +101,49 @@ int main()
 
 	// load and create a texture 
 	// -------------------------
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	unsigned int texture1, texture2;
+	// texture 1
+	// ---------
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1); 
+	 // set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load image, create texture and generate mipmaps
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load("wooden.png", &width, &height, &nrChannels, 0);
+	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+	unsigned char *data = stbi_load(argc >= 2 ? argv[1]:"wall.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{	
+		std::cout << "IMAGE LOADED: " << (argc >= 2 ? argv[1]:"wall.png") << " " << width << "x" << height << "x" << nrChannels << std::endl;
+ 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, nrChannels == 3 ? GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+	// texture 2
+	// ---------
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load image, create texture and generate mipmaps
+	data = stbi_load(argc >= 3 ? argv[2]:"wooden.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		// note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
+		std::cout << "IMAGE LOADED: " << (argc >= 3 ? argv[2]:"wall.png") << " " << width << "x" << height << "x" << nrChannels << std::endl;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, nrChannels == 3 ? GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -123,8 +152,17 @@ int main()
 	}
 	stbi_image_free(data);
 
+	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+	// -------------------------------------------------------------------------------------------
+	// either set it manually like so:
+	GLuint shaderProgramId = shaderProgram();
+	shaderProgram.use(); // don't forget to activate/use the shader before setting uniforms!
+	glUniform1i(glGetUniformLocation(shaderProgramId, "ourTexture1"), 0);
+	// or set it via the texture class
+	glUniform1i(glGetUniformLocation(shaderProgramId, "ourTexture2"), 1);
 	
-		
+
+
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -138,13 +176,16 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// bind textures on corresponding texture units
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		shaderProgram.use(); // don't forget to activate/use the shader before setting uniforms!
+	
 		// render container
-		shaderProgram.use();
-
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		// bind Texture
-		glBindTexture(GL_TEXTURE_2D, texture);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

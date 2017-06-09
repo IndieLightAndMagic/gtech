@@ -23,7 +23,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 # $< is for each obj ITS a for loop.
 	#[LNK].###################################.#
-	$(CC) -o $@ $< $(LFLAGS)
+	$(CC) -o $@ $@.o $(LFLAGS)
 # $^ is not a for each, rather it uses OBJS as a whole, which is not what we inted for.
 # $(CC) -o $@ $^ $(LFLAGS)
 	
