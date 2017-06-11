@@ -155,11 +155,11 @@ int main(int argc, char ** argv)
 	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
 	// either set it manually like so:
+	#define LOOP_DELAY 3.0
 	GLuint shaderProgramId = shaderProgram();
-	GLfloat dTimeInitial = glfwGetTime();
+	GLfloat dTimeInitial   = glfwGetTime();
 	GLfloat dTimeNow;
-	GLfloat dTimeBind = 0.0f;
-		
+	bool  directionForward = GL_TRUE;	
 	//bind the textures into the parameters
 	shaderProgram.use(); // don't forget to activate/use the shader before setting uniforms!
 	glUniform1i(glGetUniformLocation(shaderProgramId, "ourTexture1"), 0);
@@ -169,21 +169,18 @@ int main(int argc, char ** argv)
 
 	// render loop
 	// -----------
-	#define LOOP_DELAY 3.0
 	while (!glfwWindowShouldClose(window))
 	{
 
 		dTimeNow = glfwGetTime() - dTimeInitial;
-		
-		if (dTimeNow>LOOP_DELAY){ 
-			dTimeInitial = dTimeNow;
-			dTimeNow -= LOOP_DELAY;
-		} 
-		dTimeNow /= LOOP_DELAY; 
-		dTimeBind = dTimeNow;
+		dTimeNow /= LOOP_DELAY;
 
-
-
+		while (dTimeNow >= 1.0) {
+			dTimeNow -= 1.0;
+			dTimeInitial += LOOP_DELAY;
+			directionForward = (directionForward == GL_TRUE) ? GL_FALSE : GL_TRUE;
+		}		
+		dTimeNow = directionForward ? dTimeNow : 1.0 - dTimeNow;
 		// input
 		// -----
 		processInput(window);
@@ -200,7 +197,7 @@ int main(int argc, char ** argv)
 		glBindTexture(GL_TEXTURE_2D, texture2);
 		
 		//bind the time into the parameters
-		glUniform1f(glGetUniformLocation(shaderProgramId, "mixFactor"), dTimeBind);
+		glUniform1f(glGetUniformLocation(shaderProgramId, "mixFactor"), dTimeNow);
 		// render container
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -160,7 +160,7 @@ int main(int argc, char ** argv)
 	glUniform1i(glGetUniformLocation(shaderProgramId, "ourTexture1"), 0);
 	// or set it via the texture class
 	glUniform1i(glGetUniformLocation(shaderProgramId, "ourTexture2"), 1);
-	
+	glUniform1f(glGetUniformLocation(shaderProgramId, "mixFactor"), 0.4);
 
 
 	// render loop
