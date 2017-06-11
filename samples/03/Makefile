@@ -12,9 +12,15 @@ CC := g++
 AR := ar
 MV := mv
 
+#Static Dependencies
+STATIC_LIBRARIES = glfw3 GLEW 
+APPLE_FRAMEWORKS = OpenGL Cocoa IOKit CoreVideo
+
+
+
 #Flags
 CFLAGS := -Wall -g -I$(INCDIR)
-LFLAGS := -L$(LIBDIR)  -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread -lshdr 
+LFLAGS := -L$(LIBDIR) $(addprefix -framework ,$(APPLE_FRAMEWORKS)) $(addprefix -l,$(STATIC_LIBRARIES))
 
 
 ################################################

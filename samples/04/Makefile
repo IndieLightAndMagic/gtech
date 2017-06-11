@@ -12,9 +12,15 @@ CC := g++
 AR := ar
 MV := mv
 
+#Static Dependencies
+STATIC_LIBRARIES = glfw3 GLEW shdr
+APPLE_FRAMEWORKS = OpenGL Cocoa IOKit CoreVideo
+
+
+
 #Flags
 CFLAGS := -Wall -g -I$(INCDIR)
-LFLAGS := -L$(LIBDIR)  -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread -lshdr 
+LFLAGS := -L$(LIBDIR) $(addprefix -framework ,$(APPLE_FRAMEWORKS)) $(addprefix -l,$(STATIC_LIBRARIES))
 
 
 ################################################
@@ -23,7 +29,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 # $< is for each obj ITS a for loop.
 	#[LNK].###################################.#
-	$(CC) -o $@ $< $(LFLAGS)
+	$(CC) -o $@ $@.o $(LFLAGS)
 # $^ is not a for each, rather it uses OBJS as a whole, which is not what we inted for.
 # $(CC) -o $@ $^ $(LFLAGS)
 	
