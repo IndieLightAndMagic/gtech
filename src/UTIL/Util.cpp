@@ -46,12 +46,6 @@ OSWindowWrapperGLFW::~OSWindowWrapperGLFW () {
 GLFWwindow*OSWindowWrapperGLFW::operator()(){
 	return m_pxWindow;
 }
-bool OSWindowWrapperGLFW::bOSWWCloseEventReceived(){
-	return glfwWindowShouldClose(m_pxWindow); 
-}
-void OSWindowWrapperGLFW::vOSWWRaiseCloseEvent(){
-	glfwSetWindowShouldClose(m_pxWindow, true);
-};
 
 
 OGLManager::OGLManager(){}

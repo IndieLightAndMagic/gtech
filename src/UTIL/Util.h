@@ -17,8 +17,6 @@ public:
 	OSWindowWrapper(int iAppWidth, int iAppHeight, std::string sAppTitle);
 	virtual ~OSWindowWrapper();
 
-	virtual bool bOSWWCloseEventReceived()=0;
-	virtual void vOSWWRaiseCloseEvent()=0;
 };
 
 
