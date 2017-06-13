@@ -49,6 +49,9 @@ GLFWwindow*OSWindowWrapperGLFW::operator()(){
 
 
 OGLManager::OGLManager(){}
+OGLManager::~OGLManager(){
+	std::cout << "OGLManager::Reseted (-)"<<std::endl;
+}
 OGLManager * OGLManager::init(){
 
 	if (!s_instance){
@@ -69,5 +72,8 @@ OGLManager * OGLManager::init(){
 		}
 	}
 	return s_instance;
+}
+void OGLManager::reset(){
+	if (s_instance) delete s_instance;
 }
 OGLManager * OGLManager::s_instance = 0;

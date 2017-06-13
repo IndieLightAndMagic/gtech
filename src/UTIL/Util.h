@@ -33,9 +33,12 @@ public:
 
 class OGLManager {
 	OGLManager();
+	~OGLManager();
 	static OGLManager * s_instance;
 public:
 	static OGLManager* init();
+	static void reset();
+
 
 };
 #endif /* __util__h__ */
