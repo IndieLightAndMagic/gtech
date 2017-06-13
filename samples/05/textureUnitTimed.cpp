@@ -10,7 +10,7 @@
 // Other includes
 #include <SHDR/shdr.h>
 #include <STB/stb_image.h>
-
+#include <UTIL/util.h>
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
@@ -24,35 +24,17 @@ int main(int argc, char ** argv)
 	int index;
 	for (index = 0 ; index < argc ; index++) std::cout << argv[index] << std::endl;
 
-	// glfw: initialize and configure
-	// ------------------------------
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
-
+	//GLFW
+	std::unique_ptr<OSWindowWrapperGLFW> _GLFW_(new OSWindowWrapperGLFW(SCR_WIDTH,SCR_HEIGHT,"Texture transparency timed"));
+	
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Texture Units", NULL, NULL);
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
+	GLFWwindow* window = _GLFW_ ->operator()();
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	
-	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
-	glewExperimental = GL_TRUE;
-	// Initialize GLEW to setup the OpenGL Function pointers
-	if (glewInit() != GLEW_OK)
-	{
-		std::cout << "Failed to initialize GLEW" << std::endl;
-		return -1;
-	}
+	OGLManager::init();
 
 	// build and compile our shader zprogram
 	// ------------------------------------
@@ -213,10 +195,11 @@ int main(int argc, char ** argv)
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+	OGLManager::reset();
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
-	glfwTerminate();
+	// glfwTerminate();
 	return 0;
 }
 

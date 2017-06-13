@@ -13,7 +13,7 @@ AR := ar
 MV := mv
 
 #Static Dependencies
-STATIC_LIBRARIES = glfw3 GLEW shdr stb
+STATIC_LIBRARIES = glfw3 GLEW shdr stb Util
 APPLE_FRAMEWORKS = OpenGL Cocoa IOKit CoreVideo
 
 
