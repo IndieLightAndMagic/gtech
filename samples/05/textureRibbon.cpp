@@ -57,7 +57,7 @@ int main()
 	std::cout << "Attempting Program Created " << std::endl;
 	
 	shaderProgram.pushShader("vs.vs", GL_VERTEX_SHADER);
-	shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
+	shaderProgram.pushShader("fsribbon.fs", GL_FRAGMENT_SHADER);
 	shaderProgram.link();
 	std::cout << "Shading Program State: " << shaderProgram.state() << std::endl;
 
@@ -111,12 +111,10 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load image, create texture and generate mipmaps
 	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load("/Users/imac/Code/AngelWings/angelWings.png", &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load("../Resources/Textures/wall.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		std::cout<<"Texture Opened: " << width <<" x " << height << " : " << nrChannels << std::endl; 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, nrChannels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -137,7 +135,7 @@ int main()
 
 		// render
 		// ------
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// render container

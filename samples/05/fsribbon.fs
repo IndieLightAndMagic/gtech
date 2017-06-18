@@ -12,5 +12,5 @@ uniform sampler2D ourTexture;
 void main()
 {
 	//Bind the coordinates incoming 
-    xFragColor = texture(ourTexture, TexCoord);
+    xFragColor = texture(ourTexture, TexCoord)*vec4(ourColor,1.0f);
 }
