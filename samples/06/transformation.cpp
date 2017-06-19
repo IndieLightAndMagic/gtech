@@ -2,10 +2,10 @@
 #include <GLFW/glfw3.h>
 #include <STB/stb_image.h>
 #include <SHDR/shdr.h>
-#include <UTIL/util.h>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
-#include <GLM/gtc/type_ptr.hpp>
+#include <UTIL/Util.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 #include <iostream>
