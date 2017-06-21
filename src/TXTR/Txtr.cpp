@@ -28,7 +28,7 @@ Txtr::Txtr(unsigned int uiNtextures){
 	m_bValid = false;
 	m_puiTextures = new unsigned int [uiNtextures];
 	
-	if (m_puiTextures) return;
+	if (!m_puiTextures) return;
 	
 
 	m_uiNtextures = uiNtextures;
@@ -36,14 +36,17 @@ Txtr::Txtr(unsigned int uiNtextures){
 
 	m_bValid = true;
 }
-void Txtr::TxtrSelect(unsigned int uiTextureIndex){
+Txtr::~Txtr(){
+
+}
+void Txtr::txtrSelect(unsigned int uiTextureIndex){
 
 	if (uiTextureIndex >= m_uiNtextures) return;
 	glBindTexture(GL_TEXTURE_2D, m_puiTextures[uiTextureIndex]);
 	m_uiActiveTextureIndex =  uiTextureIndex;
 
 }
-void Txtr::TxtrConfig(){
+void Txtr::txtrConfig(){
  	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   // set texture wrapping to GL_REPEAT (default wrapping method)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -52,7 +55,12 @@ void Txtr::TxtrConfig(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-void Txtr::TxtrImage(SimpleImageData * pxImage){
+void Txtr::txtrImage(SimpleImageData * pxImage){
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, pxImage->iWidth, pxImage->iHeight, 0, pxImage -> iChannels ==  3 ? GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, pxImage->operator()());
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
+bool Txtr::txtrValid(){
+	delete m_puiTextures;
+	return m_bValid;
+}
+

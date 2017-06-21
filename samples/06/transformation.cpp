@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <TXTR/Txtr.h>
 
 
 #include <iostream>
@@ -72,22 +73,33 @@ int main()
 
     // load and create a texture 
     // -------------------------
-    unsigned int texture1, texture2;
+    /*unsigned int texture1, texture2*/;
+    
     // texture 1
     // ---------
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    unsigned char *data = stbi_load("../Resources/Textures/awesomeface.png", &width, &height, &nrChannels, 0);
-    if (data)
+    Txtr xTexture0(1); //Create a texture bundle of 1 texture. 
+    std::cout<<"Texture valid: "<<xTexture0.txtrValid()<<std::endl;
+
+    xTexture0.txtrSelect(0); //select texture
+    xTexture0.txtrConfig();
+
+    SimpleImageData xSimpleImageAwesomwFace("../Resources/Textures/awesomeface.png");
+    xTexture0.txtrImage(&xSimpleImageAwesomwFace);
+
+    Txtr xTexture1(1); //Create a texture bundle of 1 texture. 
+    std::cout<<"Texture valid: "<<xTexture1.txtrValid()<<std::endl;
+    
+    xTexture1.txtrSelect(0); //select texture
+    xTexture1.txtrConfig();
+
+    SimpleImageData xSimpleImageWall("../Resources/Textures/wall.png");
+    xTexture1.txtrImage(&xSimpleImageWall);
+
+
+
+    //int width, height, nrChannels;
+    //unsigned char *data /*= stbi_load("../Resources/Textures/awesomeface.png", &width, &height, &nrChannels, 0)*/;
+    /*if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, nrChannels == 3 ?  GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -96,30 +108,30 @@ int main()
     {
         std::cout << "Failed to load texture" << std::endl;
     }
-    stbi_image_free(data);
+    stbi_image_free(data);*/
     // texture 2
     // ---------
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
+    //glGenTextures(1, &texture2);
+    //glBindTexture(GL_TEXTURE_2D, texture2);
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    data = stbi_load("../Resources/Textures/wall.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
+    //data = stbi_load("../Resources/Textures/wall.png", &width, &height, &nrChannels, 0);
+    //if (data)
+    //{
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, nrChannels == 3 ?  GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, nrChannels == 3 ?  GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
+        //glGenerateMipmap(GL_TEXTURE_2D);
+    //}
+    //else
+    //{
+        //std::cout << "Failed to load texture" << std::endl;
+    //}
+    //stbi_image_free(data);
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
@@ -144,9 +156,11 @@ int main()
 
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
+        xTexture0.txtrSelect(0); 
+        //glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        xTexture1.txtrSelect(0);
+        //glBindTexture(GL_TEXTURE_2D, texture2);
 
         // create transformations
         glm::mat4 transform;

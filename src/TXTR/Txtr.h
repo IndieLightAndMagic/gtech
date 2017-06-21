@@ -27,10 +27,13 @@ public:
 	virtual ~Txtr();
 
 	/* Select a texture */
-	void TxtrSelect(unsigned int uiTextureIndex);
+	void txtrSelect(unsigned int uiTextureIndex);
 	/* By default texture config */
-	void TxtrConfig();
+	void txtrConfig();
 	/* Assign Data for the texture */
-	void TxtrImage(SimpleImageData * pxImg);
+	void txtrImage(SimpleImageData * pxImg);
+
+	/* Checki if valid */
+	bool txtrValid();
 };
 #endif/*__TXTR_H__*/
