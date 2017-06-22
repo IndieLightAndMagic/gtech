@@ -23,6 +23,25 @@ SimpleImageData::~SimpleImageData(){
 }
 unsigned char * SimpleImageData::operator()(){ return m_pucData; }
 
+Txtr::Txtr(const char * cpcImageTexture){
+
+	int iWidth, iHeight, iChannels;
+	unsigned char * pucData = stbi_load(cpcImageTexture, &iWidth, &iHeight,&iChannels,0);
+	
+	m_bValid = false;
+	m_puiTextures = 0x00;
+	
+	if (!pucData) return;
+	m_bValid = true;
+	
+	glGenTextures(1,&m_uiTexture);
+	glBindTexture(GL_TEXTURE_2D, m_uiTexture);
+	txtrConfig();
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, iWidth, iHeight, 0, iChannels ==  3 ? GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, pucData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+}
+
 Txtr::Txtr(unsigned int uiNtextures){
 	
 	m_bValid = false;
@@ -36,8 +55,13 @@ Txtr::Txtr(unsigned int uiNtextures){
 
 	m_bValid = true;
 }
-Txtr::~Txtr(){
+void Txtr::txtrSelect(){
+	
+	glBindTexture(GL_TEXTURE_2D,m_uiTexture);
 
+}
+Txtr::~Txtr(){
+	if (m_puiTextures) delete m_puiTextures;
 }
 void Txtr::txtrSelect(unsigned int uiTextureIndex){
 
@@ -54,13 +78,11 @@ void Txtr::txtrConfig(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
-
 void Txtr::txtrImage(SimpleImageData * pxImage){
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, pxImage->iWidth, pxImage->iHeight, 0, pxImage -> iChannels ==  3 ? GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, pxImage->operator()());
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 bool Txtr::txtrValid(){
-	delete m_puiTextures;
 	return m_bValid;
 }
 

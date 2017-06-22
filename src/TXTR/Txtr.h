@@ -13,6 +13,7 @@ public:
 
 class Txtr {
 	
+	unsigned int m_uiTexture;
 	unsigned int m_uiActiveTextureIndex;
 	unsigned int m_uiNtextures;
 
@@ -24,9 +25,11 @@ public:
 		@param nTextures The number of handlers to generate;
 	*/
 	Txtr(unsigned int nTextures);
+	Txtr(const char * cpcTextureImagePath);
 	virtual ~Txtr();
 
 	/* Select a texture */
+	void txtrSelect();
 	void txtrSelect(unsigned int uiTextureIndex);
 	/* By default texture config */
 	void txtrConfig();
