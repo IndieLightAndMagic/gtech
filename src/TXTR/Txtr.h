@@ -13,11 +13,7 @@ public:
 class Txtr {
 	
 	unsigned int m_uiTexture;
-	unsigned int m_uiActiveTextureIndex;
-	unsigned int m_uiNtextures;
-
 	bool m_bValid;
-	unsigned int * m_puiTextures;
 public:
 	/*!
 		@brief Generate a number of texture handlers.
@@ -28,14 +24,12 @@ public:
 	virtual ~Txtr();
 
 	/* Select a texture */
-	void txtrSelect();
-	void txtrSelect(unsigned int uiTextureIndex);
+	void txtrSelect(unsigned int textureUnitToMakeActive = GL_TEXTURE0);
 	/* By default texture config */
 	virtual void txtrConfig();
-	/* Assign Data for the texture */
-	void txtrImage(SimpleImageData * pxImg);
-
+	
 	/* Checki if valid */
 	bool txtrValid();
+
 };
 #endif/*__TXTR_H__*/
