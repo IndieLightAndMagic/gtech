@@ -2,7 +2,6 @@
 #define __TXTR_H__
 
 class SimpleImageData{
-	bool m_bValid;
 	unsigned char * m_pucData;
 public:
 	int iWidth, iHeight, iChannels;
@@ -32,7 +31,7 @@ public:
 	void txtrSelect();
 	void txtrSelect(unsigned int uiTextureIndex);
 	/* By default texture config */
-	void txtrConfig();
+	virtual void txtrConfig();
 	/* Assign Data for the texture */
 	void txtrImage(SimpleImageData * pxImg);
 

@@ -6,7 +6,6 @@
 #include "Txtr.h"
 
 SimpleImageData::SimpleImageData(const char * pucFilePath){
-	m_bValid = false;
 	m_pucData = stbi_load(pucFilePath,&iWidth, &iHeight, &iChannels, 0);
 	if (!m_pucData){
 		std::cout << "[+]SimpleImageData: Failed...." << std::endl;
@@ -25,20 +24,23 @@ unsigned char * SimpleImageData::operator()(){ return m_pucData; }
 
 Txtr::Txtr(const char * cpcImageTexture){
 
-	int iWidth, iHeight, iChannels;
-	unsigned char * pucData = stbi_load(cpcImageTexture, &iWidth, &iHeight,&iChannels,0);
+	SimpleImageData xSimpleImage(cpcImageTexture);
 	
 	m_bValid = false;
 	m_puiTextures = 0x00;
 	
-	if (!pucData) return;
+	if (xSimpleImage() == 0x00 ) return;
 	m_bValid = true;
 	
 	glGenTextures(1,&m_uiTexture);
 	glBindTexture(GL_TEXTURE_2D, m_uiTexture);
+	
+
 	txtrConfig();
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, iWidth, iHeight, 0, iChannels ==  3 ? GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, pucData);
+
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, xSimpleImage.iWidth, xSimpleImage.iHeight, 0, xSimpleImage.iChannels ==  3 ? GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, xSimpleImage());
 	glGenerateMipmap(GL_TEXTURE_2D);
+	
 
 }
 
