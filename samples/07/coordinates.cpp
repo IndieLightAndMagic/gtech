@@ -11,8 +11,11 @@
 
 #include <iostream>
 
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -21,21 +24,21 @@ const unsigned int SCR_HEIGHT = 600;
 int main()
 {
 	//GLFW
-	std::unique_ptr<OSWindowWrapperGLFW> _GLFW_(new OSWindowWrapperGLFW(SCR_WIDTH,SCR_HEIGHT,"Texture wrappers tested"));
+	std::unique_ptr<OSWindowWrapperGLFW> _GLFW_(new OSWindowWrapperGLFW(SCR_WIDTH,SCR_HEIGHT,"Coordinate testing"));
 	// glfw window creation
 	// --------------------
 	GLFWwindow* window = _GLFW_ ->operator()();
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	OGLManager::init();
-	
-	// build and compile our shader zprogram
-	// ------------------------------------
-	Program shaderProgram;
 
-	shaderProgram.pushShader("vs.vs",	GL_VERTEX_SHADER);
-	shaderProgram.pushShader("fs.fs",	GL_FRAGMENT_SHADER);
+
+	Program shaderProgram;
+	shaderProgram.pushShader("vs.vs", GL_VERTEX_SHADER);
+	shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
 	shaderProgram.link();
+	GLuint shaderProgramId = shaderProgram();
+	
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -71,25 +74,15 @@ int main()
 	glEnableVertexAttribArray(1);
 
 
-	// load and create a texture 
-	// -------------------------
-	// texture 1
-	// ---------
-	Txtr xtexture1("../Resources/Textures/awesomeface.png");
-	
-	// texture 2
-	// ---------
-	Txtr xtexture2("../Resources/Textures/wall.png");
-	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-	// -------------------------------------------------------------------------------------------
-	GLuint shaderProgramId = shaderProgram();
-	shaderProgram.use(); 
+	Txtr texture0("../Resources/Textures/awesomeface.png");
+	Txtr texture1("../Resources/Textures/wall.png");
+
+	shaderProgram.use();
+	/*shaderProgram.setInt("texture1",0);
+	shaderProgram.setInt("texture2",1);*/
 	glUniform1i(glGetUniformLocation(shaderProgramId,"texture1"), 0);
 	glUniform1i(glGetUniformLocation(shaderProgramId,"texture2"), 1);
 
-
-	// render loop
-	// -----------
 	while (!glfwWindowShouldClose(window))
 	{
 		// input
@@ -102,18 +95,28 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// bind textures on corresponding texture units
-		xtexture1.txtrSelect(GL_TEXTURE0);
-		xtexture2.txtrSelect(GL_TEXTURE1);
-		// create transformations
-		glm::mat4 transform;
-		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+		texture0.txtrSelect(GL_TEXTURE0);
+		texture1.txtrSelect(GL_TEXTURE1);
 
-		// get matrix's uniform location and set matrix
+		// activate shader
 		shaderProgram.use();
-		unsigned int transformLoc = glGetUniformLocation(shaderProgramId, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
+	  
+		// create transformations
+		glm::mat4 model;
+		glm::mat4 view;
+		glm::mat4 projection;
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		// retrieve the matrix uniform locations
+		unsigned int modelLoc = glGetUniformLocation(shaderProgramId, "model");
+		unsigned int viewLoc  = glGetUniformLocation(shaderProgramId, "view");
+		// pass them to the shaders (3 different ways)
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+		// note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+		shaderProgram.setMat4("projection", projection);
+		
 		// render container
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -130,10 +133,12 @@ int main()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 
-	OGLManager::reset();
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
+	glfwTerminate();
+
 	return 0;
+
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -152,3 +157,4 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
 }
+

@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include <GL/glew.h>
-
+#include <glm/glm.hpp>
 
 class ShaderSource{
 public:
@@ -70,6 +70,18 @@ class Program {
 public:
 	Program();
 	
+	void setInt(const GLchar* pucUniformName, GLint value);
+	void setFloat(const GLchar* pucUniformName, GLfloat value);
+	void setVec2(const GLchar* pucUniformName, const glm::vec2 &value);
+	void setVec2(const GLchar* pucUniformName, float x, float y);
+	void setVec3(const GLchar* pucUniformName, const glm::vec3 &value);
+	void setVec3(const GLchar* pucUniformName, float x, float y, float z);
+	void setVec4(const GLchar* pucUniformName, const glm::vec4 &value);
+	void setVec4(const GLchar* pucUniformName, float x, float y, float z, float w);
+	void setMat2(const GLchar* pucUniformName, const glm::mat2 &value);
+	void setMat3(const GLchar* pucUniformName, const glm::mat3 &value);
+	void setMat4(const GLchar* pucUniformName, const glm::mat4 &value);
+
 	void use();
 	/*! 
 		Shader will not be pushed in if shader is already attached to this program

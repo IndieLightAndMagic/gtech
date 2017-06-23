@@ -59,6 +59,42 @@ Program::ProgramState Program::state(){
 	return m_state;
 }
 
+
+
+void Program::setInt(const GLchar* pucUniformName, GLint value){
+	glUniform1i(glGetUniformLocation(m_program,pucUniformName), value);
+}
+void Program::setFloat(const GLchar* pucUniformName, GLfloat value){
+	glUniform1f(glGetUniformLocation(m_program,pucUniformName), value);
+}
+void Program::setVec2(const GLchar* pucUniformName, const glm::vec2 &value){
+	glUniform2fv(glGetUniformLocation(m_program,pucUniformName), 1, &value[0]);
+}
+void Program::setVec2(const GLchar* pucUniformName, float x, float y){
+	glUniform2f(glGetUniformLocation(m_program,pucUniformName),x,y);
+}
+void Program::setVec3(const GLchar* pucUniformName, const glm::vec3 &value){
+	glUniform3fv(glGetUniformLocation(m_program,pucUniformName), 1, &value[0]);
+}
+void Program::setVec3(const GLchar* pucUniformName, float x, float y, float z){
+	glUniform3f(glGetUniformLocation(m_program,pucUniformName), x, y, z);
+}
+void Program::setVec4(const GLchar* pucUniformName, const glm::vec4 &value){
+	glUniform4fv(glGetUniformLocation(m_program,pucUniformName), 1, &value[0]);
+}
+void Program::setVec4(const GLchar* pucUniformName, float x, float y, float z, float w){
+	glUniform4f(glGetUniformLocation(m_program,pucUniformName), x, y, z, w);
+}
+void Program::setMat2(const GLchar* pucUniformName, const glm::mat2 &value){
+	glUniformMatrix2fv(glGetUniformLocation(m_program,pucUniformName), 1, GL_FALSE, &value[0][0]);
+}
+void Program::setMat3(const GLchar* pucUniformName, const glm::mat3 &value){
+	glUniformMatrix3fv(glGetUniformLocation(m_program,pucUniformName), 1, GL_FALSE, &value[0][0]);
+}
+void Program::setMat4(const GLchar* pucUniformName, const glm::mat4 &value){
+	glUniformMatrix4fv(glGetUniformLocation(m_program,pucUniformName), 1, GL_FALSE, &value[0][0]);
+}
+
 #ifdef PERFORM_UNIT_TEST
 
 	
