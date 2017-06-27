@@ -21,7 +21,7 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-int main()
+int main(int argc, char ** argv)
 {
 	//GLFW
 	std::unique_ptr<OSWindowWrapperGLFW> _GLFW_(new OSWindowWrapperGLFW(SCR_WIDTH,SCR_HEIGHT,"Coordinate testing"));
@@ -74,12 +74,12 @@ int main()
 	glEnableVertexAttribArray(1);
 
 
-	Txtr texture0("../Resources/Textures/awesomeface.png");
-	Txtr texture1("../Resources/Textures/wall.png");
+	Txtr texture0(argv[1]);
+	Txtr texture1(argv[2]);
 
 	shaderProgram.use();
-	/*shaderProgram.setInt("texture1",0);
-	shaderProgram.setInt("texture2",1);*/
+	shaderProgram.setInt("texture1",0);
+	shaderProgram.setInt("texture2",1);
 	glUniform1i(glGetUniformLocation(shaderProgramId,"texture1"), 0);
 	glUniform1i(glGetUniformLocation(shaderProgramId,"texture2"), 1);
 
