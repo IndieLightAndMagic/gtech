@@ -16,7 +16,7 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 800;
-
+const float MAX_FOV = 75.0f;
 // camera
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -25,9 +25,9 @@ glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
 bool firstMouse = true;
 float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch =  0.0f;
-float lastX =  800.0f / 2.0;
-float lastY =  600.0 / 2.0;
-float fov   =  45.0f;
+float lastX =  SCR_WIDTH / 2.0;
+float lastY =  SCR_HEIGHT / 2.0;
+float fov   =  MAX_FOV;
 float fAspectRatio = (float)SCR_WIDTH / (float)SCR_HEIGHT;
 float fNearz = 0.1f;
 float fFarz = 100.0f;
@@ -70,7 +70,7 @@ int main(int argc, char ** argv)
 	shaderProgram.pushShader("vs.vs", GL_VERTEX_SHADER);
 	shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
 	shaderProgram.link();
-	GLuint shaderProgramId = shaderProgram();
+	//GLuint shaderProgramId = shaderProgram();
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -160,7 +160,7 @@ int main(int argc, char ** argv)
 	
 	Cam cam(
 		cameraPos,
-		glm::vec3(0.0f,0.0f,0.0f), 
+		cameraFront,
 		cameraUp,
 		fov,
 		fAspectRatio,
@@ -170,8 +170,7 @@ int main(int argc, char ** argv)
 
 
 	// pass projection matrix to shader (note that in this case it could change every frame)
-	// glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
+	bCamMouseDirty = bCamViewDirty = bProjectionDirty = true;
 	// render loop
 	// -----------
 	while (!glfwWindowShouldClose(window))
@@ -210,19 +209,18 @@ int main(int argc, char ** argv)
 			cam.vSetFov(fov);
 		}
 
+		
 		if (bCamMouseDirty||bCamViewDirty||bProjectionDirty){
 			
 			cam.vUpdateCamera();
-			if (bProjectionDirty) shaderProgram.setMat4("projection", cam.m_projection);
-			if (bCamViewDirty||bCamMouseDirty) shaderProgram.setMat4("view", cam.m_view);
+			if (bProjectionDirty) shaderProgram.setMat4("projection", cam.xGetProjection());
+			if (bCamViewDirty||bCamMouseDirty) shaderProgram.setMat4("view", cam.xGetView());
 			bCamMouseDirty = bCamViewDirty = bProjectionDirty = false;
 		}
 
 
 		
-		//glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		//shaderProgram.setMat4("view", view);
-
+		
 		// render boxes
 		glBindVertexArray(VAO);
 		for (unsigned int i = 0; i < 10; i++)
@@ -294,10 +292,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
 	{
-		lastX = xpos;
+		
+		lastX = xpos; 
 		lastY = ypos;
 		firstMouse = false;
+		std::cout << lastX << "," << lastY << ":" << xpos << "," << ypos << std::endl;
 	}
+	std::cout << lastX << "," << lastY << ":" << xpos << "," << ypos << std::endl;
 
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
@@ -329,14 +330,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	if (fov >= 1.0f && fov <= 45.0f){
+	if (fov >= 1.0f && fov <= MAX_FOV){
 		fov -= yoffset;
 		bProjectionDirty = true;
 	}
 	if (fov <= 1.0f){
 		fov = 1.0f;
 	}
-	if (fov >= 45.0f){
-		fov = 45.0f;
+	if (fov >= MAX_FOV){
+		fov = MAX_FOV;
 	}
 }
