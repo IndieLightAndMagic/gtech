@@ -213,8 +213,8 @@ int main(int argc, char ** argv)
 		if (bCamMouseDirty||bCamViewDirty||bProjectionDirty){
 			
 			cam.vUpdateCamera();
-			if (bProjectionDirty) shaderProgram.setMat4("projection", cam.xGetProjection());
-			if (bCamViewDirty||bCamMouseDirty) shaderProgram.setMat4("view", cam.xGetView());
+			if (bProjectionDirty) shaderProgram.setMat4("camModel.pr", cam.xGetProjection());
+			if (bCamViewDirty||bCamMouseDirty) shaderProgram.setMat4("camModel.vw", cam.xGetView());
 			bCamMouseDirty = bCamViewDirty = bProjectionDirty = false;
 		}
 
@@ -226,11 +226,19 @@ int main(int argc, char ** argv)
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			// calculate the model matrix for each object and pass it to shader before drawing
-			glm::mat4 model;
-			model = glm::translate(model, cubePositions[i]);
+			glm::mat4 model_tx;
+			glm::mat4 model_rt;
+
+			/* Create a translation matrix */
+			model_tx = glm::translate(model_tx, cubePositions[i]);
+			
+
+			/* Create a rotation matrix */
 			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			shaderProgram.setMat4("model", model);
+			model_rt = glm::rotate(model_rt, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			
+			shaderProgram.setMat4("objModel.tx", model_tx);
+			shaderProgram.setMat4("objModel.rt", model_rt);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
