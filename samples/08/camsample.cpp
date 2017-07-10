@@ -216,6 +216,7 @@ int main(int argc, char ** argv)
 			if (bProjectionDirty) shaderProgram.setMat4("camModel.pr", cam.xGetProjection());
 			if (bCamViewDirty||bCamMouseDirty) shaderProgram.setMat4("camModel.vw", cam.xGetView());
 			bCamMouseDirty = bCamViewDirty = bProjectionDirty = false;
+		
 		}
 
 
@@ -304,9 +305,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		lastX = xpos; 
 		lastY = ypos;
 		firstMouse = false;
-		std::cout << lastX << "," << lastY << ":" << xpos << "," << ypos << std::endl;
 	}
-	std::cout << lastX << "," << lastY << ":" << xpos << "," << ypos << std::endl;
 
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
