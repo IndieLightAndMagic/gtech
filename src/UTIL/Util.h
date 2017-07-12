@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+//#include <GL/glew.h>
+#include <SDL2/SDL.h>
 
 class OSWindowWrapper {
 
@@ -20,12 +20,13 @@ public:
 };
 
 
-class OSWindowWrapperGLFW: public OSWindowWrapper {
-	GLFWwindow * m_pxWindow;
+class OSWindowWrapperSDL: public OSWindowWrapper {
+	SDL_Window * m_pxWindow;
+	SDL_GLContext m_xContext;
 public:
-	OSWindowWrapperGLFW(int iWidth, int iHeight, std::string rsAppName = "GLFW - Unnamed");
-	~OSWindowWrapperGLFW();
-	GLFWwindow * operator()();
+	OSWindowWrapperSDL(int iWidth, int iHeight, std::string rsAppName = "Unnamed");
+	~OSWindowWrapperSDL();
+	SDL_Window * operator()();
 
 	bool bOSWWCloseEventReceived();
 	void vOSWWRaiseCloseEvent();
