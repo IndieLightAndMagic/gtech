@@ -3,11 +3,11 @@
 /* First: headers: glew.h & glfw3.h */
 
 //GLEW: The OpenGL Extension Wrangler Library
-#define GLEW_STATIC
-#include <GL/glew.h>
+/*#define GLEW_STATIC
+#include <GL/glew.h>*/
 
 //GLFW: A multi-platform library for OpenGL, OpenGL ES, Vulkan, window and input http://www.glfw.org/
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 
 //WindowSize public struct 
 struct WinSZ {
@@ -33,7 +33,7 @@ static bool dirty = true;
 static bool killmainloop = false;
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
-    if (key == GLFW_KEY_R && action == GLFW_REPEAT){
+    if (key == SDLK_R && action == GLFW_REPEAT){
         color.r += speed.r;
         dirty = true;
         if (color.r > 1.0f) {
@@ -44,7 +44,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             speed.r *= -1;
         } 
     }
-    if (key == GLFW_KEY_G && action == GLFW_REPEAT){
+    if (key == SDLK_G && action == GLFW_REPEAT){
         color.g += speed.g;
         dirty = true;
         if (color.g > 1.0f) {
@@ -55,7 +55,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             speed.g *= -1;
         } 
     }
-    if (key == GLFW_KEY_B && action == GLFW_REPEAT){
+    if (key == SDLK_B && action == GLFW_REPEAT){
         color.b += speed.b;
         dirty = true;
         if (color.b > 1.0f) {
@@ -66,7 +66,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             speed.b *= -1;
         } 
     }
-    if (key == GLFW_KEY_ESCAPE){
+    if (key == SDLK_ESCAPE){
         killmainloop = true;
     }
 }
@@ -76,9 +76,7 @@ int main ()
 {
 
 
-	/* Initialize the glfw */
-	glfwInit();
-
+	
 
  	std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
     std::cout << "Press R / G / B keys!!" << std::endl;
