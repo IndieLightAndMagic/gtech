@@ -9,7 +9,6 @@ hellotriangleFragInterpol
 
 triangle
 
-testbench
 
 texture
 textureRibbon
@@ -26,6 +25,8 @@ cubes
 camsample
 
 sm/build
+
+test0
 
 
 00/
