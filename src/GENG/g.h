@@ -12,17 +12,27 @@ using namespace std;
 namespace GENG
 {
 
-
+typedef Uint32 ui32;
 
 
 
 
 class GOb {
 
+	ui32 m_ticks;
+	bool m_started;
 public:
-	virtual void update();
+	virtual void init();
+	
+	void _update();
+	virtual void update(ui32 ui32delta);
+
+
+	
+
 	GOb(){
 		cout <<"+GOb"<<endl;
+		init();
 	}
 	~GOb(){
 		cout <<"-GOb"<<endl;

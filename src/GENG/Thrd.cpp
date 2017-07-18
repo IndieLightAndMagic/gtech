@@ -8,10 +8,27 @@
 namespace GENG{ 
 
 
-void GOb::update(){
-	cout << "Updating object and making delay 1000 ms "<< typeid(this).name() << endl; 
-	SDL_Delay(1000);
+void GOb::_update(){
+
+	ui32 ui32delta;
+	if(m_started){
+		m_started = true;
+		ui32delta = 0;
+	}else ui32delta = SDL_GetTicks() - m_ticks;
+	m_ticks += ui32delta;
+	update(ui32delta);
+
 }
+
+void GOb::update(ui32 ui32delta){
+
+	
+}
+void GOb::init(){
+	m_ticks = 0;
+	m_started = false;
+}
+
 
 
 
@@ -35,11 +52,10 @@ int threadHelper(void * pv){
 }
 int GTh::run(){
 
-
+	/* Update the objects registered on this thread */
 	for (int i = 0; i<m_vO.size(); i++){
-		m_vO[i]->update();
+		m_vO[i]->_update();
 	}
-
 	return 0;
 
 }
