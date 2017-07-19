@@ -27,6 +27,8 @@ OSWindowWrapperSDL::OSWindowWrapperSDL (int iWidth, int iHeight, std::string rsA
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,24);
 	//SDL_GL_SetAttribute(SDL_RESIZABLE, GL_FALSE);
 	
 	m_pxWindow = SDL_CreateWindow(
@@ -64,7 +66,9 @@ OSWindowWrapperSDL::~OSWindowWrapperSDL () {
 SDL_Window *OSWindowWrapperSDL::operator()(){
 	return m_pxWindow;
 }
-
+void OSWindowWrapperSDL::vOSWWSwap(){
+	SDL_GL_SwapWindow(m_pxWindow);
+}
 
 OGLManager::OGLManager(){}
 OGLManager::~OGLManager(){

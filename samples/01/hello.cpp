@@ -1,6 +1,7 @@
 
+#include <vector>
 #include <iostream>
-#include <GENG/g.h
+#include <GENG/g.h>
 #include <UTIL/Util.h> 
 /* First: headers: glew.h & glfw3.h */
 
@@ -27,7 +28,7 @@ static struct {
 
 static bool dirty        = true;
 static bool killmainloop = false;
-void key_callback(int key, int scancode, int repeat, int mods){
+void key_callback(int key, int repeat){
 
     if (key == SDLK_r && repeat){
         color.r += speed.r;
@@ -66,14 +67,35 @@ void key_callback(int key, int scancode, int repeat, int mods){
         killmainloop = true;
     }
 }
+using namespace GENG;
+class GObInputProcess:public GOb {
 
-class InputThread:public GOb {
-
-    void update(ui32 ui32delta){
-        /* Process here the Input */
-        
+    /* Initialize keys to track */
+    std::vector<char> m_vKeysToTrack;
+    
+    void init(){
+        GOb::init();
+        std::vector<char>v {SDLK_r, SDLK_g, SDLK_b, 0x0};
+        m_vKeysToTrack = v;
     }
 
+    /* This will be called by the thread */
+    void update(ui32 ui32delta){
+        /* Process here the Input */
+        SDL_Event e;
+        while (SDL_PollEvent(&e)!=0){
+            if (e.type == SDL_QUIT){
+                killmainloop = true;
+                if (e.type != SDL_KEYDOWN) continue; //You Can Push it... however this is not optimal, optimization is not needed now. 
+                
+                for (
+                    int index=0;
+                    (e.type==SDL_KEYDOWN) && m_vKeysToTrack[index];
+                    ++index
+                    ) if (e.key.keysym.scancode == m_vKeysToTrack[index]) key_callback(e.key.keysym.scancode, e.key.repeat);   
+            }
+        }
+    }
 };
 
 int main ()
@@ -90,12 +112,14 @@ int main ()
 
 
     // Create An Object which processes the input events (OI).
-    GOb xInputProcess;
+    GObInputProcess xInputProcess;
 
     // Add OI as a worker into TI.
+    xInputThread.pushObject(&xInputProcess);    
+
 
     // Game loop: Here's he window 
-    while (true)
+    for (;true;_SDL_->vOSWWSwap())
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
         // Process input.
@@ -106,20 +130,18 @@ int main ()
             glClearColor(color.r,color.g,color.b,1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             dirty = false;
-
         
         }
-        // Swap the screen buffers
-        glfwSwapBuffers(pwindow);
 
+        // Swap the screen buffers
         if (killmainloop) break;
     }
 
 
 
-    /* Terminate the glfw */
-    glfwTerminate();
     return 0;
+
+    /* _SDL_ will peacefully terminate */
 
 }
 

@@ -5,7 +5,7 @@ OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 
 LIBDIR := ../../lib
 
-CC := g++
+CC := g++ -std=c++11		
 AR := ar
 MV := mv
 AFLAGS := rcs

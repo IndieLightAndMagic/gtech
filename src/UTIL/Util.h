@@ -29,6 +29,7 @@ public:
 	SDL_Window * operator()();
 
 	bool bOSWWCloseEventReceived();
+	void vOSWWSwap();
 	void vOSWWRaiseCloseEvent();
 };
 
