@@ -28,6 +28,8 @@ static struct {
 
 static bool dirty        = true;
 static bool killmainloop = false;
+static int tokill = 3;
+
 void key_callback(int key, int repeat){
 
     if (key == SDLK_r && repeat){
@@ -78,31 +80,21 @@ class GObInputProcess:public GOb {
         std::vector<char>v {SDLK_r, SDLK_g, SDLK_b, 0x0};
         m_vKeysToTrack = v;
     }
-
     /* This will be called by the thread */
     void update(ui32 ui32delta){
-        /* Process here the Input */
-        SDL_Event e;
-        while (SDL_PollEvent(&e)!=0){
-            if (e.type == SDL_QUIT){
-                killmainloop = true;
-                if (e.type != SDL_KEYDOWN) continue; //You Can Push it... however this is not optimal, optimization is not needed now. 
-                
-                for (
-                    int index=0;
-                    (e.type==SDL_KEYDOWN) && m_vKeysToTrack[index];
-                    ++index
-                    ) if (e.key.keysym.scancode == m_vKeysToTrack[index]) key_callback(e.key.keysym.scancode, e.key.repeat);   
-            }
-        }
+
     }
+public:
+    void pushEvent(SDL_Event&e){
+        std::cout << "Push!" << std::endl;
+    }
+
 };
 
 int main ()
 {
 
-
-	std::unique_ptr<OSWindowWrapperSDL> _SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
+    std::unique_ptr<OSWindowWrapperSDL> _SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
 
  	std::cout << "Starting SDL context, OpenGL 3.3" << std::endl;
     std::cout << "Press R / G / B keys!!" << std::endl;
@@ -119,7 +111,7 @@ int main ()
 
 
     // Game loop: Here's he window 
-    for (;true;_SDL_->vOSWWSwap())
+    for (;tokill;/*_SDL_->vOSWWSwap()*/)
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
         // Process input.
@@ -135,6 +127,12 @@ int main ()
 
         // Swap the screen buffers
         if (killmainloop) break;
+        SDL_Event e;
+        SDL_PollEvent(&e);
+        if (e.type == SDL_KEYUP) {
+            xInputProcess.pushEvent(e);
+        } else if (e.type == SDL_QUIT) killmainloop = true;
+
     }
 
 
