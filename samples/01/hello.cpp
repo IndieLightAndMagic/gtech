@@ -1,23 +1,19 @@
 
 #include <iostream>
+#include <GENG/g.h
+#include <UTIL/Util.h> 
 /* First: headers: glew.h & glfw3.h */
 
 //GLEW: The OpenGL Extension Wrangler Library
-/*#define GLEW_STATIC
-#include <GL/glew.h>*/
+/*#define GLEW_STATIC*/
+#include <GL/glew.h>
 
 //GLFW: A multi-platform library for OpenGL, OpenGL ES, Vulkan, window and input http://www.glfw.org/
 //#include <GLFW/glfw3.h>
 
 //WindowSize public struct 
-struct WinSZ {
-	static GLuint width;
-	static GLuint height;
-};
-
-GLuint WinSZ::width	= 800;
-GLuint WinSZ::height = 600;
-
+#define SCR_WIDTH 1200
+#define SCR_HEIGHT 675
 /*static struct {
     bool r,g,b;
 }active = { false, false, false};*/
@@ -29,11 +25,11 @@ static struct {
 }color = { 0.0f, 0.0f, 0.0f };
 
 
-static bool dirty = true;
+static bool dirty        = true;
 static bool killmainloop = false;
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+void key_callback(int key, int scancode, int repeat, int mods){
 
-    if (key == SDLK_R && action == GLFW_REPEAT){
+    if (key == SDLK_r && repeat){
         color.r += speed.r;
         dirty = true;
         if (color.r > 1.0f) {
@@ -44,7 +40,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             speed.r *= -1;
         } 
     }
-    if (key == SDLK_G && action == GLFW_REPEAT){
+    if (key == SDLK_g && repeat){
         color.g += speed.g;
         dirty = true;
         if (color.g > 1.0f) {
@@ -55,7 +51,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             speed.g *= -1;
         } 
     }
-    if (key == SDLK_B && action == GLFW_REPEAT){
+    if (key == SDLK_b && repeat){
         color.b += speed.b;
         dirty = true;
         if (color.b > 1.0f) {
@@ -71,6 +67,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
+class InputThread:public GOb {
+
+    void update(ui32 ui32delta){
+        /* Process here the Input */
+        
+    }
+
+};
 
 int main ()
 {
@@ -78,58 +82,23 @@ int main ()
 
 	std::unique_ptr<OSWindowWrapperSDL> _SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
 
- 	std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
+ 	std::cout << "Starting SDL context, OpenGL 3.3" << std::endl;
     std::cout << "Press R / G / B keys!!" << std::endl;
 
-
-	/* Window characteristics OpenGL 3.3 */
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    /* Create a GLFWwindow object that we can use for GLFW's functions */
-    GLFWwindow * pwindow = glfwCreateWindow(WinSZ::width, WinSZ::height, "Window - 01",nullptr, nullptr);
-
-    if (pwindow == nullptr)
-    {
-    	std::cout << "Failed to create GLFW window" << std::endl;
-    	glfwTerminate();
-    	return -1;
-    }
-    std::cout << "Window Created" << std::endl;
+    // Create A Thread for Objects that process Input (TI).
+    GTh xInputThread(GNULL);
 
 
-    // Set our window as the current OpenGL context. 
-	glfwMakeContextCurrent(pwindow);
+    // Create An Object which processes the input events (OI).
+    GOb xInputProcess;
 
-
-    // Set Callbacks for keyboard.
-    glfwSetKeyCallback(pwindow, key_callback);
-
-
-    // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
-    glewExperimental = GL_TRUE;
-    
-    // Initialize GLEW to setup the OpenGL Function pointers
-    if (glewInit() != GLEW_OK)
-    {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-        return -1;
-    }    
-
-    // Define the viewport dimensions
-    int width, height;
-    glfwGetFramebufferSize(pwindow, &width, &height);  
-    glViewport(0, 0, width, height);
+    // Add OI as a worker into TI.
 
     // Game loop: Here's he window 
-    while (!glfwWindowShouldClose(pwindow))
+    while (true)
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
-        glfwPollEvents();
+        // Process input.
 
         //When some change has been made 
         if (dirty){
@@ -155,9 +124,3 @@ int main ()
 }
 
 
-/* OK Build & Link (TESTED ON LINUX): 
-g++ -o hello hello.cpp  -I../inc -L../glew-2.0.0/lib/  -L../../glfw-build/src -lGL  -lglfw3  -lGLEW -ldl -lX11 -lXrandr -lpthread -lXinerama -lXcursor
-*/
-/* OK Build & Link (TESTED ON MAC): 
-g++ -o hello hello.cpp  -I../inc -L../../glew-2.0.0/build/lib/  -L../../glfw/build/src/ -framework OpenGL -framework Cocoa -framework IOKit  -framework CoreVideo -lglfw3  -lGLEW  -lpthread
-*/

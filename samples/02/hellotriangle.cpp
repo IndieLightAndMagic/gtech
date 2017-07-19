@@ -1,11 +1,7 @@
 #include <iostream>
 
-// GLEW
-#define GLEW_STATIC
-#include <GL/glew.h>
-
-// GLFW
-#include <GLFW/glfw3.h>
+// SDL
+#include <SDL2/SDL.h>
 
 
 // Function prototypes

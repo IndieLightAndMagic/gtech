@@ -12,6 +12,8 @@ using namespace std;
 namespace GENG
 {
 
+#define GNULL nullptr
+
 typedef Uint32 ui32;
 
 
