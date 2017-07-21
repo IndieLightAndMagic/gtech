@@ -9,28 +9,49 @@
 #define SCR_HEIGHT 675
 
 
-/* So this is a demo of what should have a principal thread in a game.
- * 
- * Objects in the thread: A main thread should have a dynamic/static list of
- * objects which are supposed to be processed. Just as a regular a thread but it
- * will be called from main. This main thread will render and will get input from
- * external devices such as keyboard, gamepad etc. 
- * 
- * Main thread should be the only one. So it could be a Singleton or a namespace
- * with a bunch of functions, or a class with static methods all over the place.
- * 
- * A main thread also could be a class / structure with a bunch of specific
- * callbacks. 
- * 
- * As this is a demo, we are going to oversimplify what we are doing. So a bunch
- * of functions will do for now... in fact, a single static function called
- * mainloop.
- * 
- * So Our MainThread class will inherit from GTh (A thread class).
+/*
+ 
+ 
+ MAIN APP must be thinked of as a main thread class. Render and Input should
+ take place here (SDL2 spirit).
+ 
+ The Approach taken here is MainApp. This is a Scene. Inside a Scene
+ This MainApp class MUST HAVE:
+ 
+ 1. ProcessInput method: In this method the mechanisms for processing input and
+    affecting external variables.
+ 
+    Next iteration: Is important to create a PURE VIRTUAL class to do this. This
+    will favor a protocol on how to do this. Any derived classes MUST BE final.
+    This means that Base class will be an interface and derived classes will be
+    implementations for each scene.
+ 
+    To affect external variables or states, callbacks to other objects must be
+    defined. This mechanism is simple and effective.
+ 
+ 2. Render method: In this method all the objects must be processed and displayed
+    if changes in their visual state changes.
+ 
 
-	
-
+ TODO:
+ 
+ + Take sample 08 and implement it using SDL2 and the approach described here.
+ 
+ 
+ PLANNED YET FAR FROM THIS POINT:
+ 
+ + Object Signal Connection Idiom.
+ + Threaded Logic for Game Objects.
+ + Blender3D powered Editor.
+ + Node 2 Shader Editor.
+ + FX Samples Channel. 
+ + Engine Making Channel. 
+ + C/C++ for graphics development Teaching Channel.
+ 
  */
+
+
+
 
 class MainApp{
 	OSWindowWrapperSDL * m_ww;
