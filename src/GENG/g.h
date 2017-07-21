@@ -20,7 +20,7 @@ typedef Uint32 ui32;
 
 
 class GOb {
-
+	int id;
 	ui32 m_ticks;
 	bool m_started;
 public:
@@ -29,21 +29,16 @@ public:
 	void _update();
 	virtual void update(ui32 ui32delta);
 
-
+	GOb();
+	~GOb();
 	
 
-	GOb(){
-		cout <<"+GOb"<<endl;
-		init();
-	}
-	~GOb(){
-		cout <<"-GOb"<<endl;
-	}
 
 };
 
 
 class GTh{
+	int id;
 	SDL_Thread * m_pxT;
 	vector<GOb*> m_vO;
 
@@ -55,7 +50,17 @@ public:
 	void killThread(){
 		bTAlive = false;
 	}
+	/**
+	 * @brief      Determines if alive.
+	 *
+	 * @return     True if alive, False otherwise.
+	 */
 	bool isAlive(){ return bTAlive; }
+	/**
+	 * @brief      This function runs the thread. As long the thread is alive it must be called. The task of run is to update all the objects in m_vO.
+	 *
+	 * @return     The function should return 0. Otherwise will return another value.
+	 */
 	virtual int run();
 	GTh(void * param);
 	~GTh();
