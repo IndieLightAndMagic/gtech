@@ -19,18 +19,18 @@
  This MainApp class MUST HAVE:
  
  1. ProcessInput method: In this method the mechanisms for processing input and
-    affecting external variables.
+	affecting external variables.
  
-    Next iteration: Is important to create a PURE VIRTUAL class to do this. This
-    will favor a protocol on how to do this. Any derived classes MUST BE final.
-    This means that Base class will be an interface and derived classes will be
-    implementations for each scene.
+	Next iteration: Is important to create a PURE VIRTUAL class to do this. This
+	will favor a protocol on how to do this. Any derived classes MUST BE final.
+	This means that Base class will be an interface and derived classes will be
+	implementations for each scene.
  
-    To affect external variables or states, callbacks to other objects must be
-    defined. This mechanism is simple and effective.
+	To affect external variables or states, callbacks to other objects must be
+	defined. This mechanism is simple and effective.
  
  2. Render method: In this method all the objects must be processed and displayed
-    if changes in their visual state changes.
+	if changes in their visual state changes.
  
 
  TODO:
