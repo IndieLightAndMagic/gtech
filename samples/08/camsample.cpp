@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <time.h>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <STB/stb_image.h>
@@ -17,11 +20,6 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 800;
 const float MAX_FOV = 75.0f;
-// camera
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
-
 bool firstMouse = true;
 float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch =  0.0f;
@@ -38,84 +36,140 @@ bool bCamMouseDirty = false;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-int main(int argc, char ** argv)
-{
-	// glfw: initialize and configure
-	// ------------------------------
-	std::unique_ptr<OSWindowWrapperGLFW>_GLFW_(new OSWindowWrapperGLFW(SCR_WIDTH,SCR_HEIGHT,"Cam Example!"));
+/*
+ * In this example we are going to implement the MainScene class with a more sophisticated example.
+ * 
+ * What we are going to do:
+ * 
+ * 	1. We will implement the MainScene class which is an object representing the Scene. 
+ * 	2. MainScene class is a main thread class. It will process the input, calculate the scene each frame and render the
+ * 		scene.
+ *	3. We will make an object class called camera. Camera is an object with logic. The logic of it will go on a thread.
+ *		Things that go on a thread are LOGIC things aside or different from Render and Input Process. 
+ *	4. Syntax style: we'll use Qt Syntax Style. 
+ *	5. We will implement a simple random ID generator.  
+ */ 
+
+class Camera {
+	// camera
+	glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+public:
+	Camera():
+		GOb(),
+		cameraPos(glm::vec3(0.0f, 0.0f, 3.0f)),
+		cameraFront(glm::vec3(0.0f, 0.0f, -1.0f)),
+		cameraUp(glm::vec3(0.0f, 1.0f, 0.0f))
+		{
+
+		}
+};
+
+class MainScene : public GOb{
+
+	/*!
+	 * \brief Windows Wrapper SDL. 
+	 * 
+	 */
+	OSWindowWrapperSDL * m_xWW;
 	
-	// glfw window creation
-	// --------------------
-	GLFWwindow * window = _GLFW_ ->operator()();
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	// tell GLFW to capture our mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	/*!
+	 * \brief First Pass flag.
+	 */
+	bool m_bFP;
 
-
-
-	// glad: load all OpenGL function pointers
-	// ---------------------------------------
-	OGLManager::init();
-
-	// configure global opengl state
-	// -----------------------------
-	glEnable(GL_DEPTH_TEST);
-
+	/**
+	 * \brief Shader Program to render the cubes
+	 */
 	// build and compile our shader zprogram
 	// ------------------------------------
-	Program shaderProgram;
-	shaderProgram.pushShader("vs.vs", GL_VERTEX_SHADER);
-	shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
-	shaderProgram.link();
-	//GLuint shaderProgramId = shaderProgram();
+	Program m_shaderProgram;
+
+
+	
+
+public:
+	MainScene():
+		GOb(),
+		m_xWW(0x0),
+		m_bFP(true)
+		{
+		}
+	void processInput(){
+	}
+	void sceneInit(){
+		std::unique_ptr<OSWindowWrapperSDL>_SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
+		m_xWW = _SDL_.get();
+
+		// configure global opengl state
+		// -----------------------------
+		glEnable(GL_DEPTH_TEST);
+
+		m_shaderProgram.pushShader("vs.vs", GL_VERTEX_SHADER);
+		m_shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
+		m_shaderProgram.link();
+
+	}
+	void renderScene(){
+	}
+	int mainLoop(){
+		for (;true;){
+			renderScene();
+		}
+	}
+}
+int main(int argc, char ** argv)
+{
+	
+
+	//GLuint m_shaderProgramId = m_shaderProgram();
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
 	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,	//32
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
 
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,	//41
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
 
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//53
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
 
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
+		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//20
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
 
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
+		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,	//33
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
 
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,	//40
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0		//51	
+	
 	};
 	// world space positions of our cubes
 	glm::vec3 cubePositions[] = {
@@ -154,9 +208,9 @@ int main(int argc, char ** argv)
 	
 	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
 	// -------------------------------------------------------------------------------------------
-	shaderProgram.use();
-	shaderProgram.setInt("texture1",0);
-	shaderProgram.setInt("texture2",1);
+	m_shaderProgram.use();
+	m_shaderProgram.setInt("texture1",0);
+	m_shaderProgram.setInt("texture2",1);
 	
 	Cam cam(
 		cameraPos,
@@ -195,7 +249,7 @@ int main(int argc, char ** argv)
 		texture1.txtrSelect(GL_TEXTURE1);
 		
 		// activate shader
-		shaderProgram.use();
+		m_shaderProgram.use();
 
 		// Update Items that can "change"
 		// camera/view transformation
@@ -213,8 +267,8 @@ int main(int argc, char ** argv)
 		if (bCamMouseDirty||bCamViewDirty||bProjectionDirty){
 			
 			cam.vUpdateCamera();
-			if (bProjectionDirty) shaderProgram.setMat4("camModel.pr", cam.xGetProjection());
-			if (bCamViewDirty||bCamMouseDirty) shaderProgram.setMat4("camModel.vw", cam.xGetView());
+			if (bProjectionDirty) m_shaderProgram.setMat4("camModel.pr", cam.xGetProjection());
+			if (bCamViewDirty||bCamMouseDirty) m_shaderProgram.setMat4("camModel.vw", cam.xGetView());
 			bCamMouseDirty = bCamViewDirty = bProjectionDirty = false;
 		
 		}
@@ -238,8 +292,8 @@ int main(int argc, char ** argv)
 			float angle = 20.0f * i;
 			model_rt = glm::rotate(model_rt, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			
-			shaderProgram.setMat4("objModel.tx", model_tx);
-			shaderProgram.setMat4("objModel.rt", model_rt);
+			m_shaderProgram.setMat4("objModel.tx", model_tx);
+			m_shaderProgram.setMat4("objModel.rt", model_rt);
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}

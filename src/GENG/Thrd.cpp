@@ -7,17 +7,17 @@
 
 namespace GENG{ 
 
-
-
-
+static int ids = 0;
 
 
 
 GTh::GTh(void * param):
+id(GENG::ids++),
 m_pP(param),
 bTAlive(false)
 {
-	cout <<"+"<<typeid(this).name()<<endl; 
+
+	cout <<"+ "<<typeid(this).name()<<" "<<id<<endl; 
 
 }
 GTh::~GTh(){

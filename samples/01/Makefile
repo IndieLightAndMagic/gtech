@@ -8,7 +8,7 @@ LIBDIR := ../../lib
 INCDIR := ../../inc
 
 #Static Dependencies
-STATIC_LIBRARIES = geng util GLEW iconv m SDL2
+STATIC_LIBRARIES = util GLEW iconv m SDL2
 APPLE_FRAMEWORKS = AudioToolbox CoreAudio Carbon ForceFeedback IOKit Cocoa CoreVideo OpenGL
 
 #Tools
