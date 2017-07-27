@@ -2,13 +2,9 @@
 #include <time.h>
 
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <STB/stb_image.h>
 #include <SHDR/shdr.h>
 #include <UTIL/Util.h>
-#include <TXTR/Txtr.h>
-#include <CAM/Cam.h>
-
+#include <PRMTV/Primitive.h>
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -19,22 +15,6 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 1600;
 const unsigned int SCR_HEIGHT = 800;
-const float MAX_FOV = 75.0f;
-bool firstMouse = true;
-float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-float pitch =  0.0f;
-float lastX =  SCR_WIDTH / 2.0;
-float lastY =  SCR_HEIGHT / 2.0;
-float fov   =  MAX_FOV;
-float fAspectRatio = (float)SCR_WIDTH / (float)SCR_HEIGHT;
-float fNearz = 0.1f;
-float fFarz = 100.0f;
-bool bProjectionDirty = false;
-bool bCamViewDirty = false;
-bool bCamMouseDirty = false;
-// timing
-float deltaTime = 0.0f;	// time between current frame and last frame
-float lastFrame = 0.0f;
 
 /*
  * In this example we are going to implement the MainScene class with a more sophisticated example.
@@ -49,22 +29,6 @@ float lastFrame = 0.0f;
  *	4. Syntax style: we'll use Qt Syntax Style. 
  *	5. We will implement a simple random ID generator.  
  */ 
-
-class Camera {
-	// camera
-	glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
-	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
-public:
-	Camera():
-		GOb(),
-		cameraPos(glm::vec3(0.0f, 0.0f, 3.0f)),
-		cameraFront(glm::vec3(0.0f, 0.0f, -1.0f)),
-		cameraUp(glm::vec3(0.0f, 1.0f, 0.0f))
-		{
-
-		}
-};
 
 class MainScene : public GOb{
 
@@ -99,6 +63,20 @@ public:
 	void processInput(){
 	}
 	void sceneInit(){
+
+		glm::vec3 cubePositions[] = {
+			glm::vec3( 0.0f,  0.0f,  0.0f),
+			glm::vec3( 2.0f,  5.0f, -15.0f),
+			glm::vec3(-1.5f, -2.2f, -2.5f),
+			glm::vec3(-3.8f, -2.0f, -12.3f),
+			glm::vec3( 2.4f, -0.4f, -3.5f),
+			glm::vec3(-1.7f,  3.0f, -7.5f),
+			glm::vec3( 1.3f, -2.0f, -2.5f),
+			glm::vec3( 1.5f,  2.0f, -2.5f),
+			glm::vec3( 1.5f,  0.2f, -1.5f),
+			glm::vec3(-1.3f,  1.0f, -1.5f)
+		};
+		
 		std::unique_ptr<OSWindowWrapperSDL>_SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
 		m_xWW = _SDL_.get();
 
@@ -110,6 +88,9 @@ public:
 		m_shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
 
+
+
+
 	}
 	void renderScene(){
 	}
@@ -118,72 +99,12 @@ public:
 			renderScene();
 		}
 	}
-}
+};
 int main(int argc, char ** argv)
 {
 	
-
-	//GLuint m_shaderProgramId = m_shaderProgram();
-
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	// ------------------------------------------------------------------
-	float vertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,	//32
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
-
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,	//41
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//53
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
-
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//20
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,	//33
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,	//40
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0		//51	
-	
-	};
 	// world space positions of our cubes
-	glm::vec3 cubePositions[] = {
-		glm::vec3( 0.0f,  0.0f,  0.0f),
-		glm::vec3( 2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3( 2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3( 1.3f, -2.0f, -2.5f),
-		glm::vec3( 1.5f,  2.0f, -2.5f),
-		glm::vec3( 1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
+	
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -200,10 +121,6 @@ int main(int argc, char ** argv)
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	// texture 1
-	// ---------
-	Txtr texture0(argv[1]);
-	Txtr texture1(argv[2]); 
 
 	
 	// tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
@@ -221,7 +138,6 @@ int main(int argc, char ** argv)
 		fNearz,
 		fFarz
 		);
-
 
 	// pass projection matrix to shader (note that in this case it could change every frame)
 	bCamMouseDirty = bCamViewDirty = bProjectionDirty = true;

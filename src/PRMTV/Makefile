@@ -5,12 +5,12 @@ OBJS := $(patsubst %.cpp,%.o,$(SRCS))
 
 LIBDIR := ../../lib
 
-CC := g++
+CC := g++ -std=c++11
 AR := ar
 MV := mv
 AFLAGS := rcs
 CFLAGS := -Wall -g -I../../inc
-TARGET := libcam.a 
+TARGET := libPrimitive.a 
 
 
 

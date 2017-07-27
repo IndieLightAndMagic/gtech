@@ -10,37 +10,6 @@ protected:
 	virtual void initId() = 0; 
 };
 
-/**
- * @brief      This abstract class defines a renderable object.
- */
-class GOb_Renderable_Iface{
-
-protected:
-	/**
-	 * Pointer to a Matrix translation Model.
-	 */
-	glm::mat4 * m_pModelTrx;
-
-	/**
-	 * Ponter to a Matrix rotational Model.
-	 */
-	glm::mat4 * m_pModelRtx;
-
-	/**
-	 * @brief      Derived classes must implement this. Rotate the object around an axis.  
-	 *
-	 * @param[in]  rotAxis  The rot axis by means of a x,y,z vector.
-	 * @param[in]  deg      The degrees
-	 */
-	virtual void setRotation(glm::v3 rotAxis, float deg) = 0;
-	/**
-	 * @brief      Derived classes must implement this. Sets the object's position.
-	 *
-	 * @param[in]  position	The object's position
-	 */
-	virtual void setPosition(glm::v3 position) = 0;
-
-};
 
 class GOb:public Id_Iface{
 
