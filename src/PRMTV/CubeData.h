@@ -16,6 +16,11 @@ class CubeData final {
 	 * Texture coordinates for each vertex.
 	 */
 	float * m_pVrtx_TxtrCoord;
+
+	/**
+	 * Normals. 
+	 */
+	float * m_pVrtx_Normals;
 	/**
 	 * Indices to make the triangles. 
 	 */
@@ -25,7 +30,6 @@ class CubeData final {
 	/* GL OBJECTS */ 
 	unsigned int m_vbo,m_vao;
 	float * m_fData;
-	void Set();
 
 public:
 	/* Create a Cube of size scale */
@@ -33,6 +37,8 @@ public:
 	~CubeData();
 	
 	void Gen();
+	void Bind();
+	void Draw();
 };
 
 

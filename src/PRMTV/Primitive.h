@@ -20,48 +20,9 @@ protected:
  */
 class CubeObj:public {
 	
-	/**
-	 * A cube geometry data object. This object has all the vertices and texture coordinates for a cube. 
-	 */
-	float * m_pCubeDataPack;
-
-	struct {
-	/**
-	 * Pointer to a Matrix translation Model.
-	 */
-		glm::mat4 * m_pModelTrx;
-
-	/**
-	 * Ponter to a Matrix rotational Model.
-	 */
-		glm::mat4 * m_pModelRtx;
-
-		
-		/**
-		 * @brief      Sets the rotation.
-		 *
-		 * @param[in]  xAxis  The axis the rotation will take place around acis
-		 * @param[in]  fDeg   The amount of rotation.
-		 */
-		void setRotation(glm::vec3 xAxis, float fDeg);
-
-		/**
-		 * @brief      Sets the position.
-		 *
-		 * @param[in]  xPos  The x position
-		 */
-		void setPosition(glm::vec3 xPos);	
-		
-		/**
-		 * @brief      Set a scale for the object.
-		 *
-		 * @param[in]  fScale  The f scale
-		 */
-		void setScale(float fScale);
-
-
-	}affineTransformations;
-
+	
+	CubeData m_glData;
+	
 
 public:
 	CubeObj();

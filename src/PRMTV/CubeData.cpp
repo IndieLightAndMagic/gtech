@@ -1,5 +1,9 @@
 #include "CubeData.h"
 
+#include <GLM/glm.hpp>
+#include <GL/glew.h>
+
+
 CubeData::CubeData(float fScale):
 	m_fScale(fScale),
 	m_pVrtx(0x0),
@@ -11,6 +15,9 @@ CubeData::CubeData(float fScale):
 	m_pVrtx = new float[24];
 	m_pVrtx_TxtrCoord = new float[8];
 	m_pVrtx_Normals = new float [18];
+
+	m_pIndx = new unsigned int[36];
+	m_pIndx_TxtrCoords = new unsigned int[36];
 
 
 	/* Build 8 cube vertices */
@@ -38,17 +45,22 @@ CubeData::CubeData(float fScale):
 		for (auto index1 = 0; index1 < 3; ++index1){
 
 			int vertexIdx = m_pIndx[index0*6 + index1];
-			p[index1] = glm::vec3 ( m_pVrtx[vertexIdx*3 + 0], m_pVrtx[vertexIdx*3 + 1], m_pVrtx[vertexIdx*3 + 2] )  
+			p[index1] = glm::vec3 ( m_pVrtx[vertexIdx*3 + 0], m_pVrtx[vertexIdx*3 + 1], m_pVrtx[vertexIdx*3 + 2] ); 
 
 		}
+
+		/* triang borders */
 		p0p1 = glm::vec3(p[1] - p[0]);
 		p1p2 = glm::vec3(p[2] - p[1]);
-
-
-		m_pVrtx_Normals[index0] = glm::cross(p0p1,p1p2);
+		
+		/* calc normal */
+		glm::vec3 normal = glm::normalize(glm::cross(p0p1,p1p2));
+		m_pVrtx_Normals[index0*3 + 0] = normal.x;
+		m_pVrtx_Normals[index0*3 + 1] = normal.y;
+		m_pVrtx_Normals[index0*3 + 2] = normal.z;		
+	
 	}
 
-	m_pIndx = new unsigned int[36];
 	m_pIndx[0]=7;
 	m_pIndx[1]=3;
 	m_pIndx[2]=1;
@@ -86,8 +98,7 @@ CubeData::CubeData(float fScale):
 	m_pIndx[34]=4;
 	m_pIndx[35]=5;	
 
-	m_pIndx_TxtrCoords = new unsigned int[36];
-
+	
 	m_pIndx_TxtrCoords[0] = 0;
 	m_pIndx_TxtrCoords[1] = 2;
 	m_pIndx_TxtrCoords[2] = 3;
@@ -125,6 +136,27 @@ CubeData::CubeData(float fScale):
 	m_pIndx_TxtrCoords[34] = 0;
 	m_pIndx_TxtrCoords[35] = 1;
 
+	unsigned int uiComponentsCount = 8*3*2*6;
+	m_fData = new float[8*3*2*6]; /* 6 faces, 2 triangles per face, 3 vertices per triangle, 8 components per vertex */ 
+
+	for (auto index = 0; index < uiComponentsCount ; ++index)
+	{
+		int modIndex = index%8;
+		int divIndex = index/8;
+		int vertexIndex;
+		if (modIndex<3) {
+			vertexIndex = m_pIndx[divIndex];
+			vertexIndex *= 3;
+			m_fData[index] = m_pVrtx[ vertexIndex + modIndex ]; 
+		} else if (modIndex<5) {
+			vertexIndex = m_pIndx_TxtrCoords[ divIndex ];
+			vertexIndex *= 2;
+			m_fData[index] = m_pVrtx_TxtrCoord[ vertexIndex + modIndex - 3];
+		} else {
+			vertexIndex = divIndex / 6;
+			m_fData[index] = m_pVrtx_Normals[ vertexIndex + modIndex - 5];
+		}
+	}
 }
 
 void CubeData::Gen(){
@@ -132,58 +164,35 @@ void CubeData::Gen(){
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
 	glBindVertexArray(m_vao);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	Set();
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(m_fData), m_fData, GL_STATIC_DRAW);
 
+	/* Vertices (Location 0) */
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	/* Texture Coordinates (Location 1) */
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
+	/* Normals (Location 2) */
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(5*sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 
 }
+void CubeData::Bind(){
+	glBindVertexArray(m_vao);
+}
+void CubeData::Draw(){
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+
 
 CubeData::~CubeData(){
-	delete m_pIndx_TxtrCoords;
-	delete m_pVrtx_TxtrCoord;
-	delete m_pIndx;
-	delete m_pVrtx;
-}
-void CubeData::Set(){
 
-	unsigned int uiComponentsCount = 8*3*2*6;
-	m_fData = new float[8*3*2*6] : (float*) ptr; /* 6 faces, 2 triangles per face, 3 vertices per triangle, 8 components per vertex */ 
-
-
-	for (auto index = 0; index < uiComponentsCount ; ++index){
-		
-		float comp;
-		int modIndex = index%8;
-		int divIndex = index/8;
-		int vertexIndex;
-		if (modIndex<3) {
-
-			vertexIndex = m_pIndx[divIndex];
-			vertexIndex *= 3;
-
-			m_fData[index] = m_pVrtx[ vertexIndex + modIndex ]; 
-
-		} else if (modIndex<5) {
-
-			vertexIndex = m_pIndx_TxtrCoords[ divIndex ];
-			vertexIndex *= 2;
-
-			m_fData[index] = m_pVrtx_TxtrCoord[ vertexIndex + modIndex - 3];
-
-		} else {
-
-			vertexIndex = divIndex / 6;
-
-			m_fData[index] = m_pVrtx_Normals[ vertexIndex + modIndex - 5];
-
-		}
-
-
-
-	}
-
-			
-	return cubeDataPack;
+	if (m_pIndx_TxtrCoords) delete m_pIndx_TxtrCoords;
+	if (m_pVrtx_TxtrCoord) delete m_pVrtx_TxtrCoord;
+	if (m_pIndx) delete m_pIndx;
+	if (m_pVrtx) delete m_pVrtx;
+	if (m_fData) delete m_fData;
 }
