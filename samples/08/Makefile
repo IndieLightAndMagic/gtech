@@ -8,13 +8,13 @@ LIBDIR := ../../lib
 INCDIR := ../../inc
 
 #Tools
-CC := g++
+CC := g++ -std=c++11
 AR := ar
 MV := mv
 
 #Static Dependencies
-STATIC_LIBRARIES = glfw3 GLEW shdr stb Util txtr cam 
-APPLE_FRAMEWORKS = OpenGL Cocoa IOKit CoreVideo
+STATIC_LIBRARIES = iconv m SDL2 shdr Primitive Util 
+APPLE_FRAMEWORKS = OpenGL AudioToolbox CoreAudio Carbon ForceFeedback IOKit Cocoa CoreVideo
 
 
 

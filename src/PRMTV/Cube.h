@@ -1,16 +1,22 @@
 #ifndef __CUBE_H__
 #define __CUBE_H__
 
-#include <GL/glew.h>
+#ifdef __APPLE__
+#include <OpenGl/gl3.h>
+#include <OpenGl/glext.h>
+#else
+#include <OpenGl/gl.h>
+#endif
+
+
 #include <GLM/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <SHDR/shdr.h>
 
+#include "CubeData.h"
 /**
  * @brief      The Object in the Scene.
  */
-
-
 class CubeObj{
 	
 protected:
@@ -37,6 +43,7 @@ protected:
 
 public:
 	CubeObj();
+	~CubeObj(){}
 	void SetPosition(glm::vec3 xPosition);
 	void SetRotation(glm::vec3 xAxis, float fDeg);
 

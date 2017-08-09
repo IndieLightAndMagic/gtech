@@ -1,20 +1,28 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <GL/glew.h>
-#include <SHDR/shdr.h>
+
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+#include <OpenGL/glext.h>
+#else 
+#include <OpenGL/gl.h>
+#endif /*__APPLE__*/
+
+
 #include <UTIL/Util.h>
 #include <PRMTV/Primitive.h>
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
-
+/*
+void framebuffer_size_callback(SDL_Window* window, int width, int height);
+void mouse_callback(SDL_Window* window, double xpos, double ypos);
+void scroll_callback(SDL_Window* window, double xoffset, double yoffset);
+void processInput(SDL_Window *window);
+*/
 // settings
-const unsigned int SCR_WIDTH = 1600;
-const unsigned int SCR_HEIGHT = 800;
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 
 /*
  * In this example we are going to implement the MainScene class with a more sophisticated example.
@@ -30,36 +38,34 @@ const unsigned int SCR_HEIGHT = 800;
  *	5. We will implement a simple random ID generator.  
  */ 
 
-class MainScene : public GOb{
+class MainScene{
 
 	/*!
 	 * \brief Windows Wrapper SDL. 
 	 * 
 	 */
-	OSWindowWrapperSDL * m_xWW;
+	SDL_Window * pWindow;
 	
-	/*!
-	 * \brief First Pass flag.
-	 */
-	bool m_bFP;
-
 	/**
-	 * \brief Shader Program to render the cubes
+	 * \brief Shader for Scene
 	 */
-	// build and compile our shader zprogram
-	// ------------------------------------
 	Program m_shaderProgram;
+
+	/*!
+	 Cubes
+	 */
+	CubeObj m_cube[10];
+
 
 
 	
 
 public:
-	MainScene():
-		GOb(),
-		m_xWW(0x0),
-		m_bFP(true)
-		{
-		}
+	MainScene(OSWindowWrapperSDL * pSDL)
+	{
+		/* The window the Scene is running in */
+		pWindow = (*pSDL)();
+	}
 	void processInput(){
 	}
 	void sceneInit(){
@@ -77,9 +83,6 @@ public:
 			glm::vec3(-1.3f,  1.0f, -1.5f)
 		};
 		
-		std::unique_ptr<OSWindowWrapperSDL>_SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
-		m_xWW = _SDL_.get();
-
 		// configure global opengl state
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
@@ -90,9 +93,24 @@ public:
 
 
 
+		for (auto index = 0; index < 10; ++index)
+		{	
+
+			m_cube[ index ].SetPosition(cubePositions[ index ]);
+			m_cube[ index ].AssignProgramRenderer(&m_shaderProgram);
+
+		}
+		
 
 	}
 	void renderScene(){
+
+
+
+	}
+	void finishScene(){
+
+		std::cout << "Finish Scene" << std::endl;
 	}
 	int mainLoop(){
 		for (;true;){
@@ -103,9 +121,11 @@ public:
 int main(int argc, char ** argv)
 {
 	
-	// world space positions of our cubes
-	
-	unsigned int VBO, VAO;
+	std::unique_ptr<OSWindowWrapperSDL>_SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
+	MainScene scn(_SDL_.get());
+	return 0;
+
+	/*unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
@@ -200,11 +220,11 @@ int main(int argc, char ** argv)
 			glm::mat4 model_tx;
 			glm::mat4 model_rt;
 
-			/* Create a translation matrix */
+			// Create a translation matrix 
 			model_tx = glm::translate(model_tx, cubePositions[i]);
 			
 
-			/* Create a rotation matrix */
+			// Create a rotation matrix
 			float angle = 20.0f * i;
 			model_rt = glm::rotate(model_rt, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			
@@ -228,11 +248,11 @@ int main(int argc, char ** argv)
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
 	glfwTerminate();
-	return 0;
+	return 0;*/
 }
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+/*void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -254,20 +274,20 @@ void processInput(GLFWwindow *window)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		bCamViewDirty = true;
 	}
-}
+}*/
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+//void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+//{
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
-	glViewport(0, 0, width, height);
-}
+	// glViewport(0, 0, width, height);
+//}
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+/*void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
 	{
@@ -301,11 +321,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(front);
 	bCamMouseDirty = true;  
-}
+}*/
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+/*void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	if (fov >= 1.0f && fov <= MAX_FOV){
 		fov -= yoffset;
@@ -317,4 +337,4 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	if (fov >= MAX_FOV){
 		fov = MAX_FOV;
 	}
-}
+}*/

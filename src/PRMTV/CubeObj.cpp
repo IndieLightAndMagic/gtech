@@ -22,6 +22,7 @@ void CubeObj::SetRotation(glm::vec3 xAxis, float fDeg){
 	m_rt = glm::rotate(m_rt, glm::radians(fDeg), xAxis);
 
 }
+void CubeObj::Update(){}
 
 void CubeObj::AssignProgramRenderer(Program * pShaderProgram){
 
