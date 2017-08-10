@@ -9,7 +9,7 @@
 #include <OpenGL/gl.h>
 #endif /*__APPLE__*/
 
-
+#include <SDL2/SDL_joystick.h>
 #include <UTIL/Util.h>
 #include <PRMTV/Primitive.h>
 #include <iostream>
@@ -45,7 +45,7 @@ class MainScene{
 	 * 
 	 */
 	SDL_Window * pWindow;
-	
+	SDL_Joystick * pGameController;
 	/**
 	 * \brief Shader for Scene
 	 */
@@ -65,8 +65,19 @@ public:
 	{
 		/* The window the Scene is running in */
 		pWindow = (*pSDL)();
+		
+		/* Initialize Joystick */
+		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+		
+		int njoy = SDL_NumJoysticks();
+		if (njoy<1){
+            std::cout << " Warning: No Joysticks " << std::endl;
+ 		} else {
+            std::cout << " Found " << njoy << " joysticks " << std::endl;
+ 		}
 	}
 	void processInput(){
+
 	}
 	void sceneInit(){
 
