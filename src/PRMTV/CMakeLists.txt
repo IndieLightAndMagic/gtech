@@ -1,7 +1,7 @@
 #HEADER
 cmake_minimum_required(VERSION 3.9.0 FATAL_ERROR)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(TARGET_NAME shdr)
+set(TARGET_NAME Primitive)
 #DIRECTORIES
 get_filename_component(ROOT_DIR "../.." ABSOLUTE)
 set(INCLUDE_DIR "${ROOT_DIR}/inc")
@@ -18,12 +18,12 @@ message(STATUS "-----------------------------")
 
 #CREATE STATIC LIBRARY
 aux_source_directory(${CMAKE_SOURCE_DIR} SOURCE_LIST)
-message(STATUS "Sources added to build target: lib${TARGET_NAME}.a")
+message(STATUS "Sources added to build target: <lib1>TARGET_NAME</lib1>")
 foreach (x ${SOURCE_LIST})
 	message(STATUS ${x})
 endforeach(x)
 
-add_library(${TARGET} STATIC ${SOURCE_LIST})
+add_library(${TARGET_NAME} STATIC ${SOURCE_LIST})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 include_directories(${INCLUDE_DIR})
 
@@ -32,4 +32,4 @@ include_directories(${INCLUDE_DIR})
 add_custom_target(copy)
 add_custom_command(
 	TARGET copy PRE_BUILD 
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/lib${TARGET}.a ${LIB_DIR}/lib${TARGET}.a)
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/lib${TARGET_NAME}.a ${LIB_DIR}/lib${TARGET_NAME}.a)

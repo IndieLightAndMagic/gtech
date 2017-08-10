@@ -23,7 +23,7 @@ foreach (x ${SOURCE_LIST})
 	message(STATUS ${x})
 endforeach(x)
 
-add_library(${TARGET} STATIC ${SOURCE_LIST})
+add_library(${TARGET_NAME} STATIC ${SOURCE_LIST})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 include_directories(${INCLUDE_DIR})
 
@@ -32,4 +32,4 @@ include_directories(${INCLUDE_DIR})
 add_custom_target(copy)
 add_custom_command(
 	TARGET copy PRE_BUILD 
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/lib${TARGET}.a ${LIB_DIR}/lib${TARGET}.a)
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/lib${TARGET_NAME}.a ${LIB_DIR}/lib${TARGET_NAME}.a)
