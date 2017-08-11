@@ -57,10 +57,11 @@ class MainScene{
 	 */
 	CubeObj m_cube[10];
 
-
+	/* Running? */
 	bool m_bRun;
 
-	
+	/* First Pass */
+	bool m_bFirstPass;
 
 public:
 
@@ -72,9 +73,12 @@ public:
 		/* Initialize Controller Hardware */
 		initControllerHw();
 
-
+		/* The following two flags could be better expressed with states */
 		/* The Scene is now Running : Not on screen, just running.. on the RAM! */
 		m_bRun = true;
+
+		/* First Pass Flag */
+		m_bFirstPass = true;
 	}
 	~MainScene(){
 
@@ -176,6 +180,11 @@ public:
 	}
 	void renderScene(){
 
+		if (m_bFirstPass){
+
+		}
+
+		
 
 
 	}
