@@ -184,6 +184,7 @@ public:
 		std::cout << "Finish Scene" << std::endl;
 	}
 	int mainLoop(){
+        sceneInit();
 		for (;m_bRun;){
 			processInput();
 			renderScene();
