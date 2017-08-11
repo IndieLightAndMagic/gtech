@@ -23,7 +23,7 @@ void processInput(SDL_Window *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
+const int JOYSTICK_DEAD_ZONE = 8000;
 /*
  * In this example we are going to implement the MainScene class with a more sophisticated example.
  * 
@@ -46,7 +46,8 @@ class MainScene{
 	 */
 	SDL_Window * pWindow;
 	SDL_Joystick * pGameController;
-	/**
+    SDL_JoystickID xGameControllerID;
+    /**
 	 * \brief Shader for Scene
 	 */
 	Program m_shaderProgram;
@@ -57,15 +58,38 @@ class MainScene{
 	CubeObj m_cube[10];
 
 
+	bool m_bRun;
 
 	
 
 public:
+
 	MainScene(OSWindowWrapperSDL * pSDL)
 	{
 		/* The window the Scene is running in */
 		pWindow = (*pSDL)();
 		
+		/* Initialize Controller Hardware */
+		initControllerHw();
+
+
+		/* The Scene is now Running : Not on screen, just running.. on the RAM! */
+		m_bRun = true;
+	}
+	~MainScene(){
+
+			if (pGameController) {
+				
+				SDL_JoystickClose(pGameController);
+				std::cout << " Joystick shutdown... " << std::endl;
+
+			}
+			pGameController = 0;
+
+	}
+
+	void initControllerHw(){
+
 		/* Initialize Joystick */
 		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 		
@@ -74,9 +98,45 @@ public:
             std::cout << " Warning: No Joysticks " << std::endl;
  		} else {
             std::cout << " Found " << njoy << " joysticks " << std::endl;
+ 			pGameController = SDL_JoystickOpen(0);
+            xGameControllerID = SDL_JoystickInstanceID(pGameController);
+ 			if (!pGameController)
+ 			{
+ 				std::cout << " Sorry Unable to init joysticks." << std::endl;
+ 			} else {
+ 				std::cout << " Joystick Instance ID: [" << SDL_JoystickInstanceID(pGameController) << "] --  Cool." << std::endl;
+ 				std::cout << " Joystick name: " << SDL_JoystickName(pGameController) << std::endl;
+ 				std::cout << " Joystick num axis: " << SDL_JoystickNumAxes(pGameController) << std::endl;
+ 				std::cout << " Joystick num buttons: " << SDL_JoystickNumButtons(pGameController) << std::endl;
+ 				std::cout << " Joytstick num hats: " << SDL_JoystickNumHats(pGameController) << std::endl;
+ 			}
  		}
+
 	}
 	void processInput(){
+		SDL_Event e;
+		if (SDL_PollEvent(&e)==0) return;
+
+		if ( e.type == SDL_QUIT) {
+			m_bRun = false;
+        } else if(e.type == SDL_KEYDOWN) {
+            
+            if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+                m_bRun = false;
+            
+        } else if (e.type == SDL_JOYAXISMOTION){
+            if (e.jaxis.which == xGameControllerID){
+                std::cout << "Axis: " << (unsigned int)e.jaxis.axis << std::endl;
+            }
+        } else if (e.type == SDL_JOYBUTTONUP || e.type == SDL_JOYBUTTONDOWN){
+            if (e.jbutton.which == xGameControllerID){
+                std::cout << "Button: " << (unsigned int)e.jbutton.button << std::endl;
+            }
+        }
+
+
+
+		
 
 	}
 	void sceneInit(){
@@ -124,9 +184,11 @@ public:
 		std::cout << "Finish Scene" << std::endl;
 	}
 	int mainLoop(){
-		for (;true;){
+		for (;m_bRun;){
+			processInput();
 			renderScene();
 		}
+        return 0;
 	}
 };
 int main(int argc, char ** argv)
@@ -134,8 +196,10 @@ int main(int argc, char ** argv)
 	
 	std::unique_ptr<OSWindowWrapperSDL>_SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
 	MainScene scn(_SDL_.get());
-	return 0;
+	scn.mainLoop();
 
+	return 0;
+}
 	/*unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -259,8 +323,8 @@ int main(int argc, char ** argv)
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
 	glfwTerminate();
-	return 0;*/
-}
+	return 0;
+}*/
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 /*void processInput(GLFWwindow *window)
