@@ -22,7 +22,7 @@ class CubeObj{
 protected:
 
 	/* Static Data loadel in the GPU(By OpenGl means) */
-	CubeData m_cube;
+	static CubeData * m_pCube;
 
 	/* The position matrix */
 	glm::mat4 m_tx;
@@ -42,7 +42,7 @@ protected:
 	bool m_bRedraw;
 
 public:
-	CubeObj();
+	CubeObj(CubeData*);
 	~CubeObj(){}
 	void SetPosition(glm::vec3 xPosition);
 	void SetRotation(glm::vec3 xAxis, float fDeg);

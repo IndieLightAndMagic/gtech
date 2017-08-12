@@ -8,9 +8,16 @@
 #endif
 #include <GLM/glm.hpp>
 
-
-CubeData::CubeData(float fScale):
-	m_fScale(fScale),
+CubeData * pSingleton = 0;
+CubeData* CubeData::CreateCubeData(){
+	if (!pSingleton) pSingleton = new CubeData;
+	return pSingleton;
+}
+void CubeData::FinishCubeData(){
+	if (pSingleton) delete pSingleton;
+}
+CubeData::CubeData():
+	m_fScale(1.0f),
 	m_pVrtx(0x0),
 	m_pVrtx_TxtrCoord(0x0),
 	m_pIndx(0x0),

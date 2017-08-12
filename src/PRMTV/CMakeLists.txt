@@ -18,7 +18,7 @@ message(STATUS "-----------------------------")
 
 #CREATE STATIC LIBRARY
 aux_source_directory(${CMAKE_SOURCE_DIR} SOURCE_LIST)
-message(STATUS "Sources added to build target: <lib1>TARGET_NAME</lib1>")
+message(STATUS "Sources added to build target: lib${TARGET_NAME}.a")
 foreach (x ${SOURCE_LIST})
 	message(STATUS ${x})
 endforeach(x)
