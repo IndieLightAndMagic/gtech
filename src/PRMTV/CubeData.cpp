@@ -8,13 +8,13 @@
 #endif
 #include <GLM/glm.hpp>
 
-CubeData * pSingleton = 0;
+CubeData * pCubeArcheType = 0;
 CubeData* CubeData::CreateCubeData(){
-	if (!pSingleton) pSingleton = new CubeData;
-	return pSingleton;
+	if (!pCubeArcheType) pCubeArcheType = new CubeData;
+	return pCubeArcheType;
 }
 void CubeData::FinishCubeData(){
-	if (pSingleton) delete pSingleton;
+	if (pCubeArcheType) delete pCubeArcheType;
 }
 CubeData::CubeData():
 	m_fScale(1.0f),
@@ -202,7 +202,6 @@ void CubeData::Draw(){
 
 
 CubeData::~CubeData(){
-
 	if (m_pIndx_TxtrCoords) delete m_pIndx_TxtrCoords;
 	if (m_pVrtx_TxtrCoord) delete m_pVrtx_TxtrCoord;
 	if (m_pIndx) delete m_pIndx;

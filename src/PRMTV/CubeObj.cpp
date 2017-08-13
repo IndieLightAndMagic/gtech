@@ -1,9 +1,9 @@
 #include "CubeData.h"
 #include "Cube.h"
 
-CubeObj::CubeObj(CubeData*pCubeData)
+CubeObj::CubeObj()
 {
-	m_pCube=pCubeData;
+	m_pCube=CubeData::CreateCubeData();
 	/* Generate Vao */
 	m_pCube->Gen();
 	SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));

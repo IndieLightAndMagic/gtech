@@ -42,7 +42,7 @@ protected:
 	bool m_bRedraw;
 
 public:
-	CubeObj(CubeData*);
+	CubeObj();
 	~CubeObj(){}
 	void SetPosition(glm::vec3 xPosition);
 	void SetRotation(glm::vec3 xAxis, float fDeg);
