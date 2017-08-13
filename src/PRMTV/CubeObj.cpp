@@ -1,11 +1,10 @@
 #include "CubeData.h"
 #include "Cube.h"
 
+
 CubeObj::CubeObj()
 {
-	m_pCube=CubeData::CreateCubeData();
-	/* Generate Vao */
-	m_pCube->Gen();
+	CubeObj::m_pCube=CubeData::CreateCubeData();
 	SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	SetRotation(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f);
 	m_pShaderProgram = 0;
@@ -34,10 +33,10 @@ void CubeObj::AssignProgramRenderer(Program * pShaderProgram){
 void CubeObj::Draw(){
 	
 	m_pShaderProgram->use();
-	m_pCube->Bind();
+	CubeObj::m_pCube->Bind();
 	m_pShaderProgram->setMat4("objModel.tx", m_tx);
 	m_pShaderProgram->setMat4("objModel.rt", m_rt);
-	m_pCube->Draw();
+	CubeObj::m_pCube->Draw();
 
 }
 

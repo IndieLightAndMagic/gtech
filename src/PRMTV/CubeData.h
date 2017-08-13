@@ -31,16 +31,16 @@ class CubeData final {
 	unsigned int m_vbo,m_vao;
 	float * m_fData;
 
-	/* Create a Cube of size scale */
+	/* Create a Cube and GEN VAO & VBO for it. */
 	CubeData();
-
+	void Gen();
+	
 public:
 	static CubeData * CreateCubeData();
 	/* Dangerous */
 	static void FinishCubeData();
 	~CubeData();
 	
-	void Gen();
 	void Bind();
 	void Draw();
 };

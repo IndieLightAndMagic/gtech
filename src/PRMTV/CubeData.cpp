@@ -170,6 +170,7 @@ CubeData::CubeData():
 			m_fData[index] = m_pVrtx_Normals[ vertexIndex + modIndex - 5];
 		}
 	}
+	Gen();	
 }
 
 void CubeData::Gen(){

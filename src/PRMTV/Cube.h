@@ -66,5 +66,5 @@ public:
 
 
 };
-
+CubeData * CubeObj::m_pCube = 0x0;
 #endif /*__CUBE_H__*/

@@ -85,5 +85,5 @@ if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
 		add_custom_command(
 			TARGET run PRE_BUILD 
 			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${SHADER} ${CMAKE_CURRENT_BINARY_DIR}/)	
-	endforeach(RESOURCE)
+	endforeach(SHADER)
 endif()

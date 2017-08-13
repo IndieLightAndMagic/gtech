@@ -37,7 +37,7 @@ const int JOYSTICK_DEAD_ZONE = 8000;
  *	4. Syntax style: we'll use Qt Syntax Style. 
  *	5. We will implement a simple random ID generator.  
  */ 
-
+extern CubeData * pCubeArchetype;
 class MainScene{
 
 	/*!
@@ -55,7 +55,7 @@ class MainScene{
 	/*!
 	 Cubes
 	 */
-	CubeObj m_cube[10];
+	CubeObj * m_cube;
 
 	/* Running? */
 	bool m_bRun;
@@ -70,12 +70,15 @@ public:
 		/* The window the Scene is running in */
 		pWindow = (*pSDL)();
 		
-		/* Initialize Controller Hardware */
+		/* [1]Initialize Controller Hardware */
 		initControllerHw();
 
 		/* The following two flags could be better expressed with states */
 		/* The Scene is now Running : Not on screen, just running.. on the RAM! */
 		m_bRun = true;
+
+		/* [2] Load on Memory the archetype */
+		CubeData::CreateCubeData();
 
 		/* First Pass Flag */
 		m_bFirstPass = true;
@@ -89,7 +92,7 @@ public:
 
 			}
 			pGameController = 0;
-
+			CubeData::FinishCubeData();
 	}
 
 	void initControllerHw(){
@@ -145,6 +148,9 @@ public:
 	}
 	void sceneInit(){
 
+		/* [3] Create 10 cubes */
+		m_cube = new CubeObj[10];
+
 		glm::vec3 cubePositions[] = {
 			glm::vec3( 0.0f,  0.0f,  0.0f),
 			glm::vec3( 2.0f,  5.0f, -15.0f),
@@ -181,7 +187,7 @@ public:
 	void renderScene(){
 
 		if (m_bFirstPass){
-
+			m_bFirstPass = false;
 		}
 
 		
@@ -189,8 +195,8 @@ public:
 
 	}
 	void finishScene(){
-
-		std::cout << "Finish Scene" << std::endl;
+		delete [] m_cube;
+		std::cout << "Finished Scene" << std::endl;
 	}
 	int mainLoop(){
         sceneInit();
