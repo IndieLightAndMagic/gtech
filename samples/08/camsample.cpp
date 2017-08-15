@@ -9,11 +9,58 @@
 #include <OpenGL/gl.h>
 #endif /*__APPLE__*/
 
+#include <CAM/Cam.h>
 #include <SDL2/SDL_joystick.h>
 #include <UTIL/Util.h>
 #include <PRMTV/Primitive.h>
 #include <iostream>
 
+	// set up vertex data (and buffer(s)) and configure vertex attributes
+	// ------------------------------------------------------------------
+	float CubeObjVertices_[] = {
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,	//32
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
+
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,	//41
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//53
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
+
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
+		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//20
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
+		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,	//33
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,	//40
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0		//51	
+	
+	};
 /*
 void framebuffer_size_callback(SDL_Window* window, int width, int height);
 void mouse_callback(SDL_Window* window, double xpos, double ypos);
@@ -46,22 +93,30 @@ class MainScene{
 	 */
 	SDL_Window * pWindow;
 	SDL_Joystick * pGameController;
-    SDL_JoystickID xGameControllerID;
-    /**
+	SDL_JoystickID xGameControllerID;
+	/**
 	 * \brief Shader for Scene
 	 */
 	Program m_shaderProgram;
 
-	/*!
-	 Cubes
+	
+	/**
+	 * A pointer to an array of cubes. 
 	 */
 	CubeObj * m_cube;
+
+	/* A pointer to Camera */
+	Cam * m_pCam;
 
 	/* Running? */
 	bool m_bRun;
 
 	/* First Pass */
 	bool m_bFirstPass;
+
+	/* Buffers and arrays */
+	unsigned int VBO, VAO;
+
 
 public:
 
@@ -102,22 +157,22 @@ public:
 		
 		int njoy = SDL_NumJoysticks();
 		if (njoy<1){
-            std::cout << " Warning: No Joysticks " << std::endl;
- 		} else {
-            std::cout << " Found " << njoy << " joysticks " << std::endl;
- 			pGameController = SDL_JoystickOpen(0);
-            xGameControllerID = SDL_JoystickInstanceID(pGameController);
- 			if (!pGameController)
- 			{
- 				std::cout << " Sorry Unable to init joysticks." << std::endl;
- 			} else {
- 				std::cout << " Joystick Instance ID: [" << SDL_JoystickInstanceID(pGameController) << "] --  Cool." << std::endl;
- 				std::cout << " Joystick name: " << SDL_JoystickName(pGameController) << std::endl;
- 				std::cout << " Joystick num axis: " << SDL_JoystickNumAxes(pGameController) << std::endl;
- 				std::cout << " Joystick num buttons: " << SDL_JoystickNumButtons(pGameController) << std::endl;
- 				std::cout << " Joytstick num hats: " << SDL_JoystickNumHats(pGameController) << std::endl;
- 			}
- 		}
+			std::cout << " Warning: No Joysticks " << std::endl;
+		} else {
+			std::cout << " Found " << njoy << " joysticks " << std::endl;
+			pGameController = SDL_JoystickOpen(0);
+			xGameControllerID = SDL_JoystickInstanceID(pGameController);
+			if (!pGameController)
+			{
+				std::cout << " Sorry Unable to init joysticks." << std::endl;
+			} else {
+				std::cout << " Joystick Instance ID: [" << SDL_JoystickInstanceID(pGameController) << "] --  Cool." << std::endl;
+				std::cout << " Joystick name: " << SDL_JoystickName(pGameController) << std::endl;
+				std::cout << " Joystick num axis: " << SDL_JoystickNumAxes(pGameController) << std::endl;
+				std::cout << " Joystick num buttons: " << SDL_JoystickNumButtons(pGameController) << std::endl;
+				std::cout << " Joytstick num hats: " << SDL_JoystickNumHats(pGameController) << std::endl;
+			}
+		}
 
 	}
 	void processInput(){
@@ -126,20 +181,20 @@ public:
 
 		if ( e.type == SDL_QUIT) {
 			m_bRun = false;
-        } else if(e.type == SDL_KEYDOWN) {
-            
-            if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-                m_bRun = false;
-            
-        } else if (e.type == SDL_JOYAXISMOTION){
-            if (e.jaxis.which == xGameControllerID){
-                std::cout << "Axis: " << (unsigned int)e.jaxis.axis << std::endl;
-            }
-        } else if (e.type == SDL_JOYBUTTONUP || e.type == SDL_JOYBUTTONDOWN){
-            if (e.jbutton.which == xGameControllerID){
-                std::cout << "Button: " << (unsigned int)e.jbutton.button << std::endl;
-            }
-        }
+		} else if(e.type == SDL_KEYDOWN) {
+			
+			if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+				m_bRun = false;
+			
+		} else if (e.type == SDL_JOYAXISMOTION){
+			if (e.jaxis.which == xGameControllerID){
+				std::cout << "Axis: " << (unsigned int)e.jaxis.axis << std::endl;
+			}
+		} else if (e.type == SDL_JOYBUTTONUP || e.type == SDL_JOYBUTTONDOWN){
+			if (e.jbutton.which == xGameControllerID){
+				std::cout << "Button: " << (unsigned int)e.jbutton.button << std::endl;
+			}
+		}
 
 
 
@@ -150,6 +205,41 @@ public:
 
 		/* [3] Create 10 cubes */
 		m_cube = new CubeObj[10];
+
+		/* [4] Create a Camera */
+		glm::vec3 cameraPos = glm::vec3(0.0f,0.0f,0.0f);
+		glm::vec3 cameraFront = glm::vec3(0.0f,0.0f,1.0f);
+		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		float fFieldOfView = 75.0f; //75 degrees.
+		float fAspectRatio = SCR_WIDTH / SCR_HEIGHT;
+		float fNearz = 0.1f;
+		float fFarz = 100.f;
+		m_pCam = new Cam(
+				cameraPos,
+				cameraFront,
+				cameraUp,
+				fFieldOfView,
+				fAspectRatio,
+				fNearz, 
+				fFarz
+			);
+
+		//VBO and VAO to "insert" cube geomery in GPU.
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(CubeObjVertices_), CubeObjVertices_, GL_STATIC_DRAW);
+
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		// texture coord attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
 
 		glm::vec3 cubePositions[] = {
 			glm::vec3( 0.0f,  0.0f,  0.0f),
@@ -178,6 +268,7 @@ public:
 		{	
 
 			m_cube[ index ].SetPosition(cubePositions[ index ]);
+			m_cube[ index ].SetRotation(glm::vec3(1.0f, 0.3f, 0.5f), 20.0f*index);
 			m_cube[ index ].AssignProgramRenderer(&m_shaderProgram);
 
 		}
@@ -185,26 +276,65 @@ public:
 
 	}
 	void renderScene(){
+		glm::vec3 cubePositions[] = {
+			glm::vec3( 0.0f,  0.0f,  0.0f),
+			glm::vec3( 2.0f,  5.0f, -15.0f),
+			glm::vec3(-1.5f, -2.2f, -2.5f),
+			glm::vec3(-3.8f, -2.0f, -12.3f),
+			glm::vec3( 2.4f, -0.4f, -3.5f),
+			glm::vec3(-1.7f,  3.0f, -7.5f),
+			glm::vec3( 1.3f, -2.0f, -2.5f),
+			glm::vec3( 1.5f,  2.0f, -2.5f),
+			glm::vec3( 1.5f,  0.2f, -1.5f),
+			glm::vec3(-1.3f,  1.0f, -1.5f)
+		};
+		
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+		m_shaderProgram.use();
 
 		if (m_bFirstPass){
 			m_bFirstPass = false;
+
+			/* Set projection matrix using camera projection model */
+			m_shaderProgram.setMat4("camModel.pr", m_pCam->xGetProjection());
+			/* Set projection matrix using camera view model */
+			m_shaderProgram.setMat4("camModel.vw", m_pCam->xGetView());
 		}
-
 		
+		/* Draw a single box */
+		glBindVertexArray(VAO);
+		{
+			glm::mat4 model_tx, model_rt;
+			model_tx = glm::translate(model_tx, cubePositions[3]);
+			model_rt = glm::rotate(model_rt, glm::radians(60.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+			m_shaderProgram.setMat4("objModel.tx", model_tx);
+			m_shaderProgram.setMat4("objModel.rt", model_rt);
 
+		}
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		/*m_cube[3].Draw();
+		m_cube[4].Draw();*/
+		SDL_GL_SwapWindow(pWindow);
+		
 
 	}
 	void finishScene(){
+		//[4] Cam
+		delete m_pCam;
+		//[3] Cubes
 		delete [] m_cube;
 		std::cout << "Finished Scene" << std::endl;
 	}
 	int mainLoop(){
-        sceneInit();
+		sceneInit();
 		for (;m_bRun;){
 			processInput();
 			renderScene();
 		}
-        return 0;
+		finishScene();
+		return 0;
 	}
 };
 int main(int argc, char ** argv)
