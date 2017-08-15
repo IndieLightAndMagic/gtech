@@ -1,3 +1,6 @@
 [submodule "sm/SDL"]
 	path = sm/SDL
 	url = git@github.com:spurious/SDL-mirror.git
+[submodule "sm/glm"]
+	path = sm/glm
+	url = https://github.com/g-truc/glm.git
