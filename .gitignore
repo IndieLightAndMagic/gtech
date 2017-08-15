@@ -30,6 +30,8 @@ test0
 
 build_*
 
+docset/
+
 00/
 camera_mouse/
 *.a
