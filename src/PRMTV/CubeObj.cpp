@@ -1,7 +1,7 @@
 #include "CubeData.h"
 #include "Cube.h"
 
-
+CubeData * CubeObj::m_pCube = 0x0;
 CubeObj::CubeObj()
 {
 	CubeObj::m_pCube=CubeData::CreateCubeData();
