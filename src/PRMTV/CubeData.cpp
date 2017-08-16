@@ -8,6 +8,8 @@
 #endif
 #include <GLM/glm.hpp>
 
+#include <iostream>
+
 CubeData * pCubeArcheType = 0;
 CubeData* CubeData::CreateCubeData(){
 	if (!pCubeArcheType) pCubeArcheType = new CubeData;
@@ -151,6 +153,8 @@ CubeData::CubeData():
 	
 	unsigned int uiComponentsCount = 8*3*2*6;
 	m_fData = new float[8*3*2*6]; /* 6 faces, 2 triangles per face, 3 vertices per triangle, 8 components per vertex */ 
+	m_uiDataSize = uiComponentsCount*sizeof(float);
+
 
 	for (auto index = 0; index < uiComponentsCount ; ++index)
 	{
@@ -179,7 +183,7 @@ void CubeData::Gen(){
 	glGenBuffers(1, &m_vbo);
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_fData), m_fData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_uiDataSize, m_fData, GL_STATIC_DRAW);
 
 	/* Vertices (Location 0) */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
@@ -191,6 +195,8 @@ void CubeData::Gen(){
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(5*sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+
+	std::cout << "m_fData size: " << m_uiDataSize << std::endl;
 
 }
 void CubeData::Bind(){

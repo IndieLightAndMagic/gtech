@@ -30,6 +30,7 @@ class CubeData final {
 	/* GL OBJECTS */ 
 	unsigned int m_vbo,m_vao;
 	float * m_fData;
+    unsigned int m_uiDataSize;
 
 	/* Create a Cube and GEN VAO & VBO for it. */
 	CubeData();
