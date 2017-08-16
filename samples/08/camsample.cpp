@@ -15,52 +15,7 @@
 #include <PRMTV/Primitive.h>
 #include <iostream>
 
-	// set up vertex data (and buffer(s)) and configure vertex attributes
-	// ------------------------------------------------------------------
-	float CubeObjVertices_[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,	//32
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,	//70
-
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,	//03
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,	//41
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//53
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//42
-
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//31
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//20
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,	//33
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	//22
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	//60
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	//71
-
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,	//51
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	//13
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	//02
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,	//40
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0		//51	
 	
-	};
 /*
 void framebuffer_size_callback(SDL_Window* window, int width, int height);
 void mouse_callback(SDL_Window* window, double xpos, double ypos);
@@ -68,8 +23,8 @@ void scroll_callback(SDL_Window* window, double xoffset, double yoffset);
 void processInput(SDL_Window *window);
 */
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1200;
+const unsigned int SCR_HEIGHT = 800;
 const int JOYSTICK_DEAD_ZONE = 8000;
 /*
  * In this example we are going to implement the MainScene class with a more sophisticated example.
@@ -117,6 +72,10 @@ class MainScene{
 	/* Buffers and arrays */
 	unsigned int VBO, VAO;
 
+	
+	struct {
+		int activeIndex;
+	}m_gameLogic;
 
 public:
 
@@ -140,16 +99,21 @@ public:
 	}
 	~MainScene(){
 
-			if (pGameController) {
-				
-				SDL_JoystickClose(pGameController);
-				std::cout << " Joystick shutdown... " << std::endl;
-
-			}
-			pGameController = 0;
+			// [2] Remove Archetype from memory 
 			CubeData::FinishCubeData();
+
+			// [1] Finish Controller Hardware
+			finishControllerHw();
 	}
 
+	void finishControllerHw(){
+		if (pGameController) {
+			SDL_JoystickClose(pGameController);
+			std::cout << " Joystick shutdown... " << std::endl;
+		}
+		pGameController = 0;
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+	}
 	void initControllerHw(){
 
 		/* Initialize Joystick */
@@ -191,7 +155,7 @@ public:
 				std::cout << "Axis: " << (unsigned int)e.jaxis.axis << std::endl;
 			}
 		} else if (e.type == SDL_JOYBUTTONUP || e.type == SDL_JOYBUTTONDOWN){
-			if (e.jbutton.which == xGameControllerID){
+			if (e.jbutton.which == xGameControllerID && e.type == SDL_JOYBUTTONUP){
 				std::cout << "Button: " << (unsigned int)e.jbutton.button << std::endl;
 			}
 		}
@@ -202,7 +166,7 @@ public:
 		m_cube = new CubeObj[10];
 
 		/* [4] Create a Camera */
-		glm::vec3 cameraPos = glm::vec3(0.0f,0.0f,8.0f);
+		glm::vec3 cameraPos = glm::vec3(0.0f,0.0f,4.0f);
 		glm::vec3 cameraFront = glm::vec3(0.0f,0.0f,1.0f);
 		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		float fFieldOfView = 75.0f; //75 degrees.
@@ -218,9 +182,6 @@ public:
 				fNearz, 
 				fFarz
 			);
-
-
-		std::cout << "Cube size: " << sizeof(CubeObjVertices_) << std::endl;
 
 		glm::vec3 cubePositions[] = {
 			glm::vec3( 0.0f,  0.0f,  -8.0f),
@@ -243,33 +204,31 @@ public:
 		m_shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
 
+		// Set Program Shader's Cam Projection & Viewport Model with m_pCam's. 
+		m_shaderProgram.use();
+		m_shaderProgram.setMat4("camModel.pr", m_pCam->xGetProjection());
+		m_shaderProgram.setMat4("camModel.vw", m_pCam->xGetView());
 
 
+		// Set cubes positions and rotations. Set Program Shader as the renderer for the cubes.
 		for (auto index = 0; index < 10; ++index)
 		{	
-
 			m_cube[ index ].SetPosition(cubePositions[ index ]);
 			m_cube[ index ].SetRotation(glm::vec3(1.0f, 0.3f, 0.5f), 20.0f*index);
 			m_cube[ index ].AssignProgramRenderer(&m_shaderProgram);
-
 		}
 		
-
+		// Logic of the game.
+		m_gameLogic.activeIndex = 0;
 	}
 	void renderScene(){
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-		m_shaderProgram.use();
 
 		if (m_bFirstPass){
 			m_bFirstPass = false;
-
-			/* Set projection matrix using camera projection model */
-			m_shaderProgram.setMat4("camModel.pr", m_pCam->xGetProjection());
-			/* Set projection matrix using camera view model */
-			m_shaderProgram.setMat4("camModel.vw", m_pCam->xGetView());
 		}
 		
 		/* Draw the boxes */
@@ -292,6 +251,7 @@ public:
 		sceneInit();
 		for (;m_bRun;){
 			processInput();
+
 			renderScene();
 		}
 		finishScene();
