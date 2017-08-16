@@ -236,6 +236,8 @@ public:
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
+		std::cout << "Cube size: " << sizeof(CubeObjVertices_) << std::endl;
+
 		glm::vec3 cubePositions[] = {
 			glm::vec3( 0.0f,  0.0f,  0.0f),
 			glm::vec3( 2.0f,  5.0f, -15.0f),
@@ -298,20 +300,11 @@ public:
 			m_shaderProgram.setMat4("camModel.vw", m_pCam->xGetView());
 		}
 		
-		/* Draw a single box */
+		/* Draw the boxes */
 		for (auto idx = 0; idx<10; ++idx)
 		{
-			glBindVertexArray(VAO);
-			glm::mat4 model_tx, model_rt;
-			model_tx = glm::translate(model_tx, cubePositions[idx]);
-			model_rt = glm::rotate(model_rt, glm::radians(20.0f*(idx+1)), glm::vec3(1.0f, 0.3f, 0.5f));
-
-			m_shaderProgram.setMat4("objModel.tx", model_tx);
-			m_shaderProgram.setMat4("objModel.rt", model_rt);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			m_cube[idx].Draw();
 		}
-		/*m_cube[3].Draw();
-		m_cube[4].Draw();*/
 		SDL_GL_SwapWindow(pWindow);
 		
 
