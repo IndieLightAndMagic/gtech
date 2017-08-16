@@ -299,13 +299,13 @@ public:
 		}
 		
 		/* Draw a single box */
-		glBindVertexArray(VAO);
 		for (auto idx = 0; idx<10; ++idx)
 		{
+			glBindVertexArray(VAO);
 			glm::mat4 model_tx, model_rt;
 			model_tx = glm::translate(model_tx, cubePositions[idx]);
 			model_rt = glm::rotate(model_rt, glm::radians(20.0f*(idx+1)), glm::vec3(1.0f, 0.3f, 0.5f));
-			
+
 			m_shaderProgram.setMat4("objModel.tx", model_tx);
 			m_shaderProgram.setMat4("objModel.rt", model_rt);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
