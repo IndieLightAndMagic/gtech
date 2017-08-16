@@ -195,11 +195,6 @@ public:
 				std::cout << "Button: " << (unsigned int)e.jbutton.button << std::endl;
 			}
 		}
-
-
-
-		
-
 	}
 	void sceneInit(){
 
@@ -207,7 +202,7 @@ public:
 		m_cube = new CubeObj[10];
 
 		/* [4] Create a Camera */
-		glm::vec3 cameraPos = glm::vec3(0.0f,0.0f,0.0f);
+		glm::vec3 cameraPos = glm::vec3(0.0f,0.0f,8.0f);
 		glm::vec3 cameraFront = glm::vec3(0.0f,0.0f,1.0f);
 		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		float fFieldOfView = 75.0f; //75 degrees.
@@ -277,7 +272,7 @@ public:
 	}
 	void renderScene(){
 		glm::vec3 cubePositions[] = {
-			glm::vec3( 0.0f,  0.0f,  0.0f),
+			glm::vec3( 0.0f,  0.0f, -8.0f),
 			glm::vec3( 2.0f,  5.0f, -15.0f),
 			glm::vec3(-1.5f, -2.2f, -2.5f),
 			glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -305,15 +300,16 @@ public:
 		
 		/* Draw a single box */
 		glBindVertexArray(VAO);
+		for (auto idx = 0; idx<10; ++idx)
 		{
 			glm::mat4 model_tx, model_rt;
-			model_tx = glm::translate(model_tx, cubePositions[3]);
-			model_rt = glm::rotate(model_rt, glm::radians(60.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+			model_tx = glm::translate(model_tx, cubePositions[idx]);
+			model_rt = glm::rotate(model_rt, glm::radians(20.0f*(idx+1)), glm::vec3(1.0f, 0.3f, 0.5f));
+			
 			m_shaderProgram.setMat4("objModel.tx", model_tx);
 			m_shaderProgram.setMat4("objModel.rt", model_rt);
-
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 		/*m_cube[3].Draw();
 		m_cube[4].Draw();*/
 		SDL_GL_SwapWindow(pWindow);
