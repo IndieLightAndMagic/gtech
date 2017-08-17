@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 #Project Name and Resources 
 set(TARGET_NAME camsample)
-set(SHADERS "vs.vs" "fs.fs")
+set(SHADERS "vrtx.shdr" "frag.shdr")
 
 
 project(${TARGET_NAME})

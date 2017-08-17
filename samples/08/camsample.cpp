@@ -200,8 +200,8 @@ public:
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
 
-		m_shaderProgram.pushShader("vs.vs", GL_VERTEX_SHADER);
-		m_shaderProgram.pushShader("fs.fs", GL_FRAGMENT_SHADER);
+		m_shaderProgram.pushShader("vrtx.shdr", GL_VERTEX_SHADER);
+		m_shaderProgram.pushShader("frag.shdr", GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
 
 		// Set Program Shader's Cam Projection & Viewport Model with m_pCam's. 
@@ -223,7 +223,7 @@ public:
 	}
 	void renderScene(){
 		
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(DARKSLATEBLUE, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 
