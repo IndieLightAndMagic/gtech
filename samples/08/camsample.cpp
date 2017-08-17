@@ -74,7 +74,7 @@ class MainScene{
 
 	
 	struct {
-		int activeIndex;
+		unsigned int activeIndex;
 	}m_gameLogic;
 
 public:
@@ -156,7 +156,20 @@ public:
 			}
 		} else if (e.type == SDL_JOYBUTTONUP || e.type == SDL_JOYBUTTONDOWN){
 			if (e.jbutton.which == xGameControllerID && e.type == SDL_JOYBUTTONUP){
-				std::cout << "Button: " << (unsigned int)e.jbutton.button << std::endl;
+				//std::cout << "Button: " << (unsigned int)e.jbutton.button << std::endl;
+				
+				if ((unsigned int)e.jbutton.button == 10 || (unsigned int)e.jbutton.button == 11){
+					m_gameLogic.activeIndex+=10;
+					if (e.jbutton.button == 10){
+						m_gameLogic.activeIndex--;
+					} else if (e.jbutton.button == 11) {
+						m_gameLogic.activeIndex++;
+					} 
+					m_gameLogic.activeIndex%=10;
+					std::cout << "Idx: " << m_gameLogic.activeIndex << std::endl;
+				}
+				
+
 			}
 		}
 	}
@@ -204,12 +217,13 @@ public:
 		m_shaderProgram.pushShader("frag.shdr", GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
 
-		// Set Program Shader's Cam Projection & Viewport Model with m_pCam's. 
+		// Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer... 
 		m_shaderProgram.use();
 		m_shaderProgram.setMat4("camModel.pr", m_pCam->xGetProjection());
 		m_shaderProgram.setMat4("camModel.vw", m_pCam->xGetView());
 
 
+		
 		// Set cubes positions and rotations. Set Program Shader as the renderer for the cubes.
 		for (auto index = 0; index < 10; ++index)
 		{	
@@ -222,7 +236,18 @@ public:
 		m_gameLogic.activeIndex = 0;
 	}
 	void renderScene(){
-		
+		glm::vec3 m_cubeColors[] = {
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE),
+			glm::vec3(DODGERBLUE)
+		};
 		glClearColor(DARKSLATEBLUE, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -233,7 +258,12 @@ public:
 		
 		/* Draw the boxes */
 		for (auto idx = 0; idx<10; ++idx)
-		{
+		{	
+			if (m_gameLogic.activeIndex == idx){
+				m_shaderProgram.setVec3("diffuseColor", glm::vec3(AQUAMARINE));
+			} else {
+				m_shaderProgram.setVec3("diffuseColor", m_cubeColors[idx]);
+			}
 			m_cube[idx].Draw();
 		}
 		SDL_GL_SwapWindow(pWindow);
