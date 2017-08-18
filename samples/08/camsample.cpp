@@ -72,10 +72,37 @@ class MainScene{
 	/* Buffers and arrays */
 	unsigned int VBO, VAO;
 
-	
+	/* Game Logic Struct */	
 	struct {
 		unsigned int activeIndex;
 	}m_gameLogic;
+
+	/* Cube Positions in the scene */
+	glm::vec3 m_cubePositions[10]{
+			glm::vec3( 0.0f,  0.0f,  -8.0f),
+			glm::vec3( 2.0f,  5.0f, -15.0f),
+			glm::vec3(-1.5f, -2.2f, -2.5f),
+			glm::vec3(-3.8f, -2.0f, -12.3f),
+			glm::vec3( 2.4f, -0.4f, -3.5f),
+			glm::vec3(-1.7f,  3.0f, -7.5f),
+			glm::vec3( 1.3f, -2.0f, -2.5f),
+			glm::vec3( 1.5f,  2.0f, -2.5f),
+			glm::vec3( 1.5f,  0.2f, -1.5f),
+			glm::vec3(-1.3f,  1.0f, -1.5f)
+		};
+
+	glm::vec3 m_cubeColors[10]{
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE),
+		glm::vec3(DODGERBLUE)
+	};
 
 public:
 
@@ -196,18 +223,7 @@ public:
 				fFarz
 			);
 
-		glm::vec3 cubePositions[] = {
-			glm::vec3( 0.0f,  0.0f,  -8.0f),
-			glm::vec3( 2.0f,  5.0f, -15.0f),
-			glm::vec3(-1.5f, -2.2f, -2.5f),
-			glm::vec3(-3.8f, -2.0f, -12.3f),
-			glm::vec3( 2.4f, -0.4f, -3.5f),
-			glm::vec3(-1.7f,  3.0f, -7.5f),
-			glm::vec3( 1.3f, -2.0f, -2.5f),
-			glm::vec3( 1.5f,  2.0f, -2.5f),
-			glm::vec3( 1.5f,  0.2f, -1.5f),
-			glm::vec3(-1.3f,  1.0f, -1.5f)
-		};
+		
 		
 		// configure global opengl state
 		// -----------------------------
@@ -227,7 +243,7 @@ public:
 		// Set cubes positions and rotations. Set Program Shader as the renderer for the cubes.
 		for (auto index = 0; index < 10; ++index)
 		{	
-			m_cube[ index ].SetPosition(cubePositions[ index ]);
+			m_cube[ index ].SetPosition(m_cubePositions[ index ]);
 			m_cube[ index ].SetRotation(glm::vec3(1.0f, 0.3f, 0.5f), 20.0f*index);
 			m_cube[ index ].AssignProgramRenderer(&m_shaderProgram);
 		}
@@ -236,18 +252,7 @@ public:
 		m_gameLogic.activeIndex = 0;
 	}
 	void renderScene(){
-		glm::vec3 m_cubeColors[] = {
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE),
-			glm::vec3(DODGERBLUE)
-		};
+		
 		glClearColor(DARKSLATEBLUE, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -393,7 +398,7 @@ int main(int argc, char ** argv)
 			glm::mat4 model_rt;
 
 			// Create a translation matrix 
-			model_tx = glm::translate(model_tx, cubePositions[i]);
+			model_tx = glm::translate(model_tx, m_cubePositions[i]);
 			
 
 			// Create a rotation matrix
