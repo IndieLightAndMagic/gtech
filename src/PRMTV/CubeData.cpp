@@ -20,18 +20,19 @@ void CubeData::FinishCubeData(){
 }
 CubeData::CubeData()
 {
-	//6 face x 4 vertex/face x 8 comp/vertex
-	m_pfData = new float[6*4*8];
-	m_uiDataSize = sizeof(float)*6*4*8;
+	//6 face x 2 triangles/face x 3 vertex/triangle x 8 comp/vertex
+	m_pfData = new float[6*2*3*8];
+	m_uiDataSize = sizeof(float)*6*2*3*8;
 	for (auto faceIndex = 0; faceIndex < 6; ++faceIndex)
-	for (auto vertexIndex = 0; vertexIndex < 4; ++vertexIndex)
+	for (auto triangleIndex = 0; triangleIndex < 2; ++triangleIndex)
+	for (auto vertexIndex = 0; vertexIndex < 3; ++vertexIndex)
 	for (auto vertexComponentIndex = 0; vertexComponentIndex < 8; ++vertexComponentIndex){
 
-		int index = faceIndex*32 + vertexIndex*8 + vertexComponentIndex;
+		int index = faceIndex*48 + triangleIndex*24 + vertexIndex*8 + vertexComponentIndex;
 
-		if 		(vertexComponentIndex<3)m_pfData[index] = vertices[faces[faceIndex][vertexIndex]][vertexComponentIndex];
+		if 		(vertexComponentIndex<3)m_pfData[index] = vertices[faces[faceIndex][triangleIndex][vertexIndex]][vertexComponentIndex];
 		else if	(vertexComponentIndex<6)m_pfData[index] = normals[faceIndex][vertexComponentIndex-3];
-		else if	(vertexComponentIndex<8)m_pfData[index] = texture[vertexIndex][vertexComponentIndex-6];
+		else if	(vertexComponentIndex<8)m_pfData[index] = texture[triangleIndex][vertexIndex][vertexComponentIndex-6];
 		
 	}
 
