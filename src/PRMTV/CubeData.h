@@ -3,39 +3,31 @@
 
 /* This class is only to calculate the geometry of a cube of m_fScale * [W=1,H=1,D=1]. */
 class CubeData final {
-	
-	
-	
-	float m_fScale;
-	/**
-	 * Local space coordinates array for the cube vertices.
-	 */
-	float * m_pVrtx;
-
-	/**
-	 * Texture coordinates for each vertex.
-	 */
-	float * m_pVrtx_TxtrCoord;
-
-	/**
-	 * Normals. 
-	 */
-	float * m_pVrtx_Normals;
-	/**
-	 * Indices to make the triangles. 
-	 */
-	unsigned int * m_pIndx;
-	unsigned int * m_pIndx_TxtrCoords;
-
 	/* GL OBJECTS */ 
+	float * m_pfData;
 	unsigned int m_vbo,m_vao;
-	float * m_fData;
-    unsigned int m_uiDataSize;
+	unsigned int m_uiDataSize;
 
 	/* Create a Cube and GEN VAO & VBO for it. */
+	/* Build 8 cube's vertices */
+	float vertices[8][3]{
+		{ 0.5f, 0.5f, 0.5f},//0 
+		{-0.5f, 0.5f, 0.5f},//1  
+		{-0.5f,-0.5f, 0.5f},//2  
+		{ 0.5f,-0.5f, 0.5f},//3  
+		 
+		{ 0.5f, 0.5f,-0.5f},//4 
+		{-0.5f, 0.5f,-0.5f},//5  
+		{-0.5f,-0.5f,-0.5f},//6  
+		{ 0.5f,-0.5f,-0.5f}//7  
+	};
+	/* Front, Back, Top, Bottom, Left, Right */
+	unsigned int faces[6][4]{{0,1,2,3},{5,4,7,6},{4,5,1,7},{6,7,3,2},{1,5,6,2},{4,0,3,7}};
+	float normals[6][3]{{0.0f, 0.0f,1.0f},{0.0f, 0.0f,-1.0f},{0.0f,1.0f, 0.0f},{0.0f,-1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{1.0f, 0.0f, 0.0f}};
+	float texture[4][2]{{1.0f, 1.0f},{-1.0f, 1.0f}, {-1.0f, -1.0f}, {1.0f,-1.0f}};
+
 	CubeData();
-	void Gen();
-	
+
 public:
 	static CubeData * CreateCubeData();
 	/* Dangerous */
