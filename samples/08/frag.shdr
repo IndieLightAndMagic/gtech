@@ -1,7 +1,13 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec2 TexCoord;
+struct FragmentShaderInput{
+
+	vec3 aVertex;
+	vec3 aNormal;
+	vec2 aTextureCoordinate;
+};
+in FragmentShaderInput fsi;
 
 // texture samplers
 uniform sampler2D texture1;

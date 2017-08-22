@@ -1,9 +1,18 @@
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
-layout (location = 2) in vec3 aNormal;
-//Fragment Shader Input TexCoord.
-out vec2 TexCoord;
+layout (location = 0) in vec3 aVertex;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTextureCoordinate;
+
+//What should go out to Fragment Shader.
+struct FragmentShaderInput{
+	
+	vec3 aVertex;
+	vec3 aNormal;
+	vec2 aTextureCoordinate;
+};
+out FragmentShaderInput fsi;
+
+
 
 
 //Object Model-------
@@ -11,11 +20,18 @@ struct ObjModel{
 	mat4 tx;
 	mat4 rt;
 };
-mat4 ObjModel_txrt(ObjModel objModel) { return objModel.tx * objModel.rt; }
-mat4 ObjModel_rttx(ObjModel objModel) { return objModel.rt * objModel.tx; }
-
 uniform ObjModel objModel;
-mat4 objModelMatrix;
+
+mat4 ObjModel_rt_normal(ObjModel objModel){ //Normal local rotation.
+	
+
+	//The Normal Transformation Matrix
+	return mat4(transpose(inverse(objModel.rt)));
+
+}
+mat4 ObjModel_tx_rt(ObjModel objModel) { return objModel.tx * objModel.rt; }
+mat4 ObjModel_rt_tx(ObjModel objModel) { return objModel.rt * objModel.tx; }
+
 //-------------------
 
 
@@ -27,25 +43,33 @@ struct CamModel{
 mat4 CamModel_prvw(CamModel camModel) { return camModel.pr * camModel.vw; }
 
 uniform CamModel camModel;
-mat4 camModelMatrix;
 //-------------------
 
+void calcNextStage(){
 
+	//Normal (ALL NORMALS MUST BE OF LENGHT == 1)
+	mat4 objModelNormalMatrix = ObjModel_rt_normal(objModel);
+	fsi.aNormal = vec3(objModelNormalMatrix * vec4(aNormal,1.0f));
 
+	//Texture Coordinate (0,1)-(0,1)
+	fsi.aTextureCoordinate = vec2(aTextureCoordinate.x, aTextureCoordinate.y);
+	
+	//Calculate Object Model.
+	mat4 objModelMatrix = ObjModel_tx_rt(objModel);
+	fsi.aVertex = vec3(objModelMatrix * vec4(aVertex,1.0f));
+
+}
 
 void main()
 {
-	//Calculate Object Model.
-	objModelMatrix = ObjModel_txrt(objModel);
+	//Calculate next stage (frag shader) and partial results for projection.
+	calcNextStage();
 	
 	//Calculate Camera Model.
-	camModelMatrix = CamModel_prvw(camModel);
+	mat4 camModelMatrix = CamModel_prvw(camModel);
 
 	//Vertex Shader final pi position.
-	gl_Position = camModelMatrix * objModelMatrix * vec4(aPos, 1.0f);
+	gl_Position = camModelMatrix * vec4(fsi.aVertex,1.0f);
 	
-	//Texture Coordinate (0,1)-(0,1)
-	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
-
-
+	
 }
