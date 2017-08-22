@@ -1,31 +1,51 @@
 #version 330 core
 out vec4 FragColor;
+struct FragmentShaderInput{
 
+	vec3 aVertex;			//Vertex Position World Coordinate
+	vec3 aNormal;			//Normal direction Local Coordinates (Local to the model) lenght = 1 ALWAYS.
+	vec2 aTextureCoordinate;//Texture 2D Coordinates (Local to the Coordinate)
+};
+in FragmentShaderInput fsi; //Calculations exectued in the vertex shader.
+/*=================================================================*/
+uniform vec3 viewPos;		//Viewer Position World Coordinate
+
+/*
+Use this material definition in a following stage.
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
     float shininess;
+
 }; 
+uniform Material material; 
+*/
+
+struct LightPowerModel{
+
+    float constant;
+    float linear;
+    float quadratic;
+
+};
 
 struct DirLight {
     vec3 direction;
-	
-    vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 };
+uniform DirLight directionalLight;
 
 struct PointLight {
     vec3 position;
     
-    float constant;
-    float linear;
-    float quadratic;
+    LightPowerModel pm;
 	
-    vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 };
+uniform PointLight pointLight;
+
 
 struct SpotLight {
     vec3 position;
@@ -33,36 +53,103 @@ struct SpotLight {
     float cutOff;
     float outerCutOff;
   
-    float constant;
-    float linear;
-    float quadratic;
-  
-    vec3 ambient;
+	LightPowerModel pm;
+
     vec3 diffuse;
     vec3 specular;       
 };
+uniform SpotLight spotLight;
+
 
 #define NR_POINT_LIGHTS 4
 
-struct FragmentShaderInput{
 
-	vec3 aVertex;
-	vec3 aNormal;
-	vec2 aTextureCoordinate;
-};
-in FragmentShaderInput fsi;
 
 // texture samplers
-uniform sampler2D texture1;
-uniform sampler2D texture2;
+// uniform sampler2D texture1;
+// uniform sampler2D texture2;
 
 // a color selector
 uniform vec3 diffuseColor;
+uniform float ambientPower;
+uniform float shininess;
+
+struct PhongBlinn{
+
+	vec3 viewDir;	//Viewer's Direction from Fragment Position
+	vec3 lightDir;	//Light's incidence angle
+	vec3 refDir;	//Reflection Vector
+		
+	float diffPower;	//Light vs Normal Power Differentiator.
+	float specPower;	//Specularity power coeff.
+	float distance;		//Distance from fragment position to light source.
+	float attPower;		//Power Attenuation 
+
+};
+PhongBlinn bp;
+
+void CalcBPConditionsForLight(vec3 lightDirection){
+	
+	bp.viewDir = normalize(viewPos - fsi.aVertex);
+	bp.diffPower = max(dot(fsi.aNormal, lightDirection),0.0f);
+	bp.refDir = reflect(-lightDirection, fsi.aNormal);
+	bp.specPower = pow(max(dot(bp.viewDir, bp.refDir),0.0f), shininess);
 
 
+}
+vec3 CalculateResultingLight(){
+
+	vec3 ambientComponent = ambientPower * diffuseColor;
+	vec3 diffuseComponent = directionalLight.diffuse * bp.diffPower * diffuseColor;
+	vec3 specularComponent = directionalLight.specular * bp.specPower * diffuseColor;
+
+	/*ATTENUATION*/
+	ambientComponent *= bp.attPower;
+	diffuseComponent *= bp.attPower;
+	specularComponent *= bp.attPower;
+
+	/*BIG PICTURE*/
+	vec3 ResultingLight = ambientComponent + diffuseComponent + specularComponent;
+	return ResultingLight;
+}
+vec3 CalculateDirectionalLight(){
+	
+	vec3 lightDirection = normalize(-directionalLight.direction);
+	CalcBPConditionsForLight(lightDirection);
+	bp.attPower = 1.0f;
+	return CalculateResultingLight();
+
+}
+
+vec3 CalculatePointLight(){
+
+	vec3 lightDirection = normalize(pointLight.position - fsi.aVertex);
+	CalcBPConditionsForLight(lightDirection);
+
+	bp.distance = length(pointLight.position - fsi.aVertex);
+	bp.attPower = 1.0f / (pointLight.pm.constant + pointLight.pm.linear*bp.distance + pointLight.pm.quadratic*(bp.distance*bp.distance));
+
+	return CalculateResultingLight();
+
+}
+vec3 CalcSpotLight(){
+	
+	vec3 lightDirection = normalize(spotLight.position - fsi.aVertex);
+
+	bp.distance = length(spotLight.position - fsi.aVertex);
+	bp.attPower = 1.0f / (spotLight.pm.constant + spotLight.pm.linear*bp.distance + spotLight.pm.quadratic*(bp.distance*bp.distance));
+
+	float theta = dot(lightDirection, normalize(-spotLight.direction));
+	float epsilon = spotLight.cutOff - spotLight.outerCutOff;
+
+
+
+	return CalculateResultingLight();
+}
 
 void main()
 {
+	
 	// linearly interpolate between both textures (80% container, 20% awesomeface)
 	// FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
 	// FragColor = vec4(0.8,0.1,0.4,1.0);

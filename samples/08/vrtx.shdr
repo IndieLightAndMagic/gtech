@@ -52,7 +52,7 @@ void calcNextStage(){
 	fsi.aNormal = vec3(objModelNormalMatrix * vec4(aNormal,1.0f));
 
 	//Texture Coordinate (0,1)-(0,1)
-	fsi.aTextureCoordinate = vec2(aTextureCoordinate.x, aTextureCoordinate.y);
+	fsi.aTextureCoordinate = aTextureCoordinate;
 	
 	//Calculate Object Model.
 	mat4 objModelMatrix = ObjModel_tx_rt(objModel);
