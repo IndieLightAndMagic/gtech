@@ -14,6 +14,7 @@ class GIDBasedComponent
 {
 	static int m_iIdCounter;
 protected:
+	std::string m_sComponentName;
 	int m_iId;
 
 public:
@@ -52,14 +53,17 @@ public:
 
 
 	virtual void init();
-	
+		
 
 
 
 };
 
+class GGameObjectComponent: public 
 
 
-
+public:
+	void update(float dt);
+	void draw();
 }
 #endif
