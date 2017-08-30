@@ -21,7 +21,7 @@ endif()
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 #DIRECTORIES
-get_filename_component(ROOT_DIR "../.." ABSOLUTE)
+get_filename_component(ROOT_DIR "../../.." ABSOLUTE)
 set(INCLUDE_DIR "${ROOT_DIR}/inc")
 set(LIB_DIR "${ROOT_DIR}/lib")
 message(STATUS "SYSTEM NAME: ${CMAKE_SYSTEM_NAME}")
