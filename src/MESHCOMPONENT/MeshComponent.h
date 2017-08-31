@@ -9,7 +9,7 @@
 using namespace G0;
 
 
-class GMeshMaterial: publix GItemComponent
+class GMaterialComponent: public GItemComponent
 {
 public:
 	glm::vec3 m_ka_ambientColor;
@@ -32,17 +32,31 @@ public:
 
 };
 
+class GVertexComponent: public GItemComponent
+{
+
+public:
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 tcoords;
+
+};
+
 class GMeshComponent: public GItemComponent
 {
 public:
-	std::vector<glm::vec3>	m_pvertices;
-	std::vector<glm::vec3>	m_pnormals;
-	std::vector<glm::vec3>	m_tcoords;
-	std::vector<int>		m_indices;
 
-	
-	
 
+	std::vector<GVertexComponent>	m_vertices;		
+	std::vector<int>				m_indices;
+	GMaterialComponent				m_material;
+
+	GMeshComponent():GItemComponent()
+	{}
+	GMeshComponent(std::vector<GVertexComponent> vertices, std::vector<int> indices):GItemComponent()
+	m_vertices(vertices),
+	m_indices(indices)
+	{}
 
 };
 

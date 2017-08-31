@@ -3,6 +3,7 @@
 #ifndef _G_H_
 #define _G_H_
 
+#include <fstream>
 #include <iostream>
 #include <map>
 
@@ -34,7 +35,21 @@ public:
 	{
 		return m_iId;
 	}
+	std::string getComponentName()
+	{
+		return m_sComponentName;
+	}
+	void setComponentName(std::string & name)
+	{
+		m_sComponentName = name;
+	}
+	void setComponentName(std::string && name)
+	{
+		m_sComponentName = name;
+	}
+
 };
+
 
 class GItemComponent: public GIDBasedComponent 
 {
@@ -59,11 +74,12 @@ public:
 
 };
 
-class GGameObjectComponent: public 
-
+class GGameObjectComponent: public GItemComponent
+{
 
 public:
-	void update(float dt);
-	void draw();
+	virtual void update(float dt);
+	virtual void draw();
+};
 }
 #endif

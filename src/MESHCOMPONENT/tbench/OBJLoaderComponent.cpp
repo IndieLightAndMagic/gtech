@@ -1,15 +1,10 @@
+
+
+
 // OBJ_Loader.h - A Single Header OBJ Model Loader
 #include <GLM/glm.hpp>
-#include <math.h>
-// Vector - STD Vector/Array Library
-#include <vector>
+#include <MESHCOMPONENT/MeshComponent.h>
 
-// String - STD String Library
-#include <string>
-
-// fStream - STD File I/O Library
-#include <fstream>
-#include <iostream>
 // Print progress to console while loading (large models)
 #define OBJL_CONSOLE_OUTPUT
 
@@ -17,106 +12,6 @@
 //
 // Description: The namespace that holds eveyrthing that
 //	is needed and used for the OBJ Model Loader
-namespace objl
-{
-
-	// Structure: Vector3
-	//
-	// Description: A 3D Vector that Holds Positional Data
-	
-
-	// Structure: Vertex
-	//
-	// Description: Model Vertex object that holds
-	//	a Position, Normal, and Texture Coordinate
-	struct Vertex
-	{
-		// Position Vector
-		glm::vec3 Position;
-
-		// Normal Vector
-		glm::vec3 Normal;
-
-		// Texture Coordinate Vector
-        glm::vec2 TextureCoordinate;
-	};
-
-	struct Material
-	{
-		Material()
-		{
-			Ns = 0.0f;
-			Ni = 0.0f;
-			d = 0.0f;
-			illum = 0;
-		}
-
-		// Material Name
-		std::string name;
-		// Ambient Color
-		glm::vec3 Ka;
-		// Diffuse Color
-		glm::vec3 Kd;
-		// Specular Color
-		glm::vec3 Ks;
-		// Specular Exponent
-		float Ns;
-		// Optical Density
-		float Ni;
-		// Dissolve
-		float d;
-		// Illumination
-		int illum;
-		// Ambient Texture Map
-		std::string map_Ka;
-		// Diffuse Texture Map
-		std::string map_Kd;
-		// Specular Texture Map
-		std::string map_Ks;
-		// Specular Hightlight Map
-		std::string map_Ns;
-		// Alpha Texture Map
-		std::string map_d;
-		// Bump Map
-		std::string map_bump;
-	};
-
-	// Structure: Mesh
-	//
-	// Description: A Simple Mesh Object that holds
-	//	a name, a vertex list, and an index list
-	struct Mesh
-	{
-		// Default Constructor
-		Mesh()
-		{
-
-		}
-		// Variable Set Constructor
-		Mesh(std::vector<Vertex>& _Vertices, std::vector<unsigned int>& _Indices)
-		{
-			Vertices = _Vertices;
-			Indices = _Indices;
-		}
-		// Mesh Name
-		std::string MeshName;
-		// Vertex List
-		std::vector<Vertex> Vertices;
-		// Index List
-		std::vector<unsigned int> Indices;
-
-		// Material
-		Material MeshMaterial;
-	};
-
-	// Namespace: Math
-	//
-	// Description: The namespace that holds all of the math
-	//	functions need for OBJL
-	namespace math
-	{
-		
-	}
 
 	// Namespace: Algorithm
 	//
@@ -282,15 +177,15 @@ namespace objl
             std::vector<glm::vec2> TCoords;
 			std::vector<glm::vec3> Normals;
 
-			std::vector<Vertex> Vertices;
-			std::vector<unsigned int> Indices;
+			std::vector<GVertexComponent> Vertices;
+			std::vector<int> Indices;
 
 			std::vector<std::string> MeshMatNames;
 
 			bool listening = false;
 			std::string meshname;
 
-			Mesh tempMesh;
+			GMeshComponent tempMesh;
 
 			#ifdef OBJL_CONSOLE_OUTPUT
 			const unsigned int outputEveryNth = 1000;
@@ -339,8 +234,8 @@ namespace objl
 						if (!Indices.empty() && !Vertices.empty())
 						{
 							// Create Mesh
-							tempMesh = Mesh(Vertices, Indices);
-							tempMesh.MeshName = meshname;
+							tempMesh = GMeshComponent(Vertices, Indices);
+							tempMesh.setComponentName(meshname);
 
 							// Insert Mesh
 							LoadedMeshes.push_back(tempMesh);
@@ -411,14 +306,13 @@ namespace objl
 				if (algorithm::firstToken(curline) == "f")
 				{
 					// Generate the vertices
-					std::vector<Vertex> vVerts;
+					std::vector<GVertexComponent> vVerts;
 					GenVerticesFromRawOBJ(vVerts, Positions, TCoords, Normals, curline);
 
 					// Add Vertices
 					for (int i = 0; i < int(vVerts.size()); i++)
 					{
 						Vertices.push_back(vVerts[i]);
-
 						LoadedVertices.push_back(vVerts[i]);
 					}
 
@@ -446,14 +340,14 @@ namespace objl
 					if (!Indices.empty() && !Vertices.empty())
 					{
 						// Create Mesh
-						tempMesh = Mesh(Vertices, Indices);
-						tempMesh.MeshName = meshname;
+						tempMesh = GMeshComponent(Vertices, Indices);
+						tempMesh.setComponentName(meshname);
 						int i = 2;
 						while(1) {
-							tempMesh.MeshName = meshname + "_" + std::to_string(i);
+							tempMesh.setComponentName(meshname + "_" + std::to_string(i));
 
 							for (auto &m : LoadedMeshes)
-								if (m.MeshName == tempMesh.MeshName)
+								if (m.getComponentName() == tempMesh.getComponentName())
 									continue;
 							break;
 						}
@@ -510,8 +404,8 @@ namespace objl
 			if (!Indices.empty() && !Vertices.empty())
 			{
 				// Create Mesh
-				tempMesh = Mesh(Vertices, Indices);
-				tempMesh.MeshName = meshname;
+				tempMesh = GMeshComponent(Vertices, Indices);
+				tempMesh.setComponentName(meshname);
 
 				// Insert Mesh
 				LoadedMeshes.push_back(tempMesh);
@@ -528,9 +422,9 @@ namespace objl
 				// when found copy material variables into mesh material
 				for (int j = 0; j < LoadedMaterials.size(); j++)
 				{
-					if (LoadedMaterials[j].name == matname)
+					if (LoadedMaterials[j].getComponentName() == matname)
 					{
-						LoadedMeshes[i].MeshMaterial = LoadedMaterials[j];
+						LoadedMeshes[i].m_material = LoadedMaterials[j];
 						break;
 					}
 				}
@@ -547,25 +441,27 @@ namespace objl
 		}
 
 		// Loaded Mesh Objects
-		std::vector<Mesh> LoadedMeshes;
+		std::vector<GMeshComponent> LoadedMeshes;
 		// Loaded Vertex Objects
-		std::vector<Vertex> LoadedVertices;
+		std::vector<GVertexComponent> LoadedVertices;
+		std::vector<glm::vec3> LoadedNormals;
+		std::vector<glm::vec2> LoadedTextureCoordinates;
 		// Loaded Index Positions
 		std::vector<unsigned int> LoadedIndices;
 		// Loaded Material Objects
-		std::vector<Material> LoadedMaterials;
+		std::vector<GMaterialComponent> LoadedMaterials;
 
 	private:
 		// Generate vertices from a list of positions, 
 		//	tcoords, normals and a face line
-		void GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts,
+		void GenVerticesFromRawOBJ(std::vector<GVertexComponent>& oVerts,
 			const std::vector<glm::vec3>& iPositions,
             const std::vector<glm::vec2>& iTCoords,
 			const std::vector<glm::vec3>& iNormals,
 			std::string icurline)
 		{
 			std::vector<std::string> sface, svert;
-			Vertex vVert;
+			GVertexComponent vVert;
 			algorithm::split(algorithm::tail(icurline), sface, " ");
 
 			bool noNormal = false;
@@ -613,33 +509,33 @@ namespace objl
 				{
 				case 1: // P
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-                    vVert.TextureCoordinate = glm::vec2(0.0f, 0.0f);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+                    vVert.tcoords = glm::vec2(0.0f, 0.0f);
 					noNormal = true;
 					oVerts.push_back(vVert);
 					break;
 				}
 				case 2: // P/T
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-					vVert.TextureCoordinate = algorithm::getElement(iTCoords, svert[1]);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+					vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
 					noNormal = true;
 					oVerts.push_back(vVert);
 					break;
 				}
 				case 3: // P//N
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-                    vVert.TextureCoordinate = glm::vec2(0.0f, 0.0f);
-					vVert.Normal = algorithm::getElement(iNormals, svert[2]);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+                    vVert.tcoords = glm::vec2(0.0f, 0.0f);
+					vVert.normal = algorithm::getElement(iNormals, svert[2]);
 					oVerts.push_back(vVert);
 					break;
 				}
 				case 4: // P/T/N
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-					vVert.TextureCoordinate = algorithm::getElement(iTCoords, svert[1]);
-					vVert.Normal = algorithm::getElement(iNormals, svert[2]);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+					vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
+					vVert.normal = algorithm::getElement(iNormals, svert[2]);
 					oVerts.push_back(vVert);
 					break;
 				}
@@ -655,14 +551,14 @@ namespace objl
 			// best they get for not compiling a mesh with normals	
 			if (noNormal)
 			{
-				glm::vec3 A = oVerts[0].Position - oVerts[1].Position;
-				glm::vec3 B = oVerts[2].Position - oVerts[1].Position;
+				glm::vec3 A = oVerts[0].position - oVerts[1].position;
+				glm::vec3 B = oVerts[2].position - oVerts[1].position;
 
                 glm::vec3 normal = glm::cross(A, B);
 
 				for (int i = 0; i < int(oVerts.size()); i++)
 				{
-					oVerts[i].Normal = normal;
+					oVerts[i].normal = normal;
 				}
 			}
 		}
@@ -670,7 +566,7 @@ namespace objl
 		// Triangulate a list of vertices into a face by printing
 		//	inducies corresponding with triangles within it
 		void VertexTriangluation(std::vector<unsigned int>& oIndices,
-			const std::vector<Vertex>& iVerts)
+			const std::vector<GVertexComponent>& iVerts)
 		{
 			// If there are 2 or less verts,
 			// no triangle can be created,
@@ -689,7 +585,7 @@ namespace objl
 			}
 
 			// Create a list of vertices
-			std::vector<Vertex> tVerts = iVerts;
+			std::vector<GVertexComponent> tVerts = iVerts;
 
 			while (true)
 			{
@@ -697,7 +593,7 @@ namespace objl
 				for (int i = 0; i < int(tVerts.size()); i++)
 				{
 					// pPrev = the previous vertex in the list
-					Vertex pPrev;
+					GVertexComponent pPrev;
 					if (i == 0)
 					{
 						pPrev = tVerts[tVerts.size() - 1];
@@ -708,10 +604,10 @@ namespace objl
 					}
 
 					// pCur = the current vertex;
-					Vertex pCur = tVerts[i];
+					GVertexComponent pCur = tVerts[i];
 
 					// pNext = the next vertex in the list
-					Vertex pNext;
+					GVertexComponent pNext;
 					if (i == tVerts.size() - 1)
 					{
 						pNext = tVerts[0];
@@ -728,11 +624,11 @@ namespace objl
 						// Create a triangle from pCur, pPrev, pNext
 						for (int j = 0; j < int(tVerts.size()); j++)
 						{
-							if (iVerts[j].Position == pCur.Position)
+							if (iVerts[j].position == pCur.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pPrev.Position)
+							if (iVerts[j].position == pPrev.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pNext.Position)
+							if (iVerts[j].position == pNext.position)
 								oIndices.push_back(j);
 						}
 
@@ -744,22 +640,22 @@ namespace objl
 						// Create a triangle from pCur, pPrev, pNext
 						for (int j = 0; j < int(iVerts.size()); j++)
 						{
-							if (iVerts[j].Position == pCur.Position)
+							if (iVerts[j].position == pCur.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pPrev.Position)
+							if (iVerts[j].position == pPrev.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pNext.Position)
+							if (iVerts[j].position == pNext.position)
 								oIndices.push_back(j);
 						}
 
 						glm::vec3 tempVec;
 						for (int j = 0; j < int(tVerts.size()); j++)
 						{
-							if (tVerts[j].Position != pCur.Position
-								&& tVerts[j].Position != pPrev.Position
-								&& tVerts[j].Position != pNext.Position)
+							if (tVerts[j].position != pCur.position
+								&& tVerts[j].position != pPrev.position
+								&& tVerts[j].position != pNext.position)
 							{
-								tempVec = tVerts[j].Position;
+								tempVec = tVerts[j].position;
 								break;
 							}
 						}
@@ -767,11 +663,11 @@ namespace objl
 						// Create a triangle from pCur, pPrev, pNext
 						for (int j = 0; j < int(iVerts.size()); j++)
 						{
-							if (iVerts[j].Position == pPrev.Position)
+							if (iVerts[j].position == pPrev.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pNext.Position)
+							if (iVerts[j].position == pNext.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == tempVec)
+							if (iVerts[j].position == tempVec)
 								oIndices.push_back(j);
 						}
 
@@ -780,8 +676,8 @@ namespace objl
 					}
 
 					// If Vertex is not an interior vertex
-                    glm::vec3 a_origin = glm::normalize(pPrev.Position - pCur.Position);
-                    glm::vec3 b_origin = glm::normalize(pNext.Position - pCur.Position);
+                    glm::vec3 a_origin = glm::normalize(pPrev.position - pCur.position);
+                    glm::vec3 b_origin = glm::normalize(pNext.position - pCur.position);
                     float cosab = glm::dot(a_origin,b_origin);
                     
                     
@@ -793,10 +689,10 @@ namespace objl
 					bool inTri = false;
 					for (int j = 0; j < int(iVerts.size()); j++)
 					{
-						if (algorithm::inTriangle(iVerts[j].Position, pPrev.Position, pCur.Position, pNext.Position)
-							&& iVerts[j].Position != pPrev.Position
-							&& iVerts[j].Position != pCur.Position
-							&& iVerts[j].Position != pNext.Position)
+						if (algorithm::inTriangle(iVerts[j].position, pPrev.position, pCur.position, pNext.position)
+							&& iVerts[j].position != pPrev.position
+							&& iVerts[j].position != pCur.position
+							&& iVerts[j].position != pNext.position)
 						{
 							inTri = true;
 							break;
@@ -808,18 +704,18 @@ namespace objl
 					// Create a triangle from pCur, pPrev, pNext
 					for (int j = 0; j < int(iVerts.size()); j++)
 					{
-						if (iVerts[j].Position == pCur.Position)
+						if (iVerts[j].position == pCur.position)
 							oIndices.push_back(j);
-						if (iVerts[j].Position == pPrev.Position)
+						if (iVerts[j].position == pPrev.position)
 							oIndices.push_back(j);
-						if (iVerts[j].Position == pNext.Position)
+						if (iVerts[j].position == pNext.position)
 							oIndices.push_back(j);
 					}
 
 					// Delete pCur from the list
 					for (int j = 0; j < int(tVerts.size()); j++)
 					{
-						if (tVerts[j].Position == pCur.Position)
+						if (tVerts[j].position == pCur.position)
 						{
 							tVerts.erase(tVerts.begin() + j);
 							break;
@@ -854,7 +750,7 @@ namespace objl
 			if (!file.is_open())
 				return false;
 
-			Material tempMaterial;
+			GMaterialComponent tempMaterial;
 
 			bool listening = false;
 
@@ -871,11 +767,11 @@ namespace objl
 
 						if (curline.size() > 7)
 						{
-							tempMaterial.name = algorithm::tail(curline);
+							tempMaterial.setComponentName(algorithm::tail(curline));
 						}
 						else
 						{
-							tempMaterial.name = "none";
+							tempMaterial.setComponentName("none");
 						}
 					}
 					else
@@ -886,15 +782,15 @@ namespace objl
 						LoadedMaterials.push_back(tempMaterial);
 
 						// Clear Loaded Material
-						tempMaterial = Material();
+						tempMaterial = GMaterialComponent();
 
 						if (curline.size() > 7)
 						{
-							tempMaterial.name = algorithm::tail(curline);
+							tempMaterial.setComponentName(algorithm::tail(curline));
 						}
 						else
 						{
-							tempMaterial.name = "none";
+							tempMaterial.setComponentName("none");
 						}
 					}
 				}
@@ -907,9 +803,9 @@ namespace objl
 					if (temp.size() != 3)
 						continue;
 
-					tempMaterial.Ka.x = std::stof(temp[0]);
-					tempMaterial.Ka.y = std::stof(temp[1]);
-					tempMaterial.Ka.z = std::stof(temp[2]);
+					tempMaterial.m_ka_ambientColor.x = std::stof(temp[0]);
+					tempMaterial.m_ka_ambientColor.y = std::stof(temp[1]);
+					tempMaterial.m_ka_ambientColor.z = std::stof(temp[2]);
 				}
 				// Diffuse Color
 				if (algorithm::firstToken(curline) == "Kd")
@@ -920,9 +816,9 @@ namespace objl
 					if (temp.size() != 3)
 						continue;
 
-					tempMaterial.Kd.x = std::stof(temp[0]);
-					tempMaterial.Kd.y = std::stof(temp[1]);
-					tempMaterial.Kd.z = std::stof(temp[2]);
+					tempMaterial.m_kd_diffuseColor.x = std::stof(temp[0]);
+					tempMaterial.m_kd_diffuseColor.y = std::stof(temp[1]);
+					tempMaterial.m_kd_diffuseColor.z = std::stof(temp[2]);
 				}
 				// Specular Color
 				if (algorithm::firstToken(curline) == "Ks")
@@ -933,59 +829,59 @@ namespace objl
 					if (temp.size() != 3)
 						continue;
 
-					tempMaterial.Ks.x = std::stof(temp[0]);
-					tempMaterial.Ks.y = std::stof(temp[1]);
-					tempMaterial.Ks.z = std::stof(temp[2]);
+					tempMaterial.m_ks_specularColor.x = std::stof(temp[0]);
+					tempMaterial.m_ks_specularColor.y = std::stof(temp[1]);
+					tempMaterial.m_ks_specularColor.z = std::stof(temp[2]);
 				}
 				// Specular Exponent
 				if (algorithm::firstToken(curline) == "Ns")
 				{
-					tempMaterial.Ns = std::stof(algorithm::tail(curline));
+					tempMaterial.m_ns_specularExponent = std::stof(algorithm::tail(curline));
 				}
 				// Optical Density
 				if (algorithm::firstToken(curline) == "Ni")
 				{
-					tempMaterial.Ni = std::stof(algorithm::tail(curline));
+					tempMaterial.m_ni_opticalDensity = std::stof(algorithm::tail(curline));
 				}
 				// Dissolve
 				if (algorithm::firstToken(curline) == "d")
 				{
-					tempMaterial.d = std::stof(algorithm::tail(curline));
+					tempMaterial.m_d_dissolve = std::stof(algorithm::tail(curline));
 				}
 				// Illumination
 				if (algorithm::firstToken(curline) == "illum")
 				{
-					tempMaterial.illum = std::stoi(algorithm::tail(curline));
+					tempMaterial.m_illumination = std::stoi(algorithm::tail(curline));
 				}
 				// Ambient Texture Map
 				if (algorithm::firstToken(curline) == "map_Ka")
 				{
-					tempMaterial.map_Ka = algorithm::tail(curline);
+					tempMaterial.m_ka_ambientTexture = algorithm::tail(curline);
 				}
 				// Diffuse Texture Map
 				if (algorithm::firstToken(curline) == "map_Kd")
 				{
-					tempMaterial.map_Kd = algorithm::tail(curline);
+					tempMaterial.m_kd_diffuseTexture = algorithm::tail(curline);
 				}
 				// Specular Texture Map
 				if (algorithm::firstToken(curline) == "map_Ks")
 				{
-					tempMaterial.map_Ks = algorithm::tail(curline);
+					tempMaterial.m_ks_specularTexture = algorithm::tail(curline);
 				}
 				// Specular Hightlight Map
 				if (algorithm::firstToken(curline) == "map_Ns")
 				{
-					tempMaterial.map_Ns = algorithm::tail(curline);
+					tempMaterial.m_ns_specularHighLightTexture = algorithm::tail(curline);
 				}
 				// Alpha Texture Map
 				if (algorithm::firstToken(curline) == "map_d")
 				{
-					tempMaterial.map_d = algorithm::tail(curline);
+					tempMaterial.m_d_alphaTexture = algorithm::tail(curline);
 				}
 				// Bump Map
 				if (algorithm::firstToken(curline) == "map_Bump" || algorithm::firstToken(curline) == "map_bump")
 				{
-					tempMaterial.map_bump = algorithm::tail(curline);
+					tempMaterial.m_bumpMapTexture = algorithm::tail(curline);
 				}
 			}
 
@@ -1003,14 +899,14 @@ namespace objl
 				return true;
 		}
 	};
-}
+
 int main(int argc, char* argv[])
 {
 	// Initialize Loader
-	objl::Loader Loader;
+	Loader Loader;
 
 	// Load .obj File
-	bool loadout = Loader.LoadFile("resources/arwing.obj");
+	bool loadout = Loader.LoadFile("/Users/julian.guarin/Code/modern-opengl/samples/Resources/arwing.obj");
 
 	// Check to see if it loaded
 
@@ -1024,22 +920,22 @@ int main(int argc, char* argv[])
 		for (int i = 0; i < Loader.LoadedMeshes.size(); i++)
 		{
 			// Copy one of the loaded meshes to be our current mesh
-			objl::Mesh curMesh = Loader.LoadedMeshes[i];
+			GMeshComponent curMesh = Loader.LoadedMeshes[i];
 
 			// Print Mesh Name
-			file << "Mesh " << i << ": " << curMesh.MeshName << "\n";
+			file << "Mesh " << i << ": " << curMesh.getComponentName() << "\n";
 
 			// Print Vertices
 			file << "Vertices:\n";
 
 			// Go through each vertex and print its number,
 			//  position, normal, and texture coordinate
-			for (int j = 0; j < curMesh.Vertices.size(); j++)
+			for (int j = 0; j < curMesh.m_vertices.size(); j++)
 			{
 				file << "V" << j << ": " <<
-					"P(" << curMesh.Vertices[j].Position.x << ", " << curMesh.Vertices[j].Position.y << ", " << curMesh.Vertices[j].Position.z << ") " <<
-					"N(" << curMesh.Vertices[j].Normal.x << ", " << curMesh.Vertices[j].Normal.y << ", " << curMesh.Vertices[j].Normal.z << ") " <<
-					"TC(" << curMesh.Vertices[j].TextureCoordinate.x << ", " << curMesh.Vertices[j].TextureCoordinate.y << ")\n";
+					"P(" << curMesh.m_vertices[j].position.x << ", " << curMesh.m_vertices[j].position.y << ", " << curMesh.m_vertices[j].position.z << ") " <<
+					"N(" << curMesh.m_vertices[j].normal.x << ", " << curMesh.m_vertices[j].normal.y << ", " << curMesh.m_vertices[j].normal.z << ") " <<
+					"TC(" << curMesh.m_vertices[j].tcoords.x << ", " << curMesh.m_vertices[j].tcoords.y << ")\n";
 			}
 
 			// Print Indices
@@ -1047,25 +943,25 @@ int main(int argc, char* argv[])
 
 			// Go through every 3rd index and print the
 			//	triangle that these indices represent
-			for (int j = 0; j < curMesh.Indices.size(); j += 3)
+			for (int j = 0; j < curMesh.m_indices.size(); j += 3)
 			{
-				file << "T" << j / 3 << ": " << curMesh.Indices[j] << ", " << curMesh.Indices[j + 1] << ", " << curMesh.Indices[j + 2] << "\n";
+				file << "T" << j / 3 << ": " << curMesh.m_indices[j] << ", " << curMesh.m_indices[j + 1] << ", " << curMesh.m_indices[j + 2] << "\n";
 			}
 
 			// Print Material
-			file << "Material: " << curMesh.MeshMaterial.name << "\n";
-			file << "Ambient Color: " << curMesh.MeshMaterial.Ka.x << ", " << curMesh.MeshMaterial.Ka.y << ", " << curMesh.MeshMaterial.Ka.z << "\n";
-			file << "Diffuse Color: " << curMesh.MeshMaterial.Kd.x << ", " << curMesh.MeshMaterial.Kd.y << ", " << curMesh.MeshMaterial.Kd.z << "\n";
-			file << "Specular Color: " << curMesh.MeshMaterial.Ks.x << ", " << curMesh.MeshMaterial.Ks.y << ", " << curMesh.MeshMaterial.Ks.z << "\n";
-			file << "Specular Exponent: " << curMesh.MeshMaterial.Ns << "\n";
-			file << "Optical Density: " << curMesh.MeshMaterial.Ni << "\n";
-			file << "Dissolve: " << curMesh.MeshMaterial.d << "\n";
-			file << "Illumination: " << curMesh.MeshMaterial.illum << "\n";
-			file << "Ambient Texture Map: " << curMesh.MeshMaterial.map_Ka << "\n";
-			file << "Diffuse Texture Map: " << curMesh.MeshMaterial.map_Kd << "\n";
-			file << "Specular Texture Map: " << curMesh.MeshMaterial.map_Ks << "\n";
-			file << "Alpha Texture Map: " << curMesh.MeshMaterial.map_d << "\n";
-			file << "Bump Map: " << curMesh.MeshMaterial.map_bump << "\n";
+			file << "Material: " << curMesh.m_material.getComponentName() << "\n";
+			file << "Ambient Color: " << curMesh.m_material.m_ka_ambientColor.x << ", " << curMesh.m_material.m_ka_ambientColor.y << ", " << curMesh.m_material.m_ka_ambientColor.z << "\n";
+			file << "Diffuse Color: " << curMesh.m_material.m_kd_diffuseColor.x << ", " << curMesh.m_material.m_kd_diffuseColor.y << ", " << curMesh.m_material.m_kd_diffuseColor.z << "\n";
+			file << "Specular Color: " << curMesh.m_material.m_ks_specularColor.x << ", " << curMesh.m_material.m_ks_specularColor.y << ", " << curMesh.m_material.m_ks_specularColor.z << "\n";
+			file << "Specular Exponent: " << curMesh.m_material.m_ns_specularExponent << "\n";
+			file << "Optical Density: " << curMesh.m_material.m_ni_opticalDensity << "\n";
+			file << "Dissolve: " << curMesh.m_material.m_d_dissolve << "\n";
+			file << "Illumination: " << curMesh.m_material.m_illumination << "\n";
+			file << "Ambient Texture Map: " << curMesh.m_material.m_ka_ambientTexture << "\n";
+			file << "Diffuse Texture Map: " << curMesh.m_material.m_kd_diffuseTexture << "\n";
+			file << "Specular Texture Map: " << curMesh.m_material.m_ks_specularTexture << "\n";
+			file << "Alpha Texture Map: " << curMesh.m_material.m_d_alphaTexture << "\n";
+			file << "Bump Map: " << curMesh.m_material.m_bumpMapTexture << "\n";
 
 			// Leave a space to separate from the next mesh
 			file << "\n";
