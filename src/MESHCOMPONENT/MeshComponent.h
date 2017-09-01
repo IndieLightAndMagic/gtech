@@ -40,6 +40,7 @@ public:
 	glm::vec3 normal;
 	glm::vec2 tcoords;
 
+
 };
 
 class GMeshComponent: public GItemComponent
@@ -50,13 +51,6 @@ public:
 	std::vector<GVertexComponent>	m_vertices;		
 	std::vector<int>				m_indices;
 	GMaterialComponent				m_material;
-
-	GMeshComponent():GItemComponent()
-	{}
-	GMeshComponent(std::vector<GVertexComponent> vertices, std::vector<int> indices):GItemComponent()
-	m_vertices(vertices),
-	m_indices(indices)
-	{}
 
 };
 

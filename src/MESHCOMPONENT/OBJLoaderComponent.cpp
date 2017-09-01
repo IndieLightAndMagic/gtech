@@ -17,139 +17,140 @@
 	//
 	// Description: The namespace that holds all of the
 	// Algorithms needed for OBJL
-	namespace algorithm
-	{
+namespace algorithm
+{
 
 		// Check to see if a glm::vec3 Point is within a 3 glm::vec3 Triangle
-		bool inTriangle(glm::vec3 point, glm::vec3 tri1, glm::vec3 tri2, glm::vec3 tri3)
-		{
+	bool inTriangle(glm::vec3 point, glm::vec3 tri1, glm::vec3 tri2, glm::vec3 tri3)
+	{
 			// Starting vars
-			glm::vec3 u = tri2 - tri1;
-			glm::vec3 v = tri3 - tri1;
-			glm::vec3 w = point - tri1;
-            glm::vec3 n = glm::cross(u, v);
+		glm::vec3 u = tri2 - tri1;
+		glm::vec3 v = tri3 - tri1;
+		glm::vec3 w = point - tri1;
+		glm::vec3 n = glm::cross(u, v);
 
-            float y = (glm::dot(glm::cross(u, w), n) / glm::dot(n, n));
-            float b = (glm::dot(glm::cross(u, w), n) / glm::dot(n, n));
-			float a = 1 - y - b;
+		float y = (glm::dot(glm::cross(u, w), n) / glm::dot(n, n));
+		float b = (glm::dot(glm::cross(u, w), n) / glm::dot(n, n));
+		float a = 1 - y - b;
 
 			// Projected point
 			// glm::vec3  p = (a * tri1) + (b * tri2) + (y * tri3);
 
-			if (a >= 0 && a <= 1
-				&& b >= 0 && b <= 1
-				&& y >= 0 && y <= 1)
-			{
-				return true;
-			}
-			else
-				return false;
+		if (a >= 0 && a <= 1
+			&& b >= 0 && b <= 1
+			&& y >= 0 && y <= 1)
+		{
+			return true;
 		}
+		else
+			return false;
+	}
 
 		// Split a String into a string array at a given token
-		inline void split(const std::string &in,
-			std::vector<std::string> &out,
-			std::string token)
+	inline void split(const std::string &in,
+		std::vector<std::string> &out,
+		std::string token)
+	{
+		out.clear();
+
+		std::string temp;
+
+		for (int i = 0; i < int(in.size()); i++)
 		{
-			out.clear();
+			std::string test = in.substr(i, token.size());
 
-			std::string temp;
-
-			for (int i = 0; i < int(in.size()); i++)
+			if (test == token)
 			{
-				std::string test = in.substr(i, token.size());
-
-				if (test == token)
+				if (!temp.empty())
 				{
-					if (!temp.empty())
-					{
-						out.push_back(temp);
-						temp.clear();
-						i += (int)token.size() - 1;
-					}
-					else
-					{
-						out.push_back("");
-					}
-				}
-				else if (i + token.size() >= in.size())
-				{
-					temp += in.substr(i, token.size());
 					out.push_back(temp);
-					break;
+					temp.clear();
+					i += (int)token.size() - 1;
 				}
 				else
 				{
-					temp += in[i];
+					out.push_back("");
 				}
 			}
-		}
-
-		// Get tail of string after first token and possibly following spaces
-		inline std::string tail(const std::string &in)
-		{
-			size_t token_start = in.find_first_not_of(" \t");
-			size_t space_start = in.find_first_of(" \t", token_start);
-			size_t tail_start = in.find_first_not_of(" \t", space_start);
-			size_t tail_end = in.find_last_not_of(" \t");
-			if (tail_start != std::string::npos && tail_end != std::string::npos)
+			else if (i + token.size() >= in.size())
 			{
-				return in.substr(tail_start, tail_end - tail_start + 1);
+				temp += in.substr(i, token.size());
+				out.push_back(temp);
+				break;
 			}
-			else if (tail_start != std::string::npos)
-			{
-				return in.substr(tail_start);
-			}
-			return "";
-		}
-
-		// Get first token of string
-		inline std::string firstToken(const std::string &in)
-		{
-			if (!in.empty())
-			{
-				size_t token_start = in.find_first_not_of(" \t");
-				size_t token_end = in.find_first_of(" \t", token_start);
-				if (token_start != std::string::npos && token_end != std::string::npos)
-				{
-					return in.substr(token_start, token_end - token_start);
-				}
-				else if (token_start != std::string::npos)
-				{
-					return in.substr(token_start);
-				}
-			}
-			return "";
-		}
-
-		// Get element at given index position
-		template <class T>
-		inline const T & getElement(const std::vector<T> &elements, std::string &index)
-		{
-			int idx = std::stoi(index);
-			if (idx < 0)
-				idx = int(elements.size()) + idx;
 			else
-				idx--;
-			return elements[idx];
+			{
+				temp += in[i];
+			}
 		}
 	}
 
-	// Class: Loader
-	//
-	// Description: The OBJ Model Loader
-	class Loader
+		// Get tail of string after first token and possibly following spaces
+	inline std::string tail(const std::string &in)
 	{
-	public:
-		// Default Constructor
-		Loader()
+		size_t token_start = in.find_first_not_of(" \t");
+		size_t space_start = in.find_first_of(" \t", token_start);
+		size_t tail_start = in.find_first_not_of(" \t", space_start);
+		size_t tail_end = in.find_last_not_of(" \t");
+		if (tail_start != std::string::npos && tail_end != std::string::npos)
 		{
+			return in.substr(tail_start, tail_end - tail_start + 1);
+		}
+		else if (tail_start != std::string::npos)
+		{
+			return in.substr(tail_start);
+		}
+		return "";
+	}
 
-		}
-		~Loader()
+		// Get first token of string
+	inline std::string firstToken(const std::string &in)
+	{
+		if (!in.empty())
 		{
-			LoadedMeshes.clear();
+			size_t token_start = in.find_first_not_of(" \t");
+			size_t token_end = in.find_first_of(" \t", token_start);
+			if (token_start != std::string::npos && token_end != std::string::npos)
+			{
+				return in.substr(token_start, token_end - token_start);
+			}
+			else if (token_start != std::string::npos)
+			{
+				return in.substr(token_start);
+			}
 		}
+		return "";
+	}
+
+		// Get element at given index position
+		template <class T>
+	inline const T & getElement(const std::vector<T> &elements, std::string &index)
+	{
+		int idx = std::stoi(index);
+		if (idx < 0)
+			idx = int(elements.size()) + idx;
+		else
+			idx--;
+		return elements[idx];
+	}
+}
+
+// Class: Loader
+//
+// Description: The OBJ Model Loader
+
+class Loader
+{
+public:
+		// Default Constructor
+	Loader()
+	{
+
+	}
+	~Loader()
+	{
+		LoadedMeshes.clear();
+	}
 
 		// Load a file into the loader
 		//
@@ -157,88 +158,88 @@
 		//
 		// If the file is unable to be found
 		// or unable to be loaded return false
-		bool LoadFile(std::string Path)
-		{
+	bool LoadFile(std::string Path)
+	{
 			// If the file is not an .obj file return false
-			if (Path.substr(Path.size() - 4, 4) != ".obj")
-				return false;
+		if (Path.substr(Path.size() - 4, 4) != ".obj")
+			return false;
 
 
-			std::ifstream file(Path);
+		std::ifstream file(Path);
 
-			if (!file.is_open())
-				return false;
+		if (!file.is_open())
+			return false;
 
-			LoadedMeshes.clear();
-			LoadedVertices.clear();
-			LoadedIndices.clear();
+		LoadedMeshes.clear();
+		LoadedVertices.clear();
+		LoadedIndices.clear();
 
-			std::vector<glm::vec3> Positions;
-            std::vector<glm::vec2> TCoords;
-			std::vector<glm::vec3> Normals;
+		std::vector<glm::vec3> Positions;
+		std::vector<glm::vec2> TCoords;
+		std::vector<glm::vec3> Normals;
 
-			std::vector<GVertexComponent> Vertices;
-			std::vector<int> Indices;
+		std::vector<GVertexComponent> Vertices;
+		std::vector<int> Indices;
 
-			std::vector<std::string> MeshMatNames;
+		std::vector<std::string> MeshMatNames;
 
-			bool listening = false;
-			std::string meshname;
+		bool listening = false;
+		std::string meshname;
 
-			GMeshComponent tempMesh;
+		GMeshComponent tempMesh;
 
-			#ifdef OBJL_CONSOLE_OUTPUT
-			const unsigned int outputEveryNth = 1000;
-			unsigned int outputIndicator = outputEveryNth;
-			#endif
+#ifdef OBJL_CONSOLE_OUTPUT
+		const unsigned int outputEveryNth = 1000;
+		unsigned int outputIndicator = outputEveryNth;
+#endif
 
-			std::string curline;
-			while (std::getline(file, curline))
+		std::string curline;
+		while (std::getline(file, curline))
+		{
+#ifdef OBJL_CONSOLE_OUTPUT
+			if ((outputIndicator = ((outputIndicator + 1) % outputEveryNth)) == 1)
 			{
-				#ifdef OBJL_CONSOLE_OUTPUT
-				if ((outputIndicator = ((outputIndicator + 1) % outputEveryNth)) == 1)
+				if (!meshname.empty())
 				{
-					if (!meshname.empty())
-					{
-						std::cout
-							<< "\r- " << meshname
-							<< "\t| vertices > " << Positions.size()
-							<< "\t| texcoords > " << TCoords.size()
-							<< "\t| normals > " << Normals.size()
-							<< "\t| triangles > " << (Vertices.size() / 3)
-							<< (!MeshMatNames.empty() ? "\t| material: " + MeshMatNames.back() : "");
-					}
+					std::cout
+					<< "\r- " << meshname
+					<< "\t| vertices > " << Positions.size()
+					<< "\t| texcoords > " << TCoords.size()
+					<< "\t| normals > " << Normals.size()
+					<< "\t| triangles > " << (Vertices.size() / 3)
+					<< (!MeshMatNames.empty() ? "\t| material: " + MeshMatNames.back() : "");
 				}
-				#endif
+			}
+#endif
 
 				// Generate a Mesh Object or Prepare for an object to be created
-				if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g" || curline[0] == 'g')
+			if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g" || curline[0] == 'g')
+			{
+				if (!listening)
 				{
-					if (!listening)
-					{
-						listening = true;
+					listening = true;
 
-						if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g")
-						{
-							meshname = algorithm::tail(curline);
-						}
-						else
-						{
-							meshname = "unnamed";
-						}
+					if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g")
+					{
+						meshname = algorithm::tail(curline);
 					}
 					else
 					{
+						meshname = "unnamed";
+					}
+				}
+				else
+				{
 						// Generate the mesh to put into the array
 
-						if (!Indices.empty() && !Vertices.empty())
-						{
+					if (!Indices.empty() && !Vertices.empty())
+					{
 							// Create Mesh
-							tempMesh = GMeshComponent(Vertices, Indices);
-							tempMesh.setComponentName(meshname);
+							GMeshComponent aMesh;//(Vertices, Indices);
+							aMesh.setComponentName(meshname);
 
 							// Insert Mesh
-							LoadedMeshes.push_back(tempMesh);
+							LoadedMeshes.push_back(aMesh);
 
 							// Cleanup
 							Vertices.clear();
@@ -281,7 +282,7 @@
 				if (algorithm::firstToken(curline) == "vt")
 				{
 					std::vector<std::string> stex;
-                    glm::vec2 vtex;
+					glm::vec2 vtex;
 					algorithm::split(algorithm::tail(curline), stex, " ");
 
 					vtex.x = std::stof(stex[0]);
@@ -340,75 +341,75 @@
 					if (!Indices.empty() && !Vertices.empty())
 					{
 						// Create Mesh
-						tempMesh = GMeshComponent(Vertices, Indices);
-						tempMesh.setComponentName(meshname);
+						GMeshComponent aNewMesh;// (Vertices, Indices);
+						aNewMesh.setComponentName(meshname);
 						int i = 2;
 						while(1) {
-							tempMesh.setComponentName(meshname + "_" + std::to_string(i));
+							aNewMesh.setComponentName(meshname + "_" + std::to_string(i));
 
 							for (auto &m : LoadedMeshes)
-								if (m.getComponentName() == tempMesh.getComponentName())
+								if (m.getComponentName() == aNewMesh.getComponentName())
 									continue;
-							break;
-						}
+								break;
+							}
 
 						// Insert Mesh
-						LoadedMeshes.push_back(tempMesh);
+							LoadedMeshes.push_back(aNewMesh);
 
 						// Cleanup
-						Vertices.clear();
-						Indices.clear();
-					}
+							Vertices.clear();
+							Indices.clear();
+						}
 
 					#ifdef OBJL_CONSOLE_OUTPUT
-					outputIndicator = 0;
+						outputIndicator = 0;
 					#endif
-				}
+					}
 				// Load Materials
-				if (algorithm::firstToken(curline) == "mtllib")
-				{
+					if (algorithm::firstToken(curline) == "mtllib")
+					{
 					// Generate LoadedMaterial
 
 					// Generate a path to the material file
-					std::vector<std::string> temp;
-					algorithm::split(Path, temp, "/");
+						std::vector<std::string> temp;
+						algorithm::split(Path, temp, "/");
 
-					std::string pathtomat = "";
+						std::string pathtomat = "";
 
-					if (temp.size() != 1)
-					{
-						for (int i = 0; i < temp.size() - 1; i++)
+						if (temp.size() != 1)
 						{
-							pathtomat += temp[i] + "/";
+							for (int i = 0; i < temp.size() - 1; i++)
+							{
+								pathtomat += temp[i] + "/";
+							}
 						}
-					}
 
 
-					pathtomat += algorithm::tail(curline);
+						pathtomat += algorithm::tail(curline);
 
 					#ifdef OBJL_CONSOLE_OUTPUT
-					std::cout << std::endl << "- find materials in: " << pathtomat << std::endl;
+						std::cout << std::endl << "- find materials in: " << pathtomat << std::endl;
 					#endif
 
 					// Load Materials
-					LoadMaterials(pathtomat);
+						LoadMaterials(pathtomat);
+					}
 				}
-			}
 
 			#ifdef OBJL_CONSOLE_OUTPUT
-			std::cout << std::endl;
+				std::cout << std::endl;
 			#endif
 
 			// Deal with last mesh
 
-			if (!Indices.empty() && !Vertices.empty())
-			{
+				if (!Indices.empty() && !Vertices.empty())
+				{
 				// Create Mesh
-				tempMesh = GMeshComponent(Vertices, Indices);
-				tempMesh.setComponentName(meshname);
+				GMeshComponent lastMesh;//(Vertices, Indices);
+				lastMesh.setComponentName(meshname);
 
 				// Insert Mesh
-				LoadedMeshes.push_back(tempMesh);
+				LoadedMeshes.push_back(lastMesh);
 			}
 
 			file.close();
@@ -452,110 +453,100 @@
 		std::vector<GMaterialComponent> LoadedMaterials;
 
 	private:
-		// Generate vertices from a list of positions, 
-		//	tcoords, normals and a face line
+	// Generate vertices from a list of positions, 
+	//	tcoords, normals and a face line
 		void GenVerticesFromRawOBJ(std::vector<GVertexComponent>& oVerts,
 			const std::vector<glm::vec3>& iPositions,
-            const std::vector<glm::vec2>& iTCoords,
+			const std::vector<glm::vec2>& iTCoords,
 			const std::vector<glm::vec3>& iNormals,
 			std::string icurline)
 		{
 			std::vector<std::string> sface, svert;
 			GVertexComponent vVert;
 			algorithm::split(algorithm::tail(icurline), sface, " ");
-
 			bool noNormal = false;
-
 			// For every given vertex do this
 			for (int i = 0; i < int(sface.size()); i++)
 			{
 				// See What type the vertex is.
 				int vtype;
-
 				algorithm::split(sface[i], svert, "/");
-
 				// Check for just position - v1
 				if (svert.size() == 1)
 				{
-					// Only position
+				// Only position
 					vtype = 1;
 				}
-
 				// Check for position & texture - v1/vt1
 				if (svert.size() == 2)
 				{
-					// Position & Texture
+				// Position & Texture
 					vtype = 2;
 				}
-
 				// Check for Position, Texture and Normal - v1/vt1/vn1
 				// or if Position and Normal - v1//vn1
 				if (svert.size() == 3)
 				{
 					if (svert[1] != "")
 					{
-						// Position, Texture, and Normal
+					// Position, Texture, and Normal
 						vtype = 4;
 					}
 					else
 					{
-						// Position & Normal
+					// Position & Normal
 						vtype = 3;
 					}
 				}
-
 				// Calculate and store the vertex
 				switch (vtype)
 				{
-				case 1: // P
-				{
-					vVert.position = algorithm::getElement(iPositions, svert[0]);
-                    vVert.tcoords = glm::vec2(0.0f, 0.0f);
-					noNormal = true;
-					oVerts.push_back(vVert);
-					break;
-				}
-				case 2: // P/T
-				{
-					vVert.position = algorithm::getElement(iPositions, svert[0]);
-					vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
-					noNormal = true;
-					oVerts.push_back(vVert);
-					break;
-				}
-				case 3: // P//N
-				{
-					vVert.position = algorithm::getElement(iPositions, svert[0]);
-                    vVert.tcoords = glm::vec2(0.0f, 0.0f);
-					vVert.normal = algorithm::getElement(iNormals, svert[2]);
-					oVerts.push_back(vVert);
-					break;
-				}
-				case 4: // P/T/N
-				{
-					vVert.position = algorithm::getElement(iPositions, svert[0]);
-					vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
-					vVert.normal = algorithm::getElement(iNormals, svert[2]);
-					oVerts.push_back(vVert);
-					break;
-				}
-				default:
-				{
-					break;
-				}
+					case 1: // P
+					{
+						vVert.position = algorithm::getElement(iPositions, svert[0]);
+						vVert.tcoords = glm::vec2(0.0f, 0.0f);
+						noNormal = true;
+						oVerts.push_back(vVert);
+						break;
+					}
+					case 2: // P/T
+					{
+						vVert.position = algorithm::getElement(iPositions, svert[0]);
+						vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
+						noNormal = true;
+						oVerts.push_back(vVert);
+						break;
+					}
+					case 3: // P//N
+					{
+						vVert.position = algorithm::getElement(iPositions, svert[0]);
+						vVert.tcoords = glm::vec2(0.0f, 0.0f);
+						vVert.normal = algorithm::getElement(iNormals, svert[2]);
+						oVerts.push_back(vVert);
+						break;
+					}
+					case 4: // P/T/N
+					{
+						vVert.position = algorithm::getElement(iPositions, svert[0]);
+						vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
+						vVert.normal = algorithm::getElement(iNormals, svert[2]);
+						oVerts.push_back(vVert);
+						break;
+					}
+					default:
+					{
+						break;
+					}
 				}
 			}
-
 			// take care of missing normals
-			// these may not be truly acurate but it is the 
-			// best they get for not compiling a mesh with normals	
+		// these may not be truly acurate but it is the 
+		// best they get for not compiling a mesh with normals	
 			if (noNormal)
 			{
 				glm::vec3 A = oVerts[0].position - oVerts[1].position;
 				glm::vec3 B = oVerts[2].position - oVerts[1].position;
-
-                glm::vec3 normal = glm::cross(A, B);
-
+				glm::vec3 normal = glm::cross(A, B);
 				for (int i = 0; i < int(oVerts.size()); i++)
 				{
 					oVerts[i].normal = normal;
@@ -563,7 +554,7 @@
 			}
 		}
 
-		// Triangulate a list of vertices into a face by printing
+	// Triangulate a list of vertices into a face by printing
 		//	inducies corresponding with triangles within it
 		void VertexTriangluation(std::vector<unsigned int>& oIndices,
 			const std::vector<GVertexComponent>& iVerts)
@@ -676,12 +667,12 @@
 					}
 
 					// If Vertex is not an interior vertex
-                    glm::vec3 a_origin = glm::normalize(pPrev.position - pCur.position);
-                    glm::vec3 b_origin = glm::normalize(pNext.position - pCur.position);
-                    float cosab = glm::dot(a_origin,b_origin);
-                    
-                    
-                    float angle = glm::acos(cosab) * (180 / 3.14159265359);
+					glm::vec3 a_origin = glm::normalize(pPrev.position - pCur.position);
+					glm::vec3 b_origin = glm::normalize(pNext.position - pCur.position);
+					float cosab = glm::dot(a_origin,b_origin);
+
+
+					float angle = glm::acos(cosab) * (180 / 3.14159265359);
 					if (angle <= 0 && angle >= 180)
 						continue;
 
@@ -899,5 +890,3 @@
 				return true;
 		}
 	};
-
-
