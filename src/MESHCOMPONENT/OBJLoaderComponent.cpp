@@ -1,15 +1,9 @@
+
+
+
 // OBJ_Loader.h - A Single Header OBJ Model Loader
-
-#pragma once
-
-// Vector - STD Vector/Array Library
-#include <vector>
-
-// String - STD String Library
-#include <string>
-
-// fStream - STD File I/O Library
-#include <fstream>
+#include <GLM/glm.hpp>
+#include <MESHCOMPONENT/MeshComponent.h>
 
 // Print progress to console while loading (large models)
 #define OBJL_CONSOLE_OUTPUT
@@ -18,226 +12,6 @@
 //
 // Description: The namespace that holds eveyrthing that
 //	is needed and used for the OBJ Model Loader
-namespace objl
-{
-	// Structure: Vector2
-	//
-	// Description: A 2D Vector that Holds Positional Data
-	struct Vector2
-	{
-		// Default Constructor
-		Vector2()
-		{
-			X = 0.0f;
-			Y = 0.0f;
-		}
-		// Variable Set Constructor
-		Vector2(float X_, float Y_)
-		{
-			X = X_;
-			Y = Y_;
-		}
-		// Bool Equals Operator Overload
-		bool operator==(const Vector2& other) const
-		{
-			return (this->X == other.X && this->Y == other.Y);
-		}
-		// Bool Not Equals Operator Overload
-		bool operator!=(const Vector2& other) const
-		{
-			return !(this->X == other.X && this->Y == other.Y);
-		}
-		// Addition Operator Overload
-		Vector2 operator+(const Vector2& right) const
-		{
-			return Vector2(this->X + right.X, this->Y + right.Y);
-		}
-		// Subtraction Operator Overload
-		Vector2 operator-(const Vector2& right) const
-		{
-			return Vector2(this->X - right.X, this->Y - right.Y);
-		}
-		// Float Multiplication Operator Overload
-		Vector2 operator*(const float& other) const
-		{
-			return Vector2(this->X *other, this->Y * other);
-		}
-
-		// Positional Variables
-		float X;
-		float Y;
-	};
-
-	// Structure: Vector3
-	//
-	// Description: A 3D Vector that Holds Positional Data
-	struct Vector3
-	{
-		// Default Constructor
-		Vector3()
-		{
-			X = 0.0f;
-			Y = 0.0f;
-			Z = 0.0f;
-		}
-		// Variable Set Constructor
-		Vector3(float X_, float Y_, float Z_)
-		{
-			X = X_;
-			Y = Y_;
-			Z = Z_;
-		}
-		// Bool Equals Operator Overload
-		bool operator==(const Vector3& other) const
-		{
-			return (this->X == other.X && this->Y == other.Y && this->Z == other.Z);
-		}
-		// Bool Not Equals Operator Overload
-		bool operator!=(const Vector3& other) const
-		{
-			return !(this->X == other.X && this->Y == other.Y && this->Z == other.Z);
-		}
-		// Addition Operator Overload
-		Vector3 operator+(const Vector3& right) const
-		{
-			return Vector3(this->X + right.X, this->Y + right.Y, this->Z + right.Z);
-		}
-		// Subtraction Operator Overload
-		Vector3 operator-(const Vector3& right) const
-		{
-			return Vector3(this->X - right.X, this->Y - right.Y, this->Z - right.Z);
-		}
-		// Float Multiplication Operator Overload
-		Vector3 operator*(const float& other) const
-		{
-			return Vector3(this->X *other, this->Y * other, this->Z - other);
-		}
-
-		// Positional Variables
-		float X;
-		float Y;
-		float Z;
-	};
-
-	// Structure: Vertex
-	//
-	// Description: Model Vertex object that holds
-	//	a Position, Normal, and Texture Coordinate
-	struct Vertex
-	{
-		// Position Vector
-		Vector3 Position;
-
-		// Normal Vector
-		Vector3 Normal;
-
-		// Texture Coordinate Vector
-		Vector2 TextureCoordinate;
-	};
-
-	struct Material
-	{
-		Material()
-		{
-			name;
-			Ns = 0.0f;
-			Ni = 0.0f;
-			d = 0.0f;
-			illum = 0;
-		}
-
-		// Material Name
-		std::string name;
-		// Ambient Color
-		Vector3 Ka;
-		// Diffuse Color
-		Vector3 Kd;
-		// Specular Color
-		Vector3 Ks;
-		// Specular Exponent
-		float Ns;
-		// Optical Density
-		float Ni;
-		// Dissolve
-		float d;
-		// Illumination
-		int illum;
-		// Ambient Texture Map
-		std::string map_Ka;
-		// Diffuse Texture Map
-		std::string map_Kd;
-		// Specular Texture Map
-		std::string map_Ks;
-		// Specular Hightlight Map
-		std::string map_Ns;
-		// Alpha Texture Map
-		std::string map_d;
-		// Bump Map
-		std::string map_bump;
-	};
-
-	// Structure: Mesh
-	//
-	// Description: A Simple Mesh Object that holds
-	//	a name, a vertex list, and an index list
-	struct Mesh
-	{
-		// Default Constructor
-		Mesh()
-		{
-
-		}
-		// Variable Set Constructor
-		Mesh(std::vector<Vertex>& _Vertices, std::vector<unsigned int>& _Indices)
-		{
-			Vertices = _Vertices;
-			Indices = _Indices;
-		}
-		// Mesh Name
-		std::string MeshName;
-		// Vertex List
-		std::vector<Vertex> Vertices;
-		// Index List
-		std::vector<unsigned int> Indices;
-
-		// Material
-		Material MeshMaterial;
-	};
-
-	// Namespace: Math
-	//
-	// Description: The namespace that holds all of the math
-	//	functions need for OBJL
-	namespace math
-	{
-		// Vector3 Cross Product
-		Vector3 CrossV3(const Vector3 a, const Vector3 b)
-		{
-			return Vector3(a.Y * b.Z - a.Z * b.Y,
-				a.Z * b.X - a.X * b.Z,
-				a.X * b.Y - a.Y * b.X);
-		}
-
-		// Vector3 Magnitude Calculation
-		float MagnitudeV3(const Vector3 in)
-		{
-			return (sqrtf(powf(in.X, 2) + powf(in.Y, 2) + powf(in.Z, 2)));
-		}
-
-		// Vector3 DotProduct
-		float DotV3(const Vector3 a, const Vector3 b)
-		{
-			return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
-		}
-
-		// Angle between 2 Vector3 Objects
-		float AngleBetweenV3(const Vector3 a, const Vector3 b)
-		{
-			float angle = DotV3(a, b);
-			angle /= (MagnitudeV3(a) * MagnitudeV3(b));
-			return angle = acosf(angle);
-		}
-	}
 
 	// Namespace: Algorithm
 	//
@@ -245,27 +19,22 @@ namespace objl
 	// Algorithms needed for OBJL
 	namespace algorithm
 	{
-		// Vector3 Multiplication Opertor Overload
-		Vector3 operator*(const float& left, const Vector3& right)
-		{
-			return Vector3(right.X * left, right.Y * left, right.Z * left);
-		}
 
-		// Check to see if a Vector3 Point is within a 3 Vector3 Triangle
-		bool inTriangle(Vector3 point, Vector3 tri1, Vector3 tri2, Vector3 tri3)
+		// Check to see if a glm::vec3 Point is within a 3 glm::vec3 Triangle
+		bool inTriangle(glm::vec3 point, glm::vec3 tri1, glm::vec3 tri2, glm::vec3 tri3)
 		{
 			// Starting vars
-			Vector3 u = tri2 - tri1;
-			Vector3 v = tri3 - tri1;
-			Vector3 w = point - tri1;
-			Vector3 n = math::CrossV3(u, v);
+			glm::vec3 u = tri2 - tri1;
+			glm::vec3 v = tri3 - tri1;
+			glm::vec3 w = point - tri1;
+            glm::vec3 n = glm::cross(u, v);
 
-			float y = (math::DotV3(math::CrossV3(u, w), n) / math::DotV3(n, n));
-			float b = (math::DotV3(math::CrossV3(u, w), n) / math::DotV3(n, n));
+            float y = (glm::dot(glm::cross(u, w), n) / glm::dot(n, n));
+            float b = (glm::dot(glm::cross(u, w), n) / glm::dot(n, n));
 			float a = 1 - y - b;
 
 			// Projected point
-			Vector3  p = (a * tri1) + (b * tri2) + (y * tri3);
+			// glm::vec3  p = (a * tri1) + (b * tri2) + (y * tri3);
 
 			if (a >= 0 && a <= 1
 				&& b >= 0 && b <= 1
@@ -404,19 +173,19 @@ namespace objl
 			LoadedVertices.clear();
 			LoadedIndices.clear();
 
-			std::vector<Vector3> Positions;
-			std::vector<Vector2> TCoords;
-			std::vector<Vector3> Normals;
+			std::vector<glm::vec3> Positions;
+            std::vector<glm::vec2> TCoords;
+			std::vector<glm::vec3> Normals;
 
-			std::vector<Vertex> Vertices;
-			std::vector<unsigned int> Indices;
+			std::vector<GVertexComponent> Vertices;
+			std::vector<int> Indices;
 
 			std::vector<std::string> MeshMatNames;
 
 			bool listening = false;
 			std::string meshname;
 
-			Mesh tempMesh;
+			GMeshComponent tempMesh;
 
 			#ifdef OBJL_CONSOLE_OUTPUT
 			const unsigned int outputEveryNth = 1000;
@@ -465,8 +234,8 @@ namespace objl
 						if (!Indices.empty() && !Vertices.empty())
 						{
 							// Create Mesh
-							tempMesh = Mesh(Vertices, Indices);
-							tempMesh.MeshName = meshname;
+							tempMesh = GMeshComponent(Vertices, Indices);
+							tempMesh.setComponentName(meshname);
 
 							// Insert Mesh
 							LoadedMeshes.push_back(tempMesh);
@@ -499,12 +268,12 @@ namespace objl
 				if (algorithm::firstToken(curline) == "v")
 				{
 					std::vector<std::string> spos;
-					Vector3 vpos;
+					glm::vec3 vpos;
 					algorithm::split(algorithm::tail(curline), spos, " ");
 
-					vpos.X = std::stof(spos[0]);
-					vpos.Y = std::stof(spos[1]);
-					vpos.Z = std::stof(spos[2]);
+					vpos.x = std::stof(spos[0]);
+					vpos.y = std::stof(spos[1]);
+					vpos.z = std::stof(spos[2]);
 
 					Positions.push_back(vpos);
 				}
@@ -512,11 +281,11 @@ namespace objl
 				if (algorithm::firstToken(curline) == "vt")
 				{
 					std::vector<std::string> stex;
-					Vector2 vtex;
+                    glm::vec2 vtex;
 					algorithm::split(algorithm::tail(curline), stex, " ");
 
-					vtex.X = std::stof(stex[0]);
-					vtex.Y = std::stof(stex[1]);
+					vtex.x = std::stof(stex[0]);
+					vtex.y = std::stof(stex[1]);
 
 					TCoords.push_back(vtex);
 				}
@@ -524,12 +293,12 @@ namespace objl
 				if (algorithm::firstToken(curline) == "vn")
 				{
 					std::vector<std::string> snor;
-					Vector3 vnor;
+					glm::vec3 vnor;
 					algorithm::split(algorithm::tail(curline), snor, " ");
 
-					vnor.X = std::stof(snor[0]);
-					vnor.Y = std::stof(snor[1]);
-					vnor.Z = std::stof(snor[2]);
+					vnor.x = std::stof(snor[0]);
+					vnor.y = std::stof(snor[1]);
+					vnor.z = std::stof(snor[2]);
 
 					Normals.push_back(vnor);
 				}
@@ -537,14 +306,13 @@ namespace objl
 				if (algorithm::firstToken(curline) == "f")
 				{
 					// Generate the vertices
-					std::vector<Vertex> vVerts;
+					std::vector<GVertexComponent> vVerts;
 					GenVerticesFromRawOBJ(vVerts, Positions, TCoords, Normals, curline);
 
 					// Add Vertices
 					for (int i = 0; i < int(vVerts.size()); i++)
 					{
 						Vertices.push_back(vVerts[i]);
-
 						LoadedVertices.push_back(vVerts[i]);
 					}
 
@@ -572,14 +340,14 @@ namespace objl
 					if (!Indices.empty() && !Vertices.empty())
 					{
 						// Create Mesh
-						tempMesh = Mesh(Vertices, Indices);
-						tempMesh.MeshName = meshname;
+						tempMesh = GMeshComponent(Vertices, Indices);
+						tempMesh.setComponentName(meshname);
 						int i = 2;
 						while(1) {
-							tempMesh.MeshName = meshname + "_" + std::to_string(i);
+							tempMesh.setComponentName(meshname + "_" + std::to_string(i));
 
 							for (auto &m : LoadedMeshes)
-								if (m.MeshName == tempMesh.MeshName)
+								if (m.getComponentName() == tempMesh.getComponentName())
 									continue;
 							break;
 						}
@@ -636,8 +404,8 @@ namespace objl
 			if (!Indices.empty() && !Vertices.empty())
 			{
 				// Create Mesh
-				tempMesh = Mesh(Vertices, Indices);
-				tempMesh.MeshName = meshname;
+				tempMesh = GMeshComponent(Vertices, Indices);
+				tempMesh.setComponentName(meshname);
 
 				// Insert Mesh
 				LoadedMeshes.push_back(tempMesh);
@@ -654,9 +422,9 @@ namespace objl
 				// when found copy material variables into mesh material
 				for (int j = 0; j < LoadedMaterials.size(); j++)
 				{
-					if (LoadedMaterials[j].name == matname)
+					if (LoadedMaterials[j].getComponentName() == matname)
 					{
-						LoadedMeshes[i].MeshMaterial = LoadedMaterials[j];
+						LoadedMeshes[i].m_material = LoadedMaterials[j];
 						break;
 					}
 				}
@@ -673,25 +441,27 @@ namespace objl
 		}
 
 		// Loaded Mesh Objects
-		std::vector<Mesh> LoadedMeshes;
+		std::vector<GMeshComponent> LoadedMeshes;
 		// Loaded Vertex Objects
-		std::vector<Vertex> LoadedVertices;
+		std::vector<GVertexComponent> LoadedVertices;
+		std::vector<glm::vec3> LoadedNormals;
+		std::vector<glm::vec2> LoadedTextureCoordinates;
 		// Loaded Index Positions
 		std::vector<unsigned int> LoadedIndices;
 		// Loaded Material Objects
-		std::vector<Material> LoadedMaterials;
+		std::vector<GMaterialComponent> LoadedMaterials;
 
 	private:
 		// Generate vertices from a list of positions, 
 		//	tcoords, normals and a face line
-		void GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts,
-			const std::vector<Vector3>& iPositions,
-			const std::vector<Vector2>& iTCoords,
-			const std::vector<Vector3>& iNormals,
+		void GenVerticesFromRawOBJ(std::vector<GVertexComponent>& oVerts,
+			const std::vector<glm::vec3>& iPositions,
+            const std::vector<glm::vec2>& iTCoords,
+			const std::vector<glm::vec3>& iNormals,
 			std::string icurline)
 		{
 			std::vector<std::string> sface, svert;
-			Vertex vVert;
+			GVertexComponent vVert;
 			algorithm::split(algorithm::tail(icurline), sface, " ");
 
 			bool noNormal = false;
@@ -739,33 +509,33 @@ namespace objl
 				{
 				case 1: // P
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-					vVert.TextureCoordinate = Vector2(0, 0);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+                    vVert.tcoords = glm::vec2(0.0f, 0.0f);
 					noNormal = true;
 					oVerts.push_back(vVert);
 					break;
 				}
 				case 2: // P/T
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-					vVert.TextureCoordinate = algorithm::getElement(iTCoords, svert[1]);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+					vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
 					noNormal = true;
 					oVerts.push_back(vVert);
 					break;
 				}
 				case 3: // P//N
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-					vVert.TextureCoordinate = Vector2(0, 0);
-					vVert.Normal = algorithm::getElement(iNormals, svert[2]);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+                    vVert.tcoords = glm::vec2(0.0f, 0.0f);
+					vVert.normal = algorithm::getElement(iNormals, svert[2]);
 					oVerts.push_back(vVert);
 					break;
 				}
 				case 4: // P/T/N
 				{
-					vVert.Position = algorithm::getElement(iPositions, svert[0]);
-					vVert.TextureCoordinate = algorithm::getElement(iTCoords, svert[1]);
-					vVert.Normal = algorithm::getElement(iNormals, svert[2]);
+					vVert.position = algorithm::getElement(iPositions, svert[0]);
+					vVert.tcoords = algorithm::getElement(iTCoords, svert[1]);
+					vVert.normal = algorithm::getElement(iNormals, svert[2]);
 					oVerts.push_back(vVert);
 					break;
 				}
@@ -781,14 +551,14 @@ namespace objl
 			// best they get for not compiling a mesh with normals	
 			if (noNormal)
 			{
-				Vector3 A = oVerts[0].Position - oVerts[1].Position;
-				Vector3 B = oVerts[2].Position - oVerts[1].Position;
+				glm::vec3 A = oVerts[0].position - oVerts[1].position;
+				glm::vec3 B = oVerts[2].position - oVerts[1].position;
 
-				Vector3 normal = math::CrossV3(A, B);
+                glm::vec3 normal = glm::cross(A, B);
 
 				for (int i = 0; i < int(oVerts.size()); i++)
 				{
-					oVerts[i].Normal = normal;
+					oVerts[i].normal = normal;
 				}
 			}
 		}
@@ -796,7 +566,7 @@ namespace objl
 		// Triangulate a list of vertices into a face by printing
 		//	inducies corresponding with triangles within it
 		void VertexTriangluation(std::vector<unsigned int>& oIndices,
-			const std::vector<Vertex>& iVerts)
+			const std::vector<GVertexComponent>& iVerts)
 		{
 			// If there are 2 or less verts,
 			// no triangle can be created,
@@ -815,7 +585,7 @@ namespace objl
 			}
 
 			// Create a list of vertices
-			std::vector<Vertex> tVerts = iVerts;
+			std::vector<GVertexComponent> tVerts = iVerts;
 
 			while (true)
 			{
@@ -823,7 +593,7 @@ namespace objl
 				for (int i = 0; i < int(tVerts.size()); i++)
 				{
 					// pPrev = the previous vertex in the list
-					Vertex pPrev;
+					GVertexComponent pPrev;
 					if (i == 0)
 					{
 						pPrev = tVerts[tVerts.size() - 1];
@@ -834,10 +604,10 @@ namespace objl
 					}
 
 					// pCur = the current vertex;
-					Vertex pCur = tVerts[i];
+					GVertexComponent pCur = tVerts[i];
 
 					// pNext = the next vertex in the list
-					Vertex pNext;
+					GVertexComponent pNext;
 					if (i == tVerts.size() - 1)
 					{
 						pNext = tVerts[0];
@@ -854,11 +624,11 @@ namespace objl
 						// Create a triangle from pCur, pPrev, pNext
 						for (int j = 0; j < int(tVerts.size()); j++)
 						{
-							if (iVerts[j].Position == pCur.Position)
+							if (iVerts[j].position == pCur.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pPrev.Position)
+							if (iVerts[j].position == pPrev.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pNext.Position)
+							if (iVerts[j].position == pNext.position)
 								oIndices.push_back(j);
 						}
 
@@ -870,22 +640,22 @@ namespace objl
 						// Create a triangle from pCur, pPrev, pNext
 						for (int j = 0; j < int(iVerts.size()); j++)
 						{
-							if (iVerts[j].Position == pCur.Position)
+							if (iVerts[j].position == pCur.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pPrev.Position)
+							if (iVerts[j].position == pPrev.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pNext.Position)
+							if (iVerts[j].position == pNext.position)
 								oIndices.push_back(j);
 						}
 
-						Vector3 tempVec;
+						glm::vec3 tempVec;
 						for (int j = 0; j < int(tVerts.size()); j++)
 						{
-							if (tVerts[j].Position != pCur.Position
-								&& tVerts[j].Position != pPrev.Position
-								&& tVerts[j].Position != pNext.Position)
+							if (tVerts[j].position != pCur.position
+								&& tVerts[j].position != pPrev.position
+								&& tVerts[j].position != pNext.position)
 							{
-								tempVec = tVerts[j].Position;
+								tempVec = tVerts[j].position;
 								break;
 							}
 						}
@@ -893,11 +663,11 @@ namespace objl
 						// Create a triangle from pCur, pPrev, pNext
 						for (int j = 0; j < int(iVerts.size()); j++)
 						{
-							if (iVerts[j].Position == pPrev.Position)
+							if (iVerts[j].position == pPrev.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == pNext.Position)
+							if (iVerts[j].position == pNext.position)
 								oIndices.push_back(j);
-							if (iVerts[j].Position == tempVec)
+							if (iVerts[j].position == tempVec)
 								oIndices.push_back(j);
 						}
 
@@ -906,7 +676,12 @@ namespace objl
 					}
 
 					// If Vertex is not an interior vertex
-					float angle = math::AngleBetweenV3(pPrev.Position - pCur.Position, pNext.Position - pCur.Position) * (180 / 3.14159265359);
+                    glm::vec3 a_origin = glm::normalize(pPrev.position - pCur.position);
+                    glm::vec3 b_origin = glm::normalize(pNext.position - pCur.position);
+                    float cosab = glm::dot(a_origin,b_origin);
+                    
+                    
+                    float angle = glm::acos(cosab) * (180 / 3.14159265359);
 					if (angle <= 0 && angle >= 180)
 						continue;
 
@@ -914,10 +689,10 @@ namespace objl
 					bool inTri = false;
 					for (int j = 0; j < int(iVerts.size()); j++)
 					{
-						if (algorithm::inTriangle(iVerts[j].Position, pPrev.Position, pCur.Position, pNext.Position)
-							&& iVerts[j].Position != pPrev.Position
-							&& iVerts[j].Position != pCur.Position
-							&& iVerts[j].Position != pNext.Position)
+						if (algorithm::inTriangle(iVerts[j].position, pPrev.position, pCur.position, pNext.position)
+							&& iVerts[j].position != pPrev.position
+							&& iVerts[j].position != pCur.position
+							&& iVerts[j].position != pNext.position)
 						{
 							inTri = true;
 							break;
@@ -929,18 +704,18 @@ namespace objl
 					// Create a triangle from pCur, pPrev, pNext
 					for (int j = 0; j < int(iVerts.size()); j++)
 					{
-						if (iVerts[j].Position == pCur.Position)
+						if (iVerts[j].position == pCur.position)
 							oIndices.push_back(j);
-						if (iVerts[j].Position == pPrev.Position)
+						if (iVerts[j].position == pPrev.position)
 							oIndices.push_back(j);
-						if (iVerts[j].Position == pNext.Position)
+						if (iVerts[j].position == pNext.position)
 							oIndices.push_back(j);
 					}
 
 					// Delete pCur from the list
 					for (int j = 0; j < int(tVerts.size()); j++)
 					{
-						if (tVerts[j].Position == pCur.Position)
+						if (tVerts[j].position == pCur.position)
 						{
 							tVerts.erase(tVerts.begin() + j);
 							break;
@@ -975,7 +750,7 @@ namespace objl
 			if (!file.is_open())
 				return false;
 
-			Material tempMaterial;
+			GMaterialComponent tempMaterial;
 
 			bool listening = false;
 
@@ -992,11 +767,11 @@ namespace objl
 
 						if (curline.size() > 7)
 						{
-							tempMaterial.name = algorithm::tail(curline);
+							tempMaterial.setComponentName(algorithm::tail(curline));
 						}
 						else
 						{
-							tempMaterial.name = "none";
+							tempMaterial.setComponentName("none");
 						}
 					}
 					else
@@ -1007,15 +782,15 @@ namespace objl
 						LoadedMaterials.push_back(tempMaterial);
 
 						// Clear Loaded Material
-						tempMaterial = Material();
+						tempMaterial = GMaterialComponent();
 
 						if (curline.size() > 7)
 						{
-							tempMaterial.name = algorithm::tail(curline);
+							tempMaterial.setComponentName(algorithm::tail(curline));
 						}
 						else
 						{
-							tempMaterial.name = "none";
+							tempMaterial.setComponentName("none");
 						}
 					}
 				}
@@ -1028,9 +803,9 @@ namespace objl
 					if (temp.size() != 3)
 						continue;
 
-					tempMaterial.Ka.X = std::stof(temp[0]);
-					tempMaterial.Ka.Y = std::stof(temp[1]);
-					tempMaterial.Ka.Z = std::stof(temp[2]);
+					tempMaterial.m_ka_ambientColor.x = std::stof(temp[0]);
+					tempMaterial.m_ka_ambientColor.y = std::stof(temp[1]);
+					tempMaterial.m_ka_ambientColor.z = std::stof(temp[2]);
 				}
 				// Diffuse Color
 				if (algorithm::firstToken(curline) == "Kd")
@@ -1041,9 +816,9 @@ namespace objl
 					if (temp.size() != 3)
 						continue;
 
-					tempMaterial.Kd.X = std::stof(temp[0]);
-					tempMaterial.Kd.Y = std::stof(temp[1]);
-					tempMaterial.Kd.Z = std::stof(temp[2]);
+					tempMaterial.m_kd_diffuseColor.x = std::stof(temp[0]);
+					tempMaterial.m_kd_diffuseColor.y = std::stof(temp[1]);
+					tempMaterial.m_kd_diffuseColor.z = std::stof(temp[2]);
 				}
 				// Specular Color
 				if (algorithm::firstToken(curline) == "Ks")
@@ -1054,59 +829,59 @@ namespace objl
 					if (temp.size() != 3)
 						continue;
 
-					tempMaterial.Ks.X = std::stof(temp[0]);
-					tempMaterial.Ks.Y = std::stof(temp[1]);
-					tempMaterial.Ks.Z = std::stof(temp[2]);
+					tempMaterial.m_ks_specularColor.x = std::stof(temp[0]);
+					tempMaterial.m_ks_specularColor.y = std::stof(temp[1]);
+					tempMaterial.m_ks_specularColor.z = std::stof(temp[2]);
 				}
 				// Specular Exponent
 				if (algorithm::firstToken(curline) == "Ns")
 				{
-					tempMaterial.Ns = std::stof(algorithm::tail(curline));
+					tempMaterial.m_ns_specularExponent = std::stof(algorithm::tail(curline));
 				}
 				// Optical Density
 				if (algorithm::firstToken(curline) == "Ni")
 				{
-					tempMaterial.Ni = std::stof(algorithm::tail(curline));
+					tempMaterial.m_ni_opticalDensity = std::stof(algorithm::tail(curline));
 				}
 				// Dissolve
 				if (algorithm::firstToken(curline) == "d")
 				{
-					tempMaterial.d = std::stof(algorithm::tail(curline));
+					tempMaterial.m_d_dissolve = std::stof(algorithm::tail(curline));
 				}
 				// Illumination
 				if (algorithm::firstToken(curline) == "illum")
 				{
-					tempMaterial.illum = std::stoi(algorithm::tail(curline));
+					tempMaterial.m_illumination = std::stoi(algorithm::tail(curline));
 				}
 				// Ambient Texture Map
 				if (algorithm::firstToken(curline) == "map_Ka")
 				{
-					tempMaterial.map_Ka = algorithm::tail(curline);
+					tempMaterial.m_ka_ambientTexture = algorithm::tail(curline);
 				}
 				// Diffuse Texture Map
 				if (algorithm::firstToken(curline) == "map_Kd")
 				{
-					tempMaterial.map_Kd = algorithm::tail(curline);
+					tempMaterial.m_kd_diffuseTexture = algorithm::tail(curline);
 				}
 				// Specular Texture Map
 				if (algorithm::firstToken(curline) == "map_Ks")
 				{
-					tempMaterial.map_Ks = algorithm::tail(curline);
+					tempMaterial.m_ks_specularTexture = algorithm::tail(curline);
 				}
 				// Specular Hightlight Map
 				if (algorithm::firstToken(curline) == "map_Ns")
 				{
-					tempMaterial.map_Ns = algorithm::tail(curline);
+					tempMaterial.m_ns_specularHighLightTexture = algorithm::tail(curline);
 				}
 				// Alpha Texture Map
 				if (algorithm::firstToken(curline) == "map_d")
 				{
-					tempMaterial.map_d = algorithm::tail(curline);
+					tempMaterial.m_d_alphaTexture = algorithm::tail(curline);
 				}
 				// Bump Map
 				if (algorithm::firstToken(curline) == "map_Bump" || algorithm::firstToken(curline) == "map_bump")
 				{
-					tempMaterial.map_bump = algorithm::tail(curline);
+					tempMaterial.m_bumpMapTexture = algorithm::tail(curline);
 				}
 			}
 
@@ -1124,4 +899,5 @@ namespace objl
 				return true;
 		}
 	};
-}
+
+
