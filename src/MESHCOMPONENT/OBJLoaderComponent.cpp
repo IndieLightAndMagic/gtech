@@ -5,6 +5,9 @@
 #include <GLM/glm.hpp>
 #include <MESHCOMPONENT/MeshComponent.h>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 // Print progress to console while loading (large models)
 #define OBJL_CONSOLE_OUTPUT
 
@@ -17,6 +20,7 @@
 	//
 	// Description: The namespace that holds all of the
 	// Algorithms needed for OBJL
+using namespace std;
 namespace algorithm
 {
 
@@ -141,11 +145,83 @@ namespace algorithm
 
 class Loader
 {
+	std::string m_directory;
+	std::string m_path;
+	aiScene 	*m_pScene;
 public:
 		// Default Constructor
 	Loader()
 	{
 
+	}
+	Loader(string & path):
+		m_path(path),
+		m_directory(path.substr(0, path.find_last_of('/')));
+	{
+		
+		Assimp::Importer importer;
+		m_pScene = importer.ReadFile(m_path, aiProcess_Triangulate);
+
+		if (!m_pScene || m_pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_pScene->mRootNode)
+		{
+			std::cout << "OBJLoaderComponent @" << std::hex << m_pScene << " [Assimp error reading file : " << m_path << "] " << importer.GetErrorString() << std::endl; 
+			return;
+		}
+		processNode();
+
+	}
+	void ProcessNode(aiScene * pScene){
+
+		auto pRootNode = m_pScene->mRootNode;
+		for ( auto index = 0; index < pRootNode -> mNumMeshes; ++index )
+		{
+			auto pMesh = m_pScene -> mMeshes[ pRootNode   ]
+		}
+	}
+	void ProcessMesh(aiMesh * pMesh){
+
+		std::vector<GVertexComponent>	vertices;
+		std::vector<unsigned int>		indices;
+		std::vector<GTextureComponent>	textures;
+
+		auto nVerticesCount = pMesh -> mNumVertices;
+
+		for (auto index = 0; index < nVerticesCount; ++index)
+		{
+			GVertexComponent vertex; 
+			
+			vertex.position = glm::vec3(pMesh->mVertices[index].x,	pMesh->mVertices[index].y,	pMesh->mVertices[index].z);
+			vertex.normal 	= glm::vec3(pMesh->mNormals[index].x, 	pMesh->nNormals[index].y,	pMesh->mVertices[index].z);
+
+			if (pMesh -> mTextureCoords[0])
+			{
+				vertex.tcoords = glm::vec2(pMesh->mTextureCoords[0][index].x, pMesh->mTextureCoords[0][index].y)
+			}
+			else 
+			{
+				vertex.tcoords = glm::vec2(0.0f, 0.0f);
+			}
+			vertices.push_back(vertex);
+		}
+		
+		auto nFacesCount = pMesh -> mNumFaces;
+
+		for (auto index = 0; index < nFacesCount; ++index)
+		{
+			aiFace face = mesh -> mFaces[index];
+
+			auto nIndicesCount = face -> mNumIndices;
+
+			for (auto iindex = 0; iindex < nIndicesCount ; ++iindex)
+			{
+				indices.push_back(face.mIndices[i]);
+			}
+		}
+		if (mesh -> mMaterialIndex >= 0)
+		{
+			auto material = scene -> mMaterials[pMesh -> mMaterialIndex];
+			
+		}
 	}
 	~Loader()
 	{

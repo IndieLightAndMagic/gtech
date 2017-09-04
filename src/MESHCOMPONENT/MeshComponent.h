@@ -8,7 +8,11 @@
 
 using namespace G0;
 
-
+class GTextureComponent: public GItemComponent
+{
+public:
+	string type;
+};
 class GMaterialComponent: public GItemComponent
 {
 public:
@@ -49,9 +53,10 @@ public:
 
 
 	std::vector<GVertexComponent>	m_vertices;		
-	std::vector<int>				m_indices;
+	std::vector<unsigned int>		m_indices;
 	GMaterialComponent				m_material;
 
+	
 };
 
 
