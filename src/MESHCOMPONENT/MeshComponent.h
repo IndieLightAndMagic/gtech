@@ -12,9 +12,11 @@ using namespace G0;
 class GTextureComponent: public GItemComponent
 {
 public:
-	std::string type;
-	std::string path;
-	unsigned int textureId;
+	std::string m_type;
+	std::string m_path;
+	unsigned int m_textureId;
+	GTextureComponent(){}
+	GTextureComponent(const GTextureComponent & texture);
 };
 class GMaterialComponent: public GItemComponent
 {
@@ -37,17 +39,20 @@ public:
 	std::string m_d_alphaTexture;
 	std::string m_bumpMapTexture;
 
+	GMaterialComponent(const GMaterialComponent & other);
+
 };
 
 class GVertexComponent: public GItemComponent
 {
 
 public:
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec2 tcoords;
+	glm::vec3 m_position;
+	glm::vec3 m_normal;
+	glm::vec2 m_tcoords;
 
-
+	GVertexComponent(){}
+	GVertexComponent(const GVertexComponent&other);
 };
 
 class GMeshComponent: public GItemComponent
@@ -57,15 +62,22 @@ public:
 
 	std::vector<GVertexComponent>	m_vertices;		
 	std::vector<unsigned int>		m_indices;
-	GMaterialComponent				m_material;
+	std::vector<GMaterialComponent>	m_materials;
+	std::vector<GTextureComponent>	m_textures;
 	GMeshComponent();
-	GMeshComponent(std::vector <GVertexComponent> vertices, std::vector <unsigned int> indices, std::vector <GTextureComponent> textures);
+	
+	GMeshComponent(std::vector <GVertexComponent> vertices, std::vector <unsigned int> indices);
+
+	void AddMaterialComponent 		(const GMaterialComponent	& material);
+	void AddTextureComponent		(const GTextureComponent	& texture);
+	void AddTextureComponentList	(const std::vector<GTextureComponent>	& textures);
+	void AddMaterialComponentList	(const std::vector<GMaterialComponent>	& materials);
 };
 
 class GModelComponent: public GItemComponent 
 {
 public:
-	GMeshComponent m_cMesh;
+	std::vector<GMeshComponent> m_cMeshList;
 	GModelComponent();
 
 };

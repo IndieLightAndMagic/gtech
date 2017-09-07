@@ -5,6 +5,7 @@
 #include <OpenGL/gl.h>
 #endif /*__APPLE__*/
 
+#include <STB/stb_image.h>
 #include <GLM/glm.hpp>
 #include <MESHCOMPONENT/MeshComponent.h>
 
@@ -28,8 +29,8 @@ class ModelLoaderComponent
 {
 public:
     /*  ModelLoaderComponent Data */
-    vector<GTextureComponent> textures_loaded;  // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-    vector<GMeshComponent> meshes;
+    vector<GTextureComponent> m_textures_loaded;  // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    vector<GMeshComponent> m_meshes;
     string directory;
     bool m_bGammaCorrection;
 
@@ -39,8 +40,9 @@ public:
     {
         m_bGammaCorrection = gamma;
         loadModel(path);
-        GModelComponent r_model;
-        return r_model;
+
+        GModelComponent r_component;
+        r_component.m_cMeshList = m_meshes;
     }
 
     
@@ -63,6 +65,8 @@ private:
 
         // process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);
+
+
     }
 
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
@@ -74,7 +78,7 @@ private:
             // the node object only contains indices to index the actual objects in the scene. 
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            //meshes.push_back(processMesh(mesh, scene));
+            m_meshes.push_back(processMesh(mesh, scene));
         }
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for(unsigned int i = 0; i < node->mNumChildren; i++)
@@ -84,7 +88,7 @@ private:
 
     }
 
-    /*GMeshComponent*/void processMesh(aiMesh *mesh, const aiScene *scene)
+    GMeshComponent processMesh(aiMesh *mesh, const aiScene *scene)
     {
         // data to fill
         vector<GVertexComponent> vertices;
@@ -100,12 +104,12 @@ private:
             vector.x = mesh->mVertices[i].x;
             vector.y = mesh->mVertices[i].y;
             vector.z = mesh->mVertices[i].z;
-            vertex.position = vector;
+            vertex.m_position = vector;
             // normals
             vector.x = mesh->mNormals[i].x;
             vector.y = mesh->mNormals[i].y;
             vector.z = mesh->mNormals[i].z;
-            vertex.normal = vector;
+            vertex.m_normal = vector;
             // texture coordinates
             if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
             {
@@ -114,10 +118,10 @@ private:
                 // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
                 vec.x = mesh->mTextureCoords[0][i].x; 
                 vec.y = mesh->mTextureCoords[0][i].y;
-                vertex.tcoords = vec;
+                vertex.m_tcoords = vec;
             }
             else
-                vertex.tcoords = glm::vec2(0.0f, 0.0f);
+                vertex.m_tcoords = glm::vec2(0.0f, 0.0f);
             vertices.push_back(vertex);
             // tangent
             // vector.x = mesh->mTangents[i].x;
@@ -161,7 +165,9 @@ private:
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
         
         // return a mesh object created from the extracted mesh data
-        //return GMeshComponent(vertices, indices, textures);
+        GMeshComponent r_mesh(vertices, indices);
+        r_mesh.AddTextureComponentList(textures);
+        return r_mesh;
     }
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
@@ -175,11 +181,11 @@ private:
             mat->GetTexture(type, i, &str);
             // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
             bool skip = false;
-            for(unsigned int j = 0; j < textures_loaded.size(); j++)
+            for(unsigned int j = 0; j < m_textures_loaded.size(); j++)
             {
-                if(std::strcmp(textures_loaded[j].path.c_str(), str.C_Str()) == 0)
+                if(std::strcmp(m_textures_loaded[j].m_path.c_str(), str.C_Str()) == 0)
                 {
-                    textures.push_back(textures_loaded[j]);
+                    textures.push_back(m_textures_loaded[j]);
                     skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
                     break;
                 }
@@ -187,11 +193,11 @@ private:
             if(!skip)
             {   // if texture hasn't been loaded already, load it
                 GTextureComponent texture;
-                texture.textureId = TextureFromFile(str.C_Str(), this->directory);
-                texture.type = typeName;
-                texture.path = std::string(str.C_Str());
+                texture.m_textureId = TextureFromFile(str.C_Str(), this->directory);
+                texture.m_type = typeName;
+                texture.m_path = std::string(str.C_Str());
                 textures.push_back(texture);
-                textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+                m_textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
             }
         }
         return textures;
@@ -238,4 +244,3 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 
     return textureID;
 }
-#endif
