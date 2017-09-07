@@ -14,6 +14,7 @@ class GTextureComponent: public GItemComponent
 public:
 	std::string type;
 	std::string path;
+	unsigned int textureId;
 };
 class GMaterialComponent: public GItemComponent
 {
@@ -57,14 +58,15 @@ public:
 	std::vector<GVertexComponent>	m_vertices;		
 	std::vector<unsigned int>		m_indices;
 	GMaterialComponent				m_material;
-
-	
+	GMeshComponent();
+	GMeshComponent(std::vector <GVertexComponent> vertices, std::vector <unsigned int> indices, std::vector <GTextureComponent> textures);
 };
 
 class GModelComponent: public GItemComponent 
 {
 public:
 	GMeshComponent m_cMesh;
+	GModelComponent();
 
 };
 
