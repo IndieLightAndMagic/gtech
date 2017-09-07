@@ -1,6 +1,7 @@
 #ifndef __MESHCOMPONENT_H__
 #define __MESHCOMPONENT_H__
 
+#include <iostream>
 #include <vector>
 
 #include <GLM/glm.hpp>
@@ -11,7 +12,9 @@ using namespace G0;
 class GTextureComponent: public GItemComponent
 {
 public:
-	string type;
+	std::string type;
+	std::string path;
+	unsigned int textureId;
 };
 class GMaterialComponent: public GItemComponent
 {
@@ -55,12 +58,17 @@ public:
 	std::vector<GVertexComponent>	m_vertices;		
 	std::vector<unsigned int>		m_indices;
 	GMaterialComponent				m_material;
-
-	
+	GMeshComponent();
+	GMeshComponent(std::vector <GVertexComponent> vertices, std::vector <unsigned int> indices, std::vector <GTextureComponent> textures);
 };
 
+class GModelComponent: public GItemComponent 
+{
+public:
+	GMeshComponent m_cMesh;
+	GModelComponent();
 
-
+};
 
 
 #endif /*__MESHCOMPONENT_H__*/
