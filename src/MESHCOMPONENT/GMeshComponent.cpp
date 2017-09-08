@@ -1,4 +1,4 @@
-#include <MESHCOMPONENT/MeshComponent.h>
+#include <MESHCOMPONENT/GMeshComponent.h>
 
 GMeshComponent::GMeshComponent(const GMeshComponent & other)
 {
