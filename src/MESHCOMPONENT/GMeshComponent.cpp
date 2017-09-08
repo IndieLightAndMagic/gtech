@@ -1,6 +1,13 @@
 #include <MESHCOMPONENT/MeshComponent.h>
 
-GMeshComponent(std::vector <GVertexComponent> vertices, std::vector <unsigned int> indices)
+GMeshComponent::GMeshComponent(const GMeshComponent & other)
+{
+    m_vertices = other.m_vertices;     
+    m_indices = other.m_indices;
+    m_materials = other.m_materials;
+    m_textures = other.m_textures;
+}
+GMeshComponent::GMeshComponent(std::vector <GVertexComponent> vertices, std::vector <unsigned int> indices)
 {
     m_vertices  = vertices;
     m_indices   = indices; 
@@ -15,7 +22,6 @@ void GMeshComponent::AddTextureComponent(const GTextureComponent & texture)
 {
     m_textures.push_back(texture);
 }
-template<>
 void GMeshComponent::AddTextureComponentList(const std::vector<GTextureComponent> & textures)
 {
     m_textures = textures;

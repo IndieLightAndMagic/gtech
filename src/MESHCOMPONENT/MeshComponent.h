@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 #include <GENG/g.h>
 
 using namespace G0;
@@ -64,8 +64,9 @@ public:
 	std::vector<unsigned int>		m_indices;
 	std::vector<GMaterialComponent>	m_materials;
 	std::vector<GTextureComponent>	m_textures;
-	GMeshComponent();
 	
+	GMeshComponent();
+	GMeshComponent(const GMeshComponent & other);
 	GMeshComponent(std::vector <GVertexComponent> vertices, std::vector <unsigned int> indices);
 
 	void AddMaterialComponent 		(const GMaterialComponent	& material);
