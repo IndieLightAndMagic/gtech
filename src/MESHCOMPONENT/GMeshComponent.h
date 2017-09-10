@@ -79,7 +79,7 @@ class GModelComponent: public GItemComponent
 {
 public:
 	std::vector<GMeshComponent> m_cMeshList;
-	GModelComponent();
+	GModelComponent(){};
 
 };
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 #Project Name and Resources 
-set(TARGET_NAME objsample)
+set(TARGET_NAME objloadersample)
 
 
 project(${TARGET_NAME})
@@ -24,10 +24,12 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 get_filename_component(ROOT_DIR "../../.." ABSOLUTE)
 set(INCLUDE_DIR "${ROOT_DIR}/inc")
 set(LIB_DIR "${ROOT_DIR}/lib")
+set(RES_DIR "${ROOT_DIR}/samples/Resources")
 message(STATUS "SYSTEM NAME: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "ROOT_DIR: ${ROOT_DIR}")
 message(STATUS "INCLUDE_DIR: ${INCLUDE_DIR}")
 message(STATUS "LIB_DIR: ${LIB_DIR}")
+message(STATUS "RESOURCES_DIR: ${RES_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 message(STATUS "CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_GENERATOR: ${CMAKE_GENERATOR}")
@@ -41,25 +43,36 @@ endif()
 
 #C++11
 set(CPP11 "-std=c++11")
+#MACRO DEFINITIONS
+add_definitions(-DRES_DIR="${RES_DIR}")
 #HEADER FILES
 include_directories(${INCLUDE_DIR})
 #COMPILE FLAGS
 set(CMAKE_CXX_FLAGS "${CPP11}")
-
 #LIBRARY LINKS
-set(STANDARD_STATIC_LIBRARIES "iconv" "m")
-
+set(STANDARD_STATIC_LIBRARIES "iconv" "m" "z")
+set(G_STATIC_LIBRARIES  "G0" "IrrXML" "stb"  "Assimp" "MeshComponent")
 
 
 if (APPLE)
 	message(STATUS "Setting Apple Frameworks")
+	set(STATIC_FRAMEWORKS "OpenGL" "AudioToolbox" "CoreAudio" "Carbon" "ForceFeedback" "IOKit" "Cocoa" "CoreVideo")
 endif()
 
 foreach(STANDARD_STATIC_LIB ${STANDARD_STATIC_LIBRARIES})
 	target_link_libraries(${TARGET_NAME} "-l${STANDARD_STATIC_LIB}")
 endforeach(STANDARD_STATIC_LIB)
+foreach(G_STATIC_LIB ${G_STATIC_LIBRARIES})
+	target_link_libraries(${TARGET_NAME} "${LIB_DIR}/lib${G_STATIC_LIB}.a")
+	message(STATUS "${LIB_DIR}/lib${G_STATIC_LIB}.a")
+endforeach(G_STATIC_LIB)
+
 
 if (APPLE)
+foreach(FMWK ${STATIC_FRAMEWORKS})
+	target_link_libraries(${TARGET_NAME} "-framework ${FMWK}")
+	message(STATUS "Framework: ${FMWK}")
+endforeach(FMWK)
 message(STATUS "-----------------------------")
 endif()
 

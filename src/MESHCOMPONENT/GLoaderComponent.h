@@ -38,7 +38,7 @@ public:
     string directory;
     bool m_bGammaCorrection;
 
-	GModelComponent operator()(string const&path, bool gamma = false);
+	GModelComponent* operator()(string const&path, bool gamma = false);
 
 private:
 	void loadModel(string const &path);

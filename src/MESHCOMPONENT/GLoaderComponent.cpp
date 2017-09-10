@@ -5,13 +5,13 @@
 
     /*  Functions   */
     // constructor, expects a filepath to a 3D ModelLoaderComponent.
-GModelComponent GLoaderComponent::operator()(string const &path, bool gamma) 
+GModelComponent * GLoaderComponent::operator()(string const &path, bool gamma) 
 {
     m_bGammaCorrection = gamma;
     loadModel(path);
 
-    GModelComponent r_model;
-    r_model.m_cMeshList = m_meshes;
+    GModelComponent * r_model = new GModelComponent();
+    r_model->m_cMeshList = m_meshes;
     return r_model;
 }
 
