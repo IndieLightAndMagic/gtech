@@ -12,12 +12,25 @@ using namespace G0;
 class GTextureComponent: public GItemComponent
 {
 public:
+
+	struct
+	{
+		int width;
+		int height;
+		int nrComponents;
+		unsigned char * textureData;
+	}m_texture;
+
 	std::string m_type;
 	std::string m_path;
 	unsigned int m_textureId;
-	GTextureComponent(){}
+	GTextureComponent(const std::string fullPath);
 	GTextureComponent(const GTextureComponent & texture);
+
+
+
 };
+
 class GMaterialComponent: public GItemComponent
 {
 public:

@@ -1,4 +1,5 @@
 #include <MESHCOMPONENT/GMeshComponent.h>
+#include <cassert>
 
 GMeshComponent::GMeshComponent(const GMeshComponent & other)
 {
@@ -64,5 +65,24 @@ GMaterialComponent::GMaterialComponent(const GMaterialComponent & other)
     m_ns_specularHighLightTexture=other.m_ns_specularHighLightTexture;
     m_d_alphaTexture=other.m_d_alphaTexture;
     m_bumpMapTexture=other.m_bumpMapTexture;
+
+}
+GTextureComponent::GTextureComponent(const std::string & fullPath)
+{
+
+    m_texture.textureData = nullptr;
+    m_texture.width = 0;
+    m_texture.height = 0;
+    m_texture.nrComponents = 0;
+
+    m_textureId = 0;
+
+    m_texture.textureData = stbi_load(fullPath.c_str(), &m_texture.width, &m_texture.height, &m_texture.nrComponents, 0);
+    if (!m_texture.textureData)
+    {
+        assert(m_texture.textureData!=nullptr);
+    }
+    
+
 
 }
