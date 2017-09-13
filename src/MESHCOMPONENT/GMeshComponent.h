@@ -44,16 +44,18 @@ public:
 
 	int m_illumination;
 
+	std::map<std::string, GTextureComponent*> m_textureDictionary;
+	/*GTextureComponent * m_ka_ambientTexture;
+	GTextureComponent * m_kd_diffuseTexture;
+	GTextureComponent * m_ks_specularTexture;
+	GTextureComponent * m_ns_specularHighLightTexture;
+	GTextureComponent * m_d_alphaTexture;
+	GTextureComponent * m_bumpMapTexture;*/
 
-	std::string m_ka_ambientTexture;
-	std::string m_kd_diffuseTexture;
-	std::string m_ks_specularTexture;
-	std::string m_ns_specularHighLightTexture;
-	std::string m_d_alphaTexture;
-	std::string m_bumpMapTexture;
+
 
 	GMaterialComponent(const GMaterialComponent & other);
-
+	void setTextureType(std::string & textureTypeString, GTextureComponent * pTextureComponent);
 };
 
 class GVertexComponent: public GItemComponent
