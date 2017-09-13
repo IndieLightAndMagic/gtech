@@ -5,11 +5,13 @@
 
     /*  Functions   */
     // constructor, expects a filepath to a 3D ModelLoaderComponent.
-GModelComponent * GLoaderComponent::operator()(string const &path, bool gamma) 
+GModelComponent * GLoaderComponent::operator()(string const &directory, string const &path, bool gamma) 
 {
+    m_directory = directory;
+    m_path = path;
     m_bGammaCorrection = gamma;
-    loadModel(path);
-
+    loadModel(directory + path);
+    
     GModelComponent * r_model = new GModelComponent();
     r_model->m_cMeshList = m_meshes;
     return r_model;
@@ -29,9 +31,7 @@ void GLoaderComponent::loadModel(string const &path)
         cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
         return;
     }
-    // retrieve the directory path of the filepath
-    directory = path.substr(0, path.find_last_of('/'));
-
+    
     // process ASSIMP's root node recursively
     processNode(scene->mRootNode, scene);
 
@@ -146,13 +146,16 @@ vector<GTextureComponent> GLoaderComponent::loadMaterialTextures(aiMaterial *mat
     vector<GTextureComponent> textures;
     for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
-        aiString str;
-        mat->GetTexture(type, i, &str);
+        aiString sstr;
+        std::string str;
+        mat->GetTexture(type, i, &sstr);
+        str = std::string(sstr.C_Str());
+        
         // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
         bool skip = false;
         for(unsigned int j = 0; j < m_textures_loaded.size(); j++)
         {
-            if(std::strcmp(m_textures_loaded[j].m_path.c_str(), str.C_Str()) == 0)
+            if(std::strcmp(m_textures_loaded[j].m_path.c_str(), str.c_str()) == 0)
             {
                 textures.push_back(m_textures_loaded[j]);
                 skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
@@ -161,11 +164,10 @@ vector<GTextureComponent> GLoaderComponent::loadMaterialTextures(aiMaterial *mat
         }
         if(!skip)
         {   // if texture hasn't been loaded already, load it
-    GTextureComponent texture;
-    texture.m_textureId = TextureFromFile(str.C_Str(), this->directory);
-    texture.m_type = typeName;
-    texture.m_path = std::string(str.C_Str());
-    textures.push_back(texture);
+            GTextureComponent texture(m_directory + str);
+            texture.m_type = typeName;
+            texture.m_path = std::string(m_directory + str);
+            textures.push_back(texture);
             m_textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
         }
     }
@@ -174,7 +176,7 @@ vector<GTextureComponent> GLoaderComponent::loadMaterialTextures(aiMaterial *mat
 
 
 
-unsigned int TextureFromFile(const char *path, const string &directory, bool gamma)
+/*unsigned int TextureFromFile(const char *path, const string &directory, bool gamma)
 {
     string filename = string(path);
     filename = directory + '/' + filename;
@@ -212,4 +214,4 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     }
 
     return textureID;
-}
+}*/

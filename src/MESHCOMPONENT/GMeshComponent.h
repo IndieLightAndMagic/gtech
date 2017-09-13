@@ -24,7 +24,7 @@ public:
 	std::string m_type;
 	std::string m_path;
 	unsigned int m_textureId;
-	GTextureComponent(const std::string fullPath);
+	GTextureComponent(const std::string & fullPath);
 	GTextureComponent(const GTextureComponent & texture);
 
 

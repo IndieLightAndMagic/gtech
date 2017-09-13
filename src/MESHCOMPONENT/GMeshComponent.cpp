@@ -1,3 +1,4 @@
+#include <STB/stb_image.h>
 #include <MESHCOMPONENT/GMeshComponent.h>
 #include <cassert>
 

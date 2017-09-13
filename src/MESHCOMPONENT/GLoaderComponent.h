@@ -11,7 +11,6 @@
 #include <OpenGL/gl.h>
 #endif /*__APPLE__*/
 
-#include <STB/stb_image.h>
 #include <GLM/glm.hpp>
 #include <MESHCOMPONENT/GMeshComponent.h>
 
@@ -35,10 +34,11 @@ public:
     /*  ModelLoaderComponent Data */
     vector<GTextureComponent> m_textures_loaded;  // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
     vector<GMeshComponent> m_meshes;
-    string directory;
+    string m_directory;
+    string m_path;
     bool m_bGammaCorrection;
 
-	GModelComponent* operator()(string const&path, bool gamma = false);
+	GModelComponent* operator()(string const& directory, string const&path, bool gamma = false);
 
 private:
 	void loadModel(string const &path);
@@ -47,7 +47,7 @@ private:
 	vector<GTextureComponent>loadMaterialTextures(aiMaterial*mat, aiTextureType type, string typeName);
 
 };
-unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
+//unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
 
 #endif  /*_GLOADERCOMPONENT_H_*/

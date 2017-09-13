@@ -2,7 +2,7 @@
 
 
 // OBJ_Loader.h - A Single Header OBJ Model Loader
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 #include <MESHCOMPONENT/GMeshComponent.h>
 #include <MESHCOMPONENT/GLoaderComponent.h>
 
@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 {
 	// Initialize Loader
 	GLoaderComponent	Loader;
-	GModelComponent*	pModel = Loader(std::string(RES_DIR)+std::string("/arwing.obj"));
+    GModelComponent*    pModel = Loader(std::string(RES_DIR), argc > 1 ? std::string(argv[1]):std::string("arwing.obj"));
 
 	// Check to see if it loaded
 
