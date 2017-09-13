@@ -44,13 +44,13 @@ public:
 
 	int m_illumination;
 
-	std::map<std::string, GTextureComponent*> m_textureDictionary;
-	/*GTextureComponent * m_ka_ambientTexture;
+	static std::map<std::string texture_name, GTextureComponent*> m_textureDictionary;
+	GTextureComponent * m_ka_ambientTexture;
 	GTextureComponent * m_kd_diffuseTexture;
 	GTextureComponent * m_ks_specularTexture;
 	GTextureComponent * m_ns_specularHighLightTexture;
 	GTextureComponent * m_d_alphaTexture;
-	GTextureComponent * m_bumpMapTexture;*/
+	GTextureComponent * m_bumpMapTexture;
 
 
 
