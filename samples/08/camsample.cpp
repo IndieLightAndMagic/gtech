@@ -9,11 +9,17 @@
 #include <OpenGL/gl.h>
 #endif /*__APPLE__*/
 
+#include <SHDR/shdr.h>
 #include <CAM/Cam.h>
 #include <SDL2/SDL_joystick.h>
 #include <UTIL/Util.h>
-#include <PRMTV/Primitive.h>
 #include <iostream>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
+
 
 	
 /*
@@ -39,7 +45,6 @@ const int JOYSTICK_DEAD_ZONE = 8000;
  *	4. Syntax style: we'll use Qt Syntax Style. 
  *	5. We will implement a simple random ID generator.  
  */ 
-extern CubeData * pCubeArchetype;
 class MainScene{
 
 	/*!
@@ -58,7 +63,7 @@ class MainScene{
 	/**
 	 * A pointer to an array of cubes. 
 	 */
-	CubeObj * m_cube;
+	//CubeObj * m_cube;
 
 	/* A pointer to Camera */
 	Cam * m_pCam;
@@ -119,7 +124,8 @@ public:
 		m_bRun = true;
 
 		/* [2] Load on Memory the archetype */
-		CubeData::CreateCubeData();
+		Assimp::Importer importer;
+		const aiScene * pScene = importer.ReadFile(std::string(RES_DIR)+"foxy.blend", aiProcess_Triangulate);
 
 		/* First Pass Flag */
 		m_bFirstPass = true;
@@ -127,7 +133,7 @@ public:
 	~MainScene(){
 
 			// [2] Remove Archetype from memory 
-			CubeData::FinishCubeData();
+			//CubeData::FinishCubeData();
 
 			// [1] Finish Controller Hardware
 			finishControllerHw();
@@ -202,8 +208,9 @@ public:
 	}
 	void sceneInit(){
 
+		
 		/* [3] Create 10 cubes */
-		m_cube = new CubeObj[10];
+		//m_cube = new CubeObj[10];
 
 		/* [4] Create a Camera */
 		glm::vec3 cameraPos = glm::vec3(0.0f,0.0f,4.0f);
@@ -241,12 +248,12 @@ public:
 
 		
 		// Set cubes positions and rotations. Set Program Shader as the renderer for the cubes.
-		for (auto index = 0; index < 10; ++index)
+		/*for (auto index = 0; index < 10; ++index)
 		{	
 			m_cube[ index ].SetPosition(m_cubePositions[ index ]);
 			m_cube[ index ].SetRotation(glm::vec3(1.0f, 0.3f, 0.5f), 20.0f*index);
 			m_cube[ index ].AssignProgramRenderer(&m_shaderProgram);
-		}
+		}*/
 		
 		// Logic of the game.
 		m_gameLogic.activeIndex = 0;
@@ -269,7 +276,7 @@ public:
 			} else {
 				m_shaderProgram.setVec3("diffuseColor", m_cubeColors[idx]);
 			}
-			m_cube[idx].Draw();
+			//m_cube[idx].Draw();
 		}
 		SDL_GL_SwapWindow(pWindow);
 		
@@ -279,7 +286,7 @@ public:
 		//[4] Cam
 		delete m_pCam;
 		//[3] Cubes
-		delete [] m_cube;
+		//delete [] m_cube;
 		std::cout << "Finished Scene" << std::endl;
 	}
 	int mainLoop(){

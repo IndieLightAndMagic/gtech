@@ -25,10 +25,12 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 get_filename_component(ROOT_DIR "../.." ABSOLUTE)
 set(INCLUDE_DIR "${ROOT_DIR}/inc")
 set(LIB_DIR "${ROOT_DIR}/lib")
+set(RES_DIR "${ROOT_DIR}/samples/Resources/")
 message(STATUS "SYSTEM NAME: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "ROOT_DIR: ${ROOT_DIR}")
 message(STATUS "INCLUDE_DIR: ${INCLUDE_DIR}")
 message(STATUS "LIB_DIR: ${LIB_DIR}")
+message(STATUS "RESOURCES_DIR: ${RES_DIR}")
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 message(STATUS "CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_GENERATOR: ${CMAKE_GENERATOR}")
@@ -42,6 +44,8 @@ endif()
 
 #C++11
 set(CPP11 "-std=c++11")
+#MACRO DEFINITIONS
+add_definitions(-DRES_DIR="${RES_DIR}")
 #HEADER FILES
 include_directories(${INCLUDE_DIR})
 #COMPILE FLAGS
@@ -49,7 +53,7 @@ set(CMAKE_CXX_FLAGS "${CPP11}")
 
 #LIBRARY LINKS
 set(STANDARD_STATIC_LIBRARIES "iconv" "m")
-set(G_STATIC_LIBRARIES "SDL2" "shdr" "Primitive" "Util" "Cam")
+set(G_STATIC_LIBRARIES "SDL2" "shdr" "Primitive" "Util" "Cam" "assimp" "IrrXML")
 set(STATIC_LIBRARIES ${STANDARD_STATIC_LIBRARIES} ${G_STATIC_LIBRARIES})
 
 
