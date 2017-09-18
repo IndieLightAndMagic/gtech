@@ -1,27 +1,45 @@
 #ifndef __MESHCOMPONENT_H__
 #define __MESHCOMPONENT_H__
 
-#include <GENG/g.h>
+
+#include <vector>
+#include <string>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
+#include <GENG/g.h>
 
-
-using namespace Assimp;
-
-class GNode : GItemComponent
+class GComponentNode : public G::GItemComponent
 {
-	GNode(const GImporter & importer, std::string nodename);
 public:
-	static GNode * CreateGNode(const GImporter & importer, std::string nodename);
+	void addChild(GComponentNode * pNode);
+protected:
+	std::vector<GComponentNode*> m_child;
+
 };
 
-class GImporter: public Importer 
+
+class GLoaderComponent : public G::GItemComponent
 {
-	std::string m_directory;
+	std::string m_resource;
+	GLoaderComponent(Assimp::Importer & importer);
 public:
-	const aiScene * Load(std::string file);
-	const aiNode * GetNode(std::string name);
+	~GLoaderComponent();
+
+private:
+	Assimp::Importer m_importer;
+	const aiScene*m_pScene;
+
+public:
+	static GLoaderComponent * openLoaderUsingResource(const std::string & resource);
+	static void closeLoaderComponent();
+
+	GComponentNode * createComponentNodeUsingResource(const std::string & resource);
+
+
 };
+
 
 #endif /*__MESHCOMPONENT_H__*/

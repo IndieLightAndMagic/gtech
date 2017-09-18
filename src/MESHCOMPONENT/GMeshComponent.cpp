@@ -3,33 +3,44 @@
 
 #include <MESHCOMPONENT/GMeshComponent.h>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 
 
-const aiScene * GImporter::Load(std::string filepath)
+
+
+
+void GComponentNode::addChild(GComponentNode * pNode)
 {
-    // read file via ASSIMP
-    const aiScene* pScene = ReadFile(filepath, aiProcess_Triangulate | aiProcess_FlipUVs );
-    
-    // check for errors
-    if(!pScene || pScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !pScene->mRootNode) // if is Not Zero
-    {
-        std::cout << "ERROR::ASSIMP:: " << GetErrorString() << std::endl;
-        return nullptr;
-    }
-    
-    // retrieve the directory path of the filepath
-    m_directory = filepath.substr(0, filepath.find_last_of('/'));
-
-    return pScene;
+    m_child.push_back(pNode);
 }
 
-const aiNode * GImporter::GetNode(std::string nodename)
+
+
+GLoaderComponent::GLoaderComponent(Assimp::Importer&importer):
+        m_importer(importer)
 {
-    aiNode * pRootNode = 
+
+    m_pScene = m_importer.GetScene();
+
+}
+GLoaderComponent::~GLoaderComponent()
+{
+    
+}
+
+GLoaderComponent*GLoaderComponent::openLoaderUsingResource(const std::string & resource)
+{
+    Assimp::Importer importer;
+    const aiScene * pScene = importer.ReadFile(resource, aiProcess_Triangulate);
+
+    if (!pScene) return nullptr;
+    return new GLoaderComponent(importer); 
+
 
 }
 
+GComponentNode * GLoaderComponent::createComponentNodeUsingResource(const std::string & resource)
+{
+    std::cout << "try to use " << resource << " to create component " << std::endl;
+    return new GComponentNode();
+}

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <map>
 
-namespace G0
+namespace G
 {
 
 
@@ -26,12 +26,12 @@ public:
 	}
 	GIDBasedComponent(GIDBasedComponent & other){
 		m_iId = ++m_iIdCounter;
-		std::cout << "[+]GIDBasedComponent @" << m_iId << " copied from @" << other.GetComponentId() << std::endl; 
+		std::cout << "[+]GIDBasedComponent @" << m_iId << " copied from @" << other.getComponentId() << std::endl; 
 	}
 	virtual ~GIDBasedComponent()=0;
 
 
-	int GetComponentId()
+	int getComponentId()
 	{
 		return m_iId;
 	}
@@ -55,16 +55,17 @@ class GItemComponent: public GIDBasedComponent
 {
 	
 
-	GItemComponent * m_pParent;
+	GItemComponent * m_pParent = 0;
 	std::map<int, GItemComponent*> m_pmComponents;
 
 
 public:
 
-	int addComponents(GItemComponent * pChild);
-	void removeComponentById(int id);
-	GItemComponent * getParent();
-	GItemComponent * getComponentById(int id);
+	void 	addComponent(GItemComponent * pChild);
+	void	removeComponentById(int id);
+	
+	GItemComponent*	getParent();
+	GItemComponent*	getComponentById(int id);
 
 
 	virtual void init();
@@ -78,8 +79,8 @@ class GGameObjectComponent: public GItemComponent
 {
 
 public:
-	virtual void update(float dt);
-	virtual void draw();
+	virtual void update(float dt)=0;
+	virtual void draw()=0;
 };
 }
 #endif

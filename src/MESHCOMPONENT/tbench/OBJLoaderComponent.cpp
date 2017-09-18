@@ -1,13 +1,19 @@
-
-
+#include <iostream>
+#include <string>
 
 // OBJ_Loader.h - A Single Header OBJ Model Loader
-#include <glm/glm.hpp>
 #include <MESHCOMPONENT/GMeshComponent.h>
-#include <MESHCOMPONENT/GLoaderComponent.h>
 
+int main (int argc, char ** argv)
+{
+	GLoaderComponent * loader = GLoaderComponent::openLoaderUsingResource(std::string(RES_DIR)+"foxy.blend");
+    
+	
+    
+	return 0;
+}
 
-int main(int argc, char* argv[])
+/*int main(int argc, char* argv[])
 {
 	// Initialize Loader
 	GLoaderComponent	Loader;
@@ -94,3 +100,4 @@ int main(int argc, char* argv[])
 	// Exit the program
 	return 0;
 }
+*/
