@@ -10,9 +10,14 @@
 #include <assimp/postprocess.h>
 
 #include <GENG/g.h>
+#include <glm/glm.hpp>
+
+
+
 
 class GComponentNode : public G::GItemComponent
 {
+	std::string m_nodeName;
 public:
 	void addChild(GComponentNode * pNode);
 protected:
@@ -20,6 +25,26 @@ protected:
 
 };
 
+class GMaterialComponent : public GComponentNode
+{
+private:
+	aiMaterial * m_pMaterial;
+}
+class GMeshComponent : public GComponentNode
+{
+
+private:
+	aiMesh * m_pMesh;
+};
+class GSceneComponent : public GComponentNode
+{
+
+	GSceneComponent(const GSceneComponent & other);
+	GMeshComponent * m_pMeshes;
+private:
+	aiScene * m_pScene;
+
+};
 
 class GLoaderComponent : public G::GItemComponent
 {
