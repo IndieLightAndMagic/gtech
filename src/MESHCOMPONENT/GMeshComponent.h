@@ -13,56 +13,40 @@
 #include <glm/glm.hpp>
 
 
-
-
-class GComponentNode : public G::GItemComponent
+/* A Model Component is something you download */
+class GLoaderComponent;
+class GModelComponent : public G::GItemComponent
 {
-	std::string m_nodeName;
 public:
-	void addChild(GComponentNode * pNode);
+	const std::string m_nodeName;
+
 protected:
-	std::vector<GComponentNode*> m_child;
+	static GModelComponent * createComponentNodeUsingResource(
+		GLoaderComponent*pLoader, 
+		std::string nodeName,
+		bool bRecursive = false,
+		unsigned int uiDepth = 0);	
 
 };
 
-class GMaterialComponent : public GComponentNode
-{
-private:
-	aiMaterial * m_pMaterial;
-}
-class GMeshComponent : public GComponentNode
-{
-
-private:
-	aiMesh * m_pMesh;
-};
-class GSceneComponent : public GComponentNode
-{
-
-	GSceneComponent(const GSceneComponent & other);
-	GMeshComponent * m_pMeshes;
-private:
-	aiScene * m_pScene;
-
-};
 
 class GLoaderComponent : public G::GItemComponent
 {
 	std::string m_resource;
-	GLoaderComponent(Assimp::Importer & importer);
+	GLoaderComponent(Assimp::Importer & importer, const aiScene * pScene, std::string resource);
 public:
 	~GLoaderComponent();
 
 private:
-	Assimp::Importer m_importer;
-	const aiScene*m_pScene;
-
+	Assimp::Importer 	m_importer;
+	const aiScene*		m_pScene;
 public:
 	static GLoaderComponent * openLoaderUsingResource(const std::string & resource);
 	static void closeLoaderComponent();
 
-	GComponentNode * createComponentNodeUsingResource(const std::string & resource);
-
+	GModelComponent * createComponentNodeUsingResource(const std::string & resource);
+	void printLoaderGeneralInfo();
+	void listLoaderNodes();
 
 };
 
