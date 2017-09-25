@@ -17,10 +17,10 @@
 class GLoaderComponent;
 class GModelComponent : public G::GItemComponent
 {
-public:
+protected:
 	const std::string m_nodeName;
 
-protected:
+public:
 	static GModelComponent * createComponentNodeUsingResource(
 		GLoaderComponent*pLoader, 
 		std::string nodeName,

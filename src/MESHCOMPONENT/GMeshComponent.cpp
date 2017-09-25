@@ -9,23 +9,23 @@
 using namespace Assimp;
 
 
-GLoaderComponent::GLoaderComponent(Importer&importer, const aiScene * pScene, std::string resource):
+GAssimpLoaderComponent::GAssimpLoaderComponent(Importer&importer, const aiScene * pScene, std::string resource):
         m_importer(importer)
     ,   m_pScene(pScene)
     ,   m_resource(resource)
     {
     }
 
-GLoaderComponent*GLoaderComponent::openLoaderUsingResource(const std::string & resource)
+GAssimpLoaderComponent*GAssimpLoaderComponent::openLoaderUsingResource(const std::string & resource)
 {
     Importer importer;
     const aiScene * pScene = importer.ReadFile(resource, aiProcess_Triangulate);
 
     if (!pScene) return nullptr;
-    return new GLoaderComponent(importer, pScene,resource); 
+    return new GAssimpLoaderComponent(importer, pScene,resource); 
 
 }
-void GLoaderComponent::printLoaderGeneralInfo()
+void GAssimpLoaderComponent::printLoaderGeneralInfo()
 {
     std::cout << "Resource Name: " << m_resource << std::endl << std::endl;
     std::cout << "mNumAnimations: " << m_pScene -> mNumAnimations << std::endl;
@@ -36,7 +36,7 @@ void GLoaderComponent::printLoaderGeneralInfo()
     std::cout << "mNumTextures: " << m_pScene -> mNumTextures << std::endl;
 }
 
-void GLoaderComponent::listLoaderNodes()
+void GAssimpLoaderComponent::listLoaderNodes()
 {   
     class tabPrinter{
         public:
@@ -78,7 +78,7 @@ void GLoaderComponent::listLoaderNodes()
 }
 
 GModelComponent * GModelComponent::createComponentNodeUsingResource(
-    GLoaderComponent * pLoader, 
+    GAssimpLoaderComponent * pLoader, 
     std::string nodeName,
     bool bRecursive,
     unsigned int uiDepth)
