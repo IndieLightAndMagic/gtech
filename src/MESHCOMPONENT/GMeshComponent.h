@@ -14,7 +14,7 @@
 
 
 /* A Model Component is something you download */
-class GLoaderComponent;
+class GAssimpLoaderComponent;
 class GModelComponent : public G::GItemComponent
 {
 protected:
@@ -30,18 +30,18 @@ public:
 };
 
 
-class GLoaderComponent : public G::GItemComponent
+class GAssimpLoaderComponent : public G::GItemComponent
 {
 	std::string m_resource;
-	GLoaderComponent(Assimp::Importer & importer, const aiScene * pScene, std::string resource);
+	GAssimpLoaderComponent(Assimp::Importer & importer, const aiScene * pScene, std::string resource);
 public:
-	~GLoaderComponent();
+	~GAssimpLoaderComponent();
 
 private:
 	Assimp::Importer 	m_importer;
 	const aiScene*		m_pScene;
 public:
-	static GLoaderComponent * openLoaderUsingResource(const std::string & resource);
+	static GAssimpLoaderComponent * openLoaderUsingResource(const std::string & resource);
 	static void closeLoaderComponent();
 
 	GModelComponent * createComponentNodeUsingResource(const std::string & resource);
