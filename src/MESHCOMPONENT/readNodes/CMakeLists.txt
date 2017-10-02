@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 #Project Name and Resources 
-set(TARGET_NAME objloadersample)
+set(TARGET_NAME readNodes)
 
 
 project(${TARGET_NAME})
