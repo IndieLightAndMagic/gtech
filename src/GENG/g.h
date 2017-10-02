@@ -28,7 +28,7 @@ public:
 		m_iId = ++m_iIdCounter;
 		std::cout << "[+]GIDBasedComponent @" << m_iId << " copied from @" << other.getComponentId() << std::endl; 
 	}
-	virtual ~GIDBasedComponent()=0;
+	virtual ~GIDBasedComponent();
 
 
 	int getComponentId()
@@ -57,7 +57,7 @@ public:
 
 
 	virtual void init();
-	virtual ~GItemComponent()=0;
+	virtual ~GItemComponent(){};
 
 
 

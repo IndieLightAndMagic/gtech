@@ -26,7 +26,7 @@ public:
 		std::string nodeName,
 		bool bRecursive = false,
 		unsigned int uiDepth = 0);	
-	~GModelComponent(){};
+	virtual ~GModelComponent(){};
 };
 
 
@@ -35,7 +35,7 @@ class GAssimpLoaderComponent : public G::GItemComponent
 	std::string m_resource;
 	GAssimpLoaderComponent(Assimp::Importer & importer, const aiScene * pScene, std::string resource);
 public:
-	~GAssimpLoaderComponent(){};
+	virtual ~GAssimpLoaderComponent(){};
 
 private:
 	Assimp::Importer 	m_importer;
