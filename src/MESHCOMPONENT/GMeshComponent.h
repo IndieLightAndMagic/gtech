@@ -22,11 +22,11 @@ protected:
 
 public:
 	static GModelComponent * createComponentNodeUsingResource(
-		GLoaderComponent*pLoader, 
+		GAssimpLoaderComponent*pLoader, 
 		std::string nodeName,
 		bool bRecursive = false,
 		unsigned int uiDepth = 0);	
-
+	~GModelComponent(){};
 };
 
 
@@ -35,19 +35,17 @@ class GAssimpLoaderComponent : public G::GItemComponent
 	std::string m_resource;
 	GAssimpLoaderComponent(Assimp::Importer & importer, const aiScene * pScene, std::string resource);
 public:
-	~GAssimpLoaderComponent();
+	~GAssimpLoaderComponent(){};
 
 private:
 	Assimp::Importer 	m_importer;
 	const aiScene*		m_pScene;
 public:
 	static GAssimpLoaderComponent * openLoaderUsingResource(const std::string & resource);
-	static void closeLoaderComponent();
+	void closeLoaderComponent();
 
-	GModelComponent * createComponentNodeUsingResource(const std::string & resource);
 	void printLoaderGeneralInfo();
 	void listLoaderNodes();
-
 };
 
 

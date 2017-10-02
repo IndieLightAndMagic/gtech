@@ -13,25 +13,25 @@ GItemComponent * GItemComponent::getParent()
 }
 GItemComponent * GItemComponent::getComponentById(int id)
 {
-	auto search = m_pmComponents.find(id);
-	return search == m_pmComponents.end() ? nullptr : m_pmComponents[id];
+	auto search = m_mapComponents.find(id);
+	return search == m_mapComponents.end() ? nullptr : m_mapComponents[id];
 }
 
 void GItemComponent::removeComponentById(int id)
 {
-	auto search = m_pmComponents.find(id);
-	if (search != m_pmComponents.end())
+	auto search = m_mapComponents.find(id);
+	if (search != m_mapComponents.end())
 	{
-		m_pmComponents.erase(id);
+		m_mapComponents.erase(id);
 	}
 }
 
 void GItemComponent::addComponent(GItemComponent * pChild)
 {
 	auto compoId = pChild -> getComponentId();
-	auto search = m_pmComponents.find(compoId);
-	if (search==m_pmComponents.end())
+	auto search = m_mapComponents.find(compoId);
+	if (search==m_mapComponents.end())
 	{
-		m_pmComponents[compoId] = pChild;
+		m_mapComponents[compoId] = pChild;
 	}
 }

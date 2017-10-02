@@ -10,7 +10,8 @@ using namespace Assimp;
 
 
 GAssimpLoaderComponent::GAssimpLoaderComponent(Importer&importer, const aiScene * pScene, std::string resource):
-        m_importer(importer)
+    //    G::GItemComponent()
+    m_importer(importer)
     ,   m_pScene(pScene)
     ,   m_resource(resource)
     {
@@ -24,6 +25,10 @@ GAssimpLoaderComponent*GAssimpLoaderComponent::openLoaderUsingResource(const std
     if (!pScene) return nullptr;
     return new GAssimpLoaderComponent(importer, pScene,resource); 
 
+}
+void GAssimpLoaderComponent::closeLoaderComponent()
+{
+    m_importer.FreeScene();
 }
 void GAssimpLoaderComponent::printLoaderGeneralInfo()
 {

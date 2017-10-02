@@ -35,18 +35,6 @@ public:
 	{
 		return m_iId;
 	}
-	std::string getComponentName()
-	{
-		return m_sComponentName;
-	}
-	void setComponentName(std::string & name)
-	{
-		m_sComponentName = name;
-	}
-	void setComponentName(std::string && name)
-	{
-		m_sComponentName = name;
-	}
 
 };
 
@@ -56,7 +44,7 @@ class GItemComponent: public GIDBasedComponent
 	
 
 	GItemComponent * m_pParent = 0;
-	std::map<int, GItemComponent*> m_pmComponents;
+	std::map<int, GItemComponent*> m_mapComponents;
 
 
 public:
@@ -69,7 +57,7 @@ public:
 
 
 	virtual void init();
-		
+	virtual ~GItemComponent()=0;
 
 
 
