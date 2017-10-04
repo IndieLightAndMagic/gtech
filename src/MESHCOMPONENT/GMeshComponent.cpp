@@ -15,6 +15,59 @@ GAssimpLoaderComponent::GAssimpLoaderComponent(Importer&importer, const aiScene 
     ,   m_pScene(pScene)
     ,   m_resource(resource)
     {
+        aiNode * pNode = pScene -> mRootNode;
+        class tabPrinter{
+            void tabs(int tab){while (tab--) std::cout << " ";}
+            void printMeshes(aiNode * pNode, const aiScene * pScene, unsigned int tab)
+            {
+                tabs(tab);
+
+                auto sz = pNode -> mNumMeshes;
+                for (auto index = 0; index < sz; ++index)
+                {
+                    auto meshIndex = pNode -> mMeshes[index]; 
+                    std::cout << "vidx: " << meshIndex << std::endl;
+                }
+            }
+        public:
+            void operator()(aiNode*pNode, const aiScene * pScene, unsigned int tab)
+            {
+                bool bHasChildren = pNode -> mChildren != nullptr;
+                bool bHasMeshes = pNode -> mNumMeshes > 0;
+                unsigned int tablevel = tab;
+                tabs(tab);
+                if (bHasChildren)
+                {
+                    std::cout << "+";
+                }
+                else
+                {
+                    std::cout << ".";
+                }
+                std::cout <<std::string(pNode -> mName.C_Str()) + std::string("[#") << pNode -> mNumMeshes << std::string("]") << std::endl;
+                if (bHasMeshes)
+                {
+                    tablevel++;
+                    printMeshes(pNode, pScene, tablevel--);
+                }
+                if (bHasChildren)
+                {
+                    tablevel++;
+                    /* Print Children */
+                    for (auto index = 0; index < pNode -> mNumChildren; ++index )
+                    {
+                        this->operator()(pNode->mChildren[index], pScene, tablevel);
+                    }
+                }
+            }
+        };
+        printLoaderGeneralInfo();
+        unsigned int tablevel = 0;
+        if (pNode)
+        {   
+            tabPrinter printer;
+            printer(pNode, pScene, tablevel);
+        }
     }
 
 GAssimpLoaderComponent*GAssimpLoaderComponent::openLoaderUsingResource(const std::string & resource)
@@ -43,43 +96,7 @@ void GAssimpLoaderComponent::printLoaderGeneralInfo()
 
 void GAssimpLoaderComponent::listLoaderNodes()
 {   
-    class tabPrinter{
-        public:
-        void operator()(aiNode*pNode, unsigned tab)
-        {
-            bool bHasChildren = pNode -> mChildren != nullptr;
-            unsigned int tablevel = tab;
-            while (tab--)
-            {
-                std::cout << " ";
-            }
-            if (bHasChildren)
-            {
-                std::cout << "+";
-            }
-            else 
-            {
-                std::cout << ".";
-            } 
-            std::cout <<std::string(pNode -> mName.C_Str()) + std::string("[#") << pNode -> mNumMeshes << std::string("]") << std::endl;
-            if (bHasChildren)
-            {
-                tablevel++;
-                for (auto index = 0; index < pNode -> mNumChildren; ++index )
-                {
-                    this->operator()(pNode->mChildren[index],tablevel);
-                }
-            }
-        }
-    };
-    printLoaderGeneralInfo();
-    aiNode * pNode = m_pScene->mRootNode;
-    unsigned int tablevel = 0;
-    while (pNode)
-    {   
-        tabPrinter printer;
-        printer(pNode,tablevel);
-    }    
+    
 }
 
 GModelComponent * GModelComponent::createComponentNodeUsingResource(

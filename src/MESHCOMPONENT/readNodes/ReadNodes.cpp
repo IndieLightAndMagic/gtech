@@ -13,12 +13,6 @@ int main (){
 	{
 		cout << "Failed" << endl;
 	}
-	else
-	{
-		loader->printLoaderGeneralInfo();
-		cout << "*********************" << endl;
-		loader->listLoaderNodes();
-	}
 	return 0;
 
 
