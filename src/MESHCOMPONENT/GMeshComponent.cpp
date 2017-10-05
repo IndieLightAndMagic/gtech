@@ -20,13 +20,24 @@ GAssimpLoaderComponent::GAssimpLoaderComponent(Importer&importer, const aiScene 
             void tabs(int tab){while (tab--) std::cout << " ";}
             void printMeshes(aiNode * pNode, const aiScene * pScene, unsigned int tab)
             {
-                tabs(tab);
-
+                
                 auto sz = pNode -> mNumMeshes;
                 for (auto index = 0; index < sz; ++index)
-                {
+                {   
+                    
                     auto meshIndex = pNode -> mMeshes[index]; 
-                    std::cout << "vidx: " << meshIndex << std::endl;
+                    auto mesh = pScene -> mMeshes[meshIndex];
+                    auto nFaces = mesh -> mNumFaces;
+
+                    tabs(tab);std::cout << "MeshIndex: [" << meshIndex << "]\n";
+                    {
+                        tab++;
+                        tabs(tab);std::cout << "Num Faces: " << nFaces << "\n";
+                        tab--;
+                        //Go through all meshes and create VBO.
+                        
+                    }
+                    
                 }
             }
         public:
