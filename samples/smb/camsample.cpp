@@ -125,6 +125,7 @@ public:
 
 		/* [2] Load on Memory the archetype */
 		Assimp::Importer importer;
+		std::cout <<" Attempting to open " << std::string(RES_DIR) << "foxy.blend\n";
 		const aiScene * pScene = importer.ReadFile(std::string(RES_DIR)+"foxy.blend", aiProcess_Triangulate);
 
 		/* First Pass Flag */

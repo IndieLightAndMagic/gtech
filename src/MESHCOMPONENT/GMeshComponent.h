@@ -21,8 +21,18 @@ class GModelComponent : public G::GItemComponent
 protected:
 	const std::string m_nodeName;
 	float * m_pModelData;
-	
+
+	int m_vertexArrayObject;
+	int m_vertexBufferObject;
 public:
+	/**
+	 * @brief      Creates a component node using resource.
+	 *
+	 * @param[in]  pScene    A pointer to the scene. An assimp aiScene.
+	 * @param[in]  meshName  The mesh name. This is the name of the node you want to create the component off from.
+	 *
+	 * @return     On success this function returns a pointer to a model, a GModelComponent, on failure it will return a nullptr.
+	 */
 	static GModelComponent * createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
 	virtual ~GModelComponent(){};
 

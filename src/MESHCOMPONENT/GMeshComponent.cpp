@@ -11,13 +11,12 @@
 GModelComponent * GModelComponent::createComponentNodeUsingResource(const aiScene * pScene, const std::string &meshName)
 {
 	auto nodeToCreateComponent = GAssimpLoaderComponent::getMeshOnTheSceneByName(pScene->mRootNode,meshName);
-	
 	return nullptr;
 }
 
-GModelComponent * GAssimpComponentLoadloadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName)
+GModelComponent * GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceFileName, const std::string &meshName)
 {
-    const aiScene * pScene = GAssimpLoaderComponent::importer.ReadFile(sceneResourceName, aiProcess_Triangulate);
+    const aiScene * pScene = GAssimpLoaderComponent::importer.ReadFile(sceneResourceFileName, aiProcess_Triangulate);
     if (!pScene) return nullptr;
     return GModelComponent::createComponentNodeUsingResource(pScene, meshName);
 

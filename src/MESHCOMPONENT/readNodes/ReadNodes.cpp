@@ -8,7 +8,7 @@ using namespace std;
 int main (){
 
 	cout << RES_DIR << endl;
-	GAssimpLoaderComponent * loader = GAssimpLoaderComponent::openLoaderUsingResource(string(RES_DIR)+string("foxy.blend"));
+	GAssimpLoaderComponent * loader = GAssimpLoaderComponent::(string(RES_DIR)+string("foxy.blend"));
 	if (!loader)
 	{
 		cout << "Failed" << endl;
