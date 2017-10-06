@@ -12,40 +12,33 @@
 #include <GENG/g.h>
 #include <glm/glm.hpp>
 
+using namespace Assimp;
 
 /* A Model Component is something you download */
-class GAssimpLoaderComponent;
 class GModelComponent : public G::GItemComponent
 {
+
 protected:
 	const std::string m_nodeName;
-
+	float * m_pModelData;
+	
 public:
-	static GModelComponent * createComponentNodeUsingResource(
-		GAssimpLoaderComponent*pLoader, 
-		std::string nodeName,
-		bool bRecursive = false,
-		unsigned int uiDepth = 0);	
+	static GModelComponent * createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
 	virtual ~GModelComponent(){};
+
 };
 
 
 class GAssimpLoaderComponent : public G::GItemComponent
 {
-	std::string m_resource;
-	GAssimpLoaderComponent(Assimp::Importer & importer, const aiScene * pScene, std::string resource);
-public:
-	virtual ~GAssimpLoaderComponent(){};
 
-private:
-	Assimp::Importer 	m_importer;
-	const aiScene*		m_pScene;
 public:
-	static GAssimpLoaderComponent * openLoaderUsingResource(const std::string & resource);
-	void closeLoaderComponent();
+	static Importer importer;
+	static GModelComponent * loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
+	static void printSceneGeneralInfo(const aiScene *pScene);
+	static const aiNode * getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
 
-	void printLoaderGeneralInfo();
-	void listLoaderNodes();
+
 };
 
 
