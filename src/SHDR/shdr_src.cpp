@@ -5,42 +5,62 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr) {
-	
+static std::string getShaderCode(const GLchar *shdrPath)
+{
 	std::ifstream shaderFile;
 
-	/* exceptions flag checks for read/write operations on i/o operations */
+	// exceptions flag checks for read/write operations on i/o operations 
 	shaderFile.exceptions(std::ifstream::badbit);
-	try {
-		/* Open files */
-		shaderFile.open(shdrPath);
-		if (!shaderFile.good()){
-			std::cout << "ifstream.good() = false" << std::endl;
-			throw 1;
-		} 
-
-		/* Read Files into streams */
-		std::stringstream shaderStream;
-		shaderStream << shaderFile.rdbuf();
+	shaderFile.open(shdrPath);
+	if (!shaderFile.good())
+	{
+		std::string emptyString;
+		return emptyString;
+	}
+	// Read Files into streams 
+	std::stringstream shaderStream;
+	shaderStream << shaderFile.rdbuf();
 		
-		/* Close files */
-		shaderFile.close();
+	// Close files 
+	shaderFile.close();
 
-		/* Set stream into strings */
-		m_shaderCode = shaderStream.str();
+	// Return the code
+	return shaderStream.str();
+} 
+ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr) {
+	
 
-		/* C character string shader source */
+	// Set stream into strings
+	m_shaderCode = getShaderCode(shdrPath);
+
+	if (!m_shaderCode.empty())
+	{		
+		// C character string shader source 
 		m_shdrSrc = m_shaderCode.c_str();
 
-		/* Set valid State */
+		// Set valid State 
 		m_state = SOURCE_STATE_VALID;
 
 	}
-	catch (int error){
-		/* Warn error */
+	else 
+	{
+		// Warn error
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl; 
 	} 
 
+}
+ShaderSource::ShaderSource(const std::string &shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr)
+{
+	m_shaderCode = getShaderCode(shdrPath.c_str());
+	if (!m_shaderCode.empty())
+	{
+		m_shdrSrc = m_shaderCode.c_str();
+		m_state = SOURCE_STATE_VALID;
+	}
+	else 
+	{
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+	}
 }
 const GLchar * ShaderSource::operator()(){ return m_shdrSrc; }
 ShaderSource::ShaderSourceState ShaderSource::state(){ return m_state; }

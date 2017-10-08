@@ -32,7 +32,8 @@ private:
 
 public:
 	ShaderSource(const GLchar*shdrPath);
-	virtual ~ShaderSource(){};
+	ShaderSource(const std::string &shdrPath);
+	virtual ~ShaderSource(){ delete m_shdrPath;};
 	const GLchar* operator()();
 	GLenum getShaderType();
 	ShaderSourceState state();
