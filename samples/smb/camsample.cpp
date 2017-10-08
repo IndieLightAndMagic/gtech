@@ -109,9 +109,12 @@ public:
 		// configure global opengl state
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
-
-		m_shaderProgram.pushShader("vrtx.shdr", GL_VERTEX_SHADER);
-		m_shaderProgram.pushShader("frag.shdr", GL_FRAGMENT_SHADER);
+		std::string vertexShaderResource=RES_DIR;vertexShaderResource+="Shaders/smb/vrtx.shdr";
+		std::string fragmentShaderResource=RES_DIR;fragmentShaderResource+="Shaders/smb/frag.shdr";
+		ShaderSource * vtxshdrsource(new ShaderSource(vertexShaderResource));
+		ShaderSource * frgshdrsource(new ShaderSource(fragmentShaderResource)); 
+		m_shaderProgram.pushShader(vtxshdrsource, GL_VERTEX_SHADER);
+		m_shaderProgram.pushShader(frgshdrsource, GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
 		// Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer... 
 		m_shaderProgram.use();
