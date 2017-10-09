@@ -13,8 +13,7 @@ aux_source_directory(${CMAKE_SOURCE_DIR} SOURCE_LIST)
 if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
 	add_executable(${TARGET_NAME} ${SOURCE_LIST})
 elseif (${CMAKE_GENERATOR} STREQUAL "Xcode")
-	set_source_files_properties(${SHADERS} PROPERTIES MACOSX_PACKAGE_LOCATION ../..)
-	add_executable(${TARGET_NAME} MACOSX_BUNDLE ${SHADERS} ${SOURCE_LIST} )
+	add_executable(${TARGET_NAME} MACOSX_BUNDLE ${SOURCE_LIST} )
 endif()
 
 
@@ -83,11 +82,3 @@ endforeach(FMWK)
 message(STATUS "-----------------------------")
 endif()
 
-if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
-	add_custom_target(run)
-	foreach(SHADER ${SHADERS})
-		add_custom_command(
-			TARGET run PRE_BUILD 
-			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${SHADER} ${CMAKE_CURRENT_BINARY_DIR}/)	
-	endforeach(SHADER)
-endif()

@@ -20,9 +20,14 @@
 #include <assimp/postprocess.h>
 
 
+extern void getCubeData(unsigned int *, unsigned int *);
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;	
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+
 class MainScene{
 
 	SDL_Window * pWindow;
@@ -30,7 +35,7 @@ class MainScene{
 	SDL_JoystickID xGameControllerID;
 	Program m_shaderProgram;
 	bool m_bRun{true};
-
+    unsigned int vbo,vao;
 public:
 
 	MainScene(OSWindowWrapperSDL * pSDL)
@@ -116,16 +121,38 @@ public:
 		m_shaderProgram.pushShader(vtxshdrsource, GL_VERTEX_SHADER);
 		m_shaderProgram.pushShader(frgshdrsource, GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
-		// Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer... 
-		m_shaderProgram.use();
+
+		getCubeData(&vbo,&vao);
 		
+        
+        m_shaderProgram.use();
+        glm::mat4 model;
+        model = glm::translate(model, glm::vec3( 0.0f,  0.0f,  0.0f));
+        glm::mat4 rotation;
+        rotation = glm::rotate(rotation, float(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        m_shaderProgram.setMat4("objModel.tx", model);
+        m_shaderProgram.setMat4("objModel.rt", rotation);
+        m_shaderProgram.setVec3("diffuseColor",glm::vec3(NAVY));
+        // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        m_shaderProgram.setMat4("camModel.pr", projection);
+        // camera/view transformation
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        m_shaderProgram.setMat4("camModel.vw", view);
+        // Color
+        
 
 	}
 	void renderScene(){
 		
 		glClearColor(DARKSLATEBLUE, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+        
+        m_shaderProgram.use();
+        glBindVertexArray(vao);
+        
 		/*Draw Here & set your uniforms*/
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 		SDL_GL_SwapWindow(pWindow);
 	}
 	void finishScene(){
