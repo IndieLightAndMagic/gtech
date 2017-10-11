@@ -5,7 +5,8 @@
 #include <OpenGL/gl.h>
 #endif /*__APPLE__*/
 
-
+const unsigned int elements{288};
+const unsigned int elemenstperrow{8};
 float cube_vertices[] = 
 {
     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 
@@ -78,5 +79,9 @@ void getCubeData(unsigned int *pCubeVBO, unsigned int *pCubeVAO)
     glEnableVertexAttribArray(1);
        
 }
-
+void drawCube(unsigned int vao)
+{
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, 0, elements/elemenstperrow);
+}
 

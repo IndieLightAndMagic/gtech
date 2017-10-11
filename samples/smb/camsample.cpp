@@ -21,7 +21,7 @@
 
 
 extern void getCubeData(unsigned int *, unsigned int *);
-
+extern void drawCube(unsigned int vao);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;	
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -149,10 +149,9 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         
         m_shaderProgram.use();
-        glBindVertexArray(vao);
         
-		/*Draw Here & set your uniforms*/
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        drawCube(vao);
+		
 		SDL_GL_SwapWindow(pWindow);
 	}
 	void finishScene(){
