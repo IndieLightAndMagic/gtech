@@ -5,8 +5,16 @@
 #include <OpenGL/gl.h>
 #endif /*__APPLE__*/
 
+#include <SHDR/shdr.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 const unsigned int elements{288};
 const unsigned int elemenstperrow{8};
+
+glm::mat4 locationMatrix;
+glm::mat4 rotationMatrix;
 float cube_vertices[] = 
 {
     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 
@@ -53,6 +61,7 @@ float cube_vertices[] =
 };
 
 
+
 void getCubeData(unsigned int *pCubeVBO, unsigned int *pCubeVAO)
 {
     unsigned int cubeVAO;
@@ -79,9 +88,23 @@ void getCubeData(unsigned int *pCubeVBO, unsigned int *pCubeVAO)
     glEnableVertexAttribArray(1);
        
 }
-void drawCube(unsigned int vao)
+void drawCube(Program &shaderProgram, unsigned int vao)
 {
+    
+    shaderProgram.setMat4("objModel.tx", locationMatrix);
+    shaderProgram.setMat4("objModel.rt", rotationMatrix);
+
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, elements/elemenstperrow);
 }
+void setCubeLocation(glm::vec3 &locationVector)
+{
+    locationMatrix = glm::mat4(1.0f);
+    locationMatrix = glm::translate(locationMatrix, locationVector);
 
+}
+void setCubeRotation(glm::vec3 &rotationalAxis, float &radians)
+{
+    rotationMatrix = glm::mat4(1.0f);
+    rotationMatrix = glm::rotate(rotationMatrix, float(radians), rotationalAxis);  
+}

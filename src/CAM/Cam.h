@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
 
 #define CAM_UPDATE_PROJECTION	0x1
 #define CAM_UPDATE_VIEW			0x2

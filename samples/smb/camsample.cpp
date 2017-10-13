@@ -20,8 +20,15 @@
 #include <assimp/postprocess.h>
 
 
+constexpr float degrees_to_radians(float deg){ return (deg/180.0f)*glm::pi<float>(); }
+
 extern void getCubeData(unsigned int *, unsigned int *);
-extern void drawCube(unsigned int vao);
+extern void drawCube(Program &shaderProgram, unsigned int vao);
+extern void setCubeLocation(glm::vec3 &locationVector);
+extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
+
+
+
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;	
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -35,7 +42,16 @@ class MainScene{
 	SDL_JoystickID xGameControllerID;
 	Program m_shaderProgram;
 	bool m_bRun{true};
-    unsigned int vbo,vao;
+
+	struct {
+		
+		unsigned int vbo,vao;
+		glm::vec3 location;
+		glm::vec3 axisRotation;
+		float rotationMagnitude;
+
+	}cube;
+    
 public:
 
 	MainScene(OSWindowWrapperSDL * pSDL)
@@ -122,24 +138,12 @@ public:
 		m_shaderProgram.pushShader(frgshdrsource, GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
 
-		getCubeData(&vbo,&vao);
+		getCubeData(&cube.vbo,&cube.vao);
 		
         
-        m_shaderProgram.use();
-        glm::mat4 model;
-        model = glm::translate(model, glm::vec3( 0.0f,  0.0f,  0.0f));
-        glm::mat4 rotation;
-        rotation = glm::rotate(rotation, float(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        m_shaderProgram.setMat4("objModel.tx", model);
-        m_shaderProgram.setMat4("objModel.rt", rotation);
-        m_shaderProgram.setVec3("diffuseColor",glm::vec3(NAVY));
-        // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        m_shaderProgram.setMat4("camModel.pr", projection);
-        // camera/view transformation
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        m_shaderProgram.setMat4("camModel.vw", view);
         // Color
+        m_shaderProgram.use();
+        m_shaderProgram.setVec3("diffuseColor",glm::vec3(NAVY));
         
 
 	}
@@ -148,9 +152,24 @@ public:
 		glClearColor(DARKSLATEBLUE, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         
+		cube.location = glm::vec3(0.001f, 0.0f, 0.0f);
+		setCubeLocation(cube.location);
+		cube.axisRotation = glm::vec3(1.0f, 0.0f, 0.0f);
+		cube.rotationMagnitude = degrees_to_radians(20.0f);
+		setCubeRotation(cube.axisRotation, cube.rotationMagnitude);
+
         m_shaderProgram.use();
+
+        // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        m_shaderProgram.setMat4("camModel.pr", projection);
+        // camera/view transformation
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        m_shaderProgram.setMat4("camModel.vw", view);
         
-        drawCube(vao);
+
+
+        drawCube(m_shaderProgram, cube.vao);
 		
 		SDL_GL_SwapWindow(pWindow);
 	}
