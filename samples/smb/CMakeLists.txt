@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 #Project Name and Resources 
 set(TARGET_NAME camsample)
-set(SHADERS "vrtx.shdr" "frag.shdr")
 
 
 project(${TARGET_NAME})
@@ -52,7 +51,7 @@ set(CMAKE_CXX_FLAGS "${CPP11}")
 
 #LIBRARY LINKS
 set(STANDARD_STATIC_LIBRARIES "iconv" "m")
-set(G_STATIC_LIBRARIES "SDL2" "shdr" "Util" "Cam" "assimp" "IrrXML" "z")
+set(G_STATIC_LIBRARIES "SDL2" "shdr" "Util" "Cam" "G0" "MeshComponent" "assimp" "IrrXML" "z")
 set(STATIC_LIBRARIES ${STANDARD_STATIC_LIBRARIES} ${G_STATIC_LIBRARIES})
 
 

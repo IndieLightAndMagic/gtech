@@ -13,6 +13,7 @@
 #include <CAM/Cam.h>
 #include <SDL2/SDL_joystick.h>
 #include <UTIL/Util.h>
+#include <MESHCOMPONENT/GMeshComponent.h>
 #include <iostream>
 
 #include <assimp/Importer.hpp>
@@ -22,14 +23,14 @@
 
 constexpr float degrees_to_radians(float deg){ return (deg/180.0f)*glm::pi<float>(); }
 
-extern void getCubeData(unsigned int *, unsigned int *);
-extern void drawCube(Program &shaderProgram, unsigned int vao);
-extern void setCubeLocation(glm::vec3 &locationVector);
-extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
+//extern void getCubeData(unsigned int *, unsigned int *);
+//extern void drawCube(Program &shaderProgram, unsigned int vao);
+//extern void setCubeLocation(glm::vec3 &locationVector);
+//extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
 
 
 
-const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 600;	
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -43,14 +44,16 @@ class MainScene{
 	Program m_shaderProgram;
 	bool m_bRun{true};
 
-	struct {
+	/*struct {
 		
 		unsigned int vbo,vao;
 		glm::vec3 location;
 		glm::vec3 axisRotation;
 		float rotationMagnitude;
 
-	}cube;
+	}cube;*/
+    
+    std::shared_ptr<GModelComponent> pCube;
     
 public:
 
@@ -130,6 +133,9 @@ public:
 		// configure global opengl state
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
+        
+        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
+
 		std::string vertexShaderResource=RES_DIR;vertexShaderResource+="Shaders/smb/vrtx.shdr";
 		std::string fragmentShaderResource=RES_DIR;fragmentShaderResource+="Shaders/smb/frag.shdr";
 		ShaderSource * vtxshdrsource(new ShaderSource(vertexShaderResource));
@@ -137,8 +143,9 @@ public:
 		m_shaderProgram.pushShader(vtxshdrsource, GL_VERTEX_SHADER);
 		m_shaderProgram.pushShader(frgshdrsource, GL_FRAGMENT_SHADER);
 		m_shaderProgram.link();
-
-		getCubeData(&cube.vbo,&cube.vao);
+        
+        
+		//getCubeData(&cube.vbo,&cube.vao);
 		
         
         // Color
@@ -152,12 +159,11 @@ public:
 		glClearColor(DARKSLATEBLUE, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         
-		cube.location = glm::vec3(0.001f, 0.0f, 0.0f);
-		setCubeLocation(cube.location);
-		cube.axisRotation = glm::vec3(1.0f, 0.0f, 0.0f);
-		cube.rotationMagnitude = degrees_to_radians(20.0f);
-		setCubeRotation(cube.axisRotation, cube.rotationMagnitude);
-
+        //Set Cube Position
+        glm::vec3 position = glm::vec3(0.001f, 0.0f, 0.0f);
+		pCube->setComponentLocation(position);
+        glm::vec3 rotationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+		pCube->setComponentRotation(rotationAxis, degrees_to_radians(20.0f));
         m_shaderProgram.use();
 
         // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
@@ -165,11 +171,10 @@ public:
         m_shaderProgram.setMat4("camModel.pr", projection);
         // camera/view transformation
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        m_shaderProgram.setMat4("camModel.vw", view);
+        m_shaderProgram.setMat4("camModel.vw", view);    
         
-
-
-        drawCube(m_shaderProgram, cube.vao);
+        //Draw Cube
+        pCube->drawComponent(m_shaderProgram);
 		
 		SDL_GL_SwapWindow(pWindow);
 	}
@@ -178,6 +183,7 @@ public:
 	}
 	int mainLoop(){
 		sceneInit();
+        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
 		for (;m_bRun;){
 			processInput();
 			renderScene();
@@ -190,7 +196,7 @@ int main(int argc, char ** argv)
 {
 	
 	std::unique_ptr<OSWindowWrapperSDL>_SDL_(new OSWindowWrapperSDL(SCR_WIDTH, SCR_HEIGHT));
-	MainScene scn(_SDL_.get());
+    MainScene scn(_SDL_.get());
 	scn.mainLoop();
 
 	return 0;

@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -11,6 +12,8 @@
 
 #include <GENG/g.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 using namespace Assimp;
 
@@ -20,10 +23,19 @@ class GModelComponent : public G::GItemComponent
 
 protected:
 	const std::string m_nodeName;
-	float * m_pModelData;
+    std::unique_ptr<std::vector<float>> m_pModelData;
 
-	int m_vertexArrayObject;
-	int m_vertexBufferObject;
+
+	unsigned int m_vertexArrayObject;
+	unsigned int m_vertexBufferObject;
+	
+	glm::vec3 m_locationVector;
+	glm::vec3 m_rotationAxisVector;
+	float m_rotationMagnitude;
+
+	glm::mat4 m_locationMatrix;
+	glm::mat4 m_rotationMatrix;
+	size_t m_rows;
 public:
 	/**
 	 * @brief      Creates a component node using resource.
@@ -33,9 +45,14 @@ public:
 	 *
 	 * @return     On success this function returns a pointer to a model, a GModelComponent, on failure it will return a nullptr.
 	 */
-	static GModelComponent * createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
+	static std::shared_ptr<GModelComponent> createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
 	virtual ~GModelComponent(){};
 
+	GModelComponent(const aiScene * pScene, const aiNode * pNode);
+
+	void setComponentLocation(glm::vec3 &locationVector);
+	void setComponentRotation(glm::vec3 &rotationAxisVector, float rotationMagnitude_radians);
+	void drawComponent(Program &shaderProgram);
 };
 
 
@@ -44,7 +61,7 @@ class GAssimpLoaderComponent : public G::GItemComponent
 
 public:
 	static Importer importer;
-	static GModelComponent * loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
+	static std::shared_ptr<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
 	static void printSceneGeneralInfo(const aiScene *pScene);
 	static const aiNode * getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
 
