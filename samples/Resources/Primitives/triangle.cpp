@@ -37,8 +37,10 @@ void getCubeData(unsigned int *pCubeVBO, unsigned int *pCubeVAO)
     cubeVAO = *pCubeVAO;
     cubeVBO = *pCubeVBO;
 
+    auto szcube = sizeof(cube_vertices);
+    
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, szcube, cube_vertices, GL_STATIC_DRAW);
     glBindVertexArray(cubeVAO);
 
     // position attribute

@@ -23,7 +23,7 @@ class GModelComponent : public G::GItemComponent
 
 protected:
 	const std::string m_nodeName;
-    std::unique_ptr<std::vector<float>> m_pModelData;
+    std::vector<float> m_pModelData;
 
 
 	unsigned int m_vertexArrayObject;
@@ -37,6 +37,8 @@ protected:
 	glm::mat4 m_rotationMatrix;
 	size_t m_rows;
 public:
+	unsigned int m_vertexArrayObject_public;
+	unsigned int m_vertexBufferObject_public;
 	/**
 	 * @brief      Creates a component node using resource.
 	 *

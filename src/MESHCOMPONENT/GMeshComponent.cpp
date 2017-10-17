@@ -36,7 +36,6 @@ void GModelComponent::setComponentRotation(glm::vec3 &rotationAxisVector, float 
 
 GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode):
     m_nodeName(std::string(pNode->mName.C_Str())),
-    m_pModelData(new std::vector<float>),
     m_locationVector(glm::vec3(0.0f)),
     m_rotationAxisVector(glm::vec3(0.0f,0.0f,1.0f)),
     m_rotationMagnitude(0.0f),
@@ -61,18 +60,18 @@ GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode):
                 auto vertex = pMesh->mVertices[vertexIndex];
                 auto normal = pMesh->mNormals[vertexIndex];
                 
-                m_pModelData->push_back(vertex.x);
-                m_pModelData->push_back(vertex.y);
-                m_pModelData->push_back(vertex.z);
-                m_pModelData->push_back(normal.x);
-                m_pModelData->push_back(normal.y);
-                m_pModelData->push_back(normal.z);
-                m_pModelData->push_back(0.0f);
-                m_pModelData->push_back(0.0f);
+                m_pModelData.push_back(vertex.x);
+                m_pModelData.push_back(vertex.y);
+                m_pModelData.push_back(vertex.z);
+                m_pModelData.push_back(normal.x);
+                m_pModelData.push_back(normal.y);
+                m_pModelData.push_back(normal.z);
+                m_pModelData.push_back(0.0f);
+                m_pModelData.push_back(0.0f);
                 std::cout << "\n[" << m_rows << "] "; 
-                for (auto rowIndex = m_pModelData->size()-8; rowIndex < m_pModelData->size(); ++rowIndex)
+                for (auto rowIndex = m_pModelData.size()-8; rowIndex < m_pModelData.size(); ++rowIndex)
                 {
-                    std::cout << m_pModelData->at(rowIndex) << " ";
+                    std::cout << m_pModelData.at(rowIndex) << " ";
                 }
                 std::cout<< "\n"; 
                 m_rows++;
@@ -84,9 +83,13 @@ GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode):
     {
         glGenVertexArrays(1, &m_vertexArrayObject);
         glGenBuffers(1, &m_vertexBufferObject);
+
+        m_vertexBufferObject_public = m_vertexBufferObject;
+        m_vertexArrayObject_public = m_vertexArrayObject;
         
-        auto fpdata = m_pModelData->data();
-        auto fpdataSize = sizeof(fpdata);
+        auto fpdata = m_pModelData.data();
+        auto fpdataSize = sizeof(float) * m_pModelData.size();
+
         glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObject);
         glBufferData(GL_ARRAY_BUFFER, fpdataSize, fpdata, GL_STATIC_DRAW);
         glBindVertexArray(m_vertexArrayObject);

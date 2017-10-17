@@ -134,7 +134,7 @@ public:
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
         
-        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/triangles.blend"),std::string("T"));
+        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne"));
 
 		std::string vertexShaderResource=RES_DIR;vertexShaderResource+="Shaders/smb/vrtx.shdr";
 		std::string fragmentShaderResource=RES_DIR;fragmentShaderResource+="Shaders/smb/frag.shdr";
@@ -145,8 +145,6 @@ public:
 		m_shaderProgram.link();
         
         
-		getCubeData(&triangle.vbo,&triangle.vao);
-		
         
         // Color
         m_shaderProgram.use();
