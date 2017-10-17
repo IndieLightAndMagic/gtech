@@ -69,7 +69,14 @@ GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode):
                 m_pModelData->push_back(normal.z);
                 m_pModelData->push_back(0.0f);
                 m_pModelData->push_back(0.0f);
+                std::cout << "\n[" << m_rows << "] "; 
+                for (auto rowIndex = m_pModelData->size()-8; rowIndex < m_pModelData->size(); ++rowIndex)
+                {
+                    std::cout << m_pModelData->at(rowIndex) << " ";
+                }
+                std::cout<< "\n"; 
                 m_rows++;
+
             }
         }
     }

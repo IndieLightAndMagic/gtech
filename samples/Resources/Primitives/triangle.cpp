@@ -18,9 +18,9 @@ glm::mat4 rotationMatrix;
 float cube_vertices[] = 
 {
 
-    -1.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, 
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
-    -1.0f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, 1.0f, 0.0f, 0.0f,
+     0.0f,  0.5f, -0.5f,  0.0f,  0.0f, 1.0f, 0.0f, 0.0f,
 
 };
 
@@ -50,6 +50,22 @@ void getCubeData(unsigned int *pCubeVBO, unsigned int *pCubeVAO)
  	// texture coordinate attribute
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+
+    for (unsigned int index = 0; index < elements; ++index)
+    {
+    	if (index%8)
+    	{
+    		std::cout << cube_vertices[index] << " ";
+    	}
+    	else
+    	{
+    		std::cout << "\n\n[ " << index / elemenstperrow << " ] " << cube_vertices[index] << " ";
+    	}
+    }
+    std::cout << "\n";
+
+
        
 }
 void drawCube(Program &shaderProgram, unsigned int vao)
