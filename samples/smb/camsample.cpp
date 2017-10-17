@@ -23,10 +23,10 @@
 
 constexpr float degrees_to_radians(float deg){ return (deg/180.0f)*glm::pi<float>(); }
 
-//extern void getCubeData(unsigned int *, unsigned int *);
-//extern void drawCube(Program &shaderProgram, unsigned int vao);
-//extern void setCubeLocation(glm::vec3 &locationVector);
-//extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
+extern void getCubeData(unsigned int *, unsigned int *);
+extern void drawCube(Program &shaderProgram, unsigned int vao);
+extern void setCubeLocation(glm::vec3 &locationVector);
+extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
 
 
 
@@ -44,14 +44,14 @@ class MainScene{
 	Program m_shaderProgram;
 	bool m_bRun{true};
 
-	/*struct {
+	struct {
 		
 		unsigned int vbo,vao;
 		glm::vec3 location;
 		glm::vec3 axisRotation;
 		float rotationMagnitude;
 
-	}cube;*/
+	}triangle;
     
     std::shared_ptr<GModelComponent> pCube;
     
@@ -134,7 +134,7 @@ public:
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
         
-        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
+        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/triangles.blend"),std::string("T"));
 
 		std::string vertexShaderResource=RES_DIR;vertexShaderResource+="Shaders/smb/vrtx.shdr";
 		std::string fragmentShaderResource=RES_DIR;fragmentShaderResource+="Shaders/smb/frag.shdr";
@@ -145,7 +145,7 @@ public:
 		m_shaderProgram.link();
         
         
-		//getCubeData(&cube.vbo,&cube.vao);
+		getCubeData(&triangle.vbo,&triangle.vao);
 		
         
         // Color
@@ -166,6 +166,7 @@ public:
 		pCube->setComponentRotation(rotationAxis, degrees_to_radians(20.0f));
         m_shaderProgram.use();
 
+
         // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         m_shaderProgram.setMat4("camModel.pr", projection);
@@ -183,7 +184,7 @@ public:
 	}
 	int mainLoop(){
 		sceneInit();
-        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
+        //pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
 		for (;m_bRun;){
 			processInput();
 			renderScene();
