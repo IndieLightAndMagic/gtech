@@ -32,7 +32,7 @@ extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
 
 const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 600;	
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
 

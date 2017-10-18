@@ -36,4 +36,8 @@ docset/
 camera_mouse/
 *.a
 samples/*/cube.cpp
+*.blend1
+
+
 !samples/Resources/Primitives/*.cpp
+
