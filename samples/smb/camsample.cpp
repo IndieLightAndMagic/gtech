@@ -53,6 +53,17 @@ class MainScene{
 
 	}triangle;
     
+    struct {
+        glm::vec3 direction{glm::vec3(1.0f,0.0f,-1.0f)};
+        glm::vec3 diffuseColor{glm::vec3(WHITE)};
+        glm::vec3 specularColor{glm::vec3(WHITE)};
+    }directionalLight;
+    struct {
+    	glm::vec3 diffuse{glm::vec3(NAVY)};
+    	float ambientPower{1.0f};
+    	float shininess{32.0f};
+
+    }material;
     std::shared_ptr<GModelComponent> pCube;
     
 public:
@@ -148,9 +159,16 @@ public:
         
         // Color
         m_shaderProgram.use();
-        m_shaderProgram.setVec3("diffuseColor",glm::vec3(NAVY));
+        m_shaderProgram.setVec3("viewPos", cameraPos);
         
-
+        m_shaderProgram.setVec3("diffuseColor",material.diffuse);
+        m_shaderProgram.setFloat("ambientPower",material.ambientPower);
+        m_shaderProgram.setFloat("shininess",material.shininess);
+        
+        m_shaderProgram.setVec3("directionalLight.direction", directionalLight.direction);
+        m_shaderProgram.setVec3("directionalLight.diffuse",directionalLight.diffuseColor);
+        m_shaderProgram.setVec3("directionalLight.specular", directionalLight.specularColor);
+        
 	}
 	void renderScene(){
 		

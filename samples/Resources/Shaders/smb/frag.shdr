@@ -95,7 +95,6 @@ void CalcBPConditionsForLight(vec3 lightDirection){
 	bp.refDir = reflect(-lightDirection, fsi.aNormal);
 	bp.specPower = pow(max(dot(bp.viewDir, bp.refDir),0.0f), shininess);
 
-
 }
 vec3 CalculateResultingLight(){
 
@@ -153,6 +152,6 @@ void main()
 	// linearly interpolate between both textures (80% container, 20% awesomeface)
 	// FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
 	// FragColor = vec4(0.8,0.1,0.4,1.0);
-	FragColor = vec4(diffuseColor,1.0);
+	FragColor = vec4(CalculateDirectionalLight(),1.0);
 
 }
