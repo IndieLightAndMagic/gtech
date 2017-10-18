@@ -157,13 +157,9 @@ public:
 		glClearColor(DARKSLATEBLUE, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         
-        //Set Cube Position
-        glm::vec3 position = glm::vec3(0.001f, 0.0f, 0.0f);
-		pCube->setComponentLocation(position);
-        glm::vec3 rotationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-		pCube->setComponentRotation(rotationAxis, degrees_to_radians(20.0f));
+        //Use specific shader
         m_shaderProgram.use();
-
+        
 
         // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
