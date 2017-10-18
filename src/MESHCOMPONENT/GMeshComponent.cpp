@@ -28,13 +28,18 @@ void GModelComponent::setComponentLocation(glm::vec3 &locationVector)
 }
 void GModelComponent::setComponentRotation(glm::vec3 &rotationAxisVector, float rotationMagnitude_radians)
 {
+    if (rotationMagnitude_radians <= glm::epsilon<float>() && rotationMagnitude_radians>= -glm::epsilon<float>())
+    {
+        rotationAxisVector = glm::vec3(1.0f, 0.0f, 0.0f);
+        rotationMagnitude_radians = glm::zero<float>();
+    }
     m_rotationAxisVector = rotationAxisVector;
     m_rotationMagnitude = rotationMagnitude_radians;
     m_rotationMatrix = glm::mat4(1.0f);
     m_rotationMatrix = glm::rotate(m_rotationMatrix, float(rotationMagnitude_radians), rotationAxisVector);
 }
 
-GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode):
+GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly):
     m_nodeName(std::string(pNode->mName.C_Str())),
     m_locationVector(glm::vec3(0.0f)),
     m_rotationAxisVector(glm::vec3(0.0f,0.0f,1.0f)),
@@ -103,6 +108,20 @@ GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode):
         // texture coordinate attribute
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(1);
+        
+        /* Decomposition */
+        if (!localOnly)
+        {
+            /* Use the world transformation */
+            aiVector3t<float> aiScalingVector, aiRotationAxisVector, aiLocationVector;
+            pNode->mTransformation.Decompose(aiScalingVector, aiRotationAxisVector, m_rotationMagnitude, aiLocationVector);
+            auto locationVector = glm::vec3(aiLocationVector.x, aiLocationVector.y, aiLocationVector.z);
+            auto rotationAxisVector = glm::vec3(aiRotationAxisVector.x, aiRotationAxisVector.y, aiRotationAxisVector.z);
+            //auto scalingVector = glm::vec3(aiScalingVector.x,aiScalingVector.y, aiScalingVector.z);
+            setComponentLocation(locationVector);
+            setComponentRotation(rotationAxisVector, m_rotationMagnitude);
+        }
+        
     }
 }
 

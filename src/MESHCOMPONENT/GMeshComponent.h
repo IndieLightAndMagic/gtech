@@ -50,7 +50,7 @@ public:
 	static std::shared_ptr<GModelComponent> createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
 	virtual ~GModelComponent(){};
 
-	GModelComponent(const aiScene * pScene, const aiNode * pNode);
+	GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly=false);
 
 	void setComponentLocation(glm::vec3 &locationVector);
 	void setComponentRotation(glm::vec3 &rotationAxisVector, float rotationMagnitude_radians);
