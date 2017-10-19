@@ -14,6 +14,7 @@
 #include <SDL2/SDL_joystick.h>
 #include <UTIL/Util.h>
 #include <MESHCOMPONENT/GMeshComponent.h>
+#include <MESHCOMPONENT/GCamComponent.h>
 #include <iostream>
 
 #include <assimp/Importer.hpp>
@@ -65,6 +66,7 @@ class MainScene{
 
     }material;
     std::shared_ptr<GModelComponent> pCube;
+    std::shared_ptr<GCamComponent> pCam;
     
 public:
 
@@ -146,8 +148,10 @@ public:
 		glEnable(GL_DEPTH_TEST);
         
         pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne"));
-
-		std::string vertexShaderResource=RES_DIR;vertexShaderResource+="Shaders/smb/vrtx.shdr";
+        pCam = GAssimpLoaderComponent::loadCamFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"), std::string("Camera"), glm::radians(45.0f), SCR_WIDTH, SCR_HEIGHT);
+        
+		std::string vertexShaderResource=RES_DIR;
+        vertexShaderResource+="Shaders/smb/vrtx.shdr";
 		std::string fragmentShaderResource=RES_DIR;fragmentShaderResource+="Shaders/smb/frag.shdr";
 		ShaderSource * vtxshdrsource(new ShaderSource(vertexShaderResource));
 		ShaderSource * frgshdrsource(new ShaderSource(fragmentShaderResource)); 
@@ -180,11 +184,14 @@ public:
         
 
         // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        m_shaderProgram.setMat4("camModel.pr", projection);
+        //glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //m_shaderProgram.setMat4("camModel.pr", projection);
         // camera/view transformation
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        m_shaderProgram.setMat4("camModel.vw", view);    
+        //glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        //m_shaderProgram.setMat4("camModel.vw", view);
+        
+        //Set Specific Camera
+        pCam->useCamera(m_shaderProgram);
         
         //Draw Cube
         pCube->drawComponent(m_shaderProgram);

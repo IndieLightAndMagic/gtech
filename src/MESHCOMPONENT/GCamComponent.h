@@ -15,6 +15,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+
+using namespace Assimp;
 class GCamComponent : public G::GItemComponent
 {
 
@@ -38,9 +40,15 @@ class GCamComponent : public G::GItemComponent
 	}m_screen;
 
 public:
-	static std::shared_ptr<GCamComponent> createCamNodeUsingResource(const aiScene *pScene, const std::string &camName);
-	GCamComponent(const aiScene * pScene, const aiCamera *pCamera, float horizontalFieldOfView, unsigned int width, unsigned int height);
+	static std::shared_ptr<GCamComponent> createCamNodeUsingResource(const aiScene *pScene, const std::string &camName, float horizontalFieldOfView, unsigned int width, unsigned int height);
+	virtual ~GCamComponent(){};
+
+	GCamComponent(const aiCamera *pCamera, const aiNode *pNode, float horizontalFieldOfView, unsigned int width, unsigned int height);
 	void useCamera(Program &shaderProgram);
+	void setCamLocation(glm::vec3 &locationVector);
+
+
+	//void setComponentRotation(glm::vec3 &axisRotationVector, float rotationMagnitude_radians);
 };
 
 
