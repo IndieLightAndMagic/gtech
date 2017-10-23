@@ -57,14 +57,14 @@ public:
 	void drawComponent(Program &shaderProgram);
 };
 
-class GCamComponent;
+class GCameraComponent;
 class GAssimpLoaderComponent : public G::GItemComponent
 {
 
 public:
 	static Importer importer;
 	static std::shared_ptr<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
-	static std::shared_ptr<GCamComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, float horizontalFieldOfView, unsigned int width, unsigned int height);
+	static std::shared_ptr<GCameraComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height);
 
 	static void printSceneGeneralInfo(const aiScene *pScene);
 	static const aiNode * getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);

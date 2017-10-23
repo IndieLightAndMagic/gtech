@@ -31,11 +31,8 @@ extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
 
 
 
-const unsigned int SCR_WIDTH = 1000;
-const unsigned int SCR_HEIGHT = 600;	
-glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 5.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+const unsigned int SCR_WIDTH = 640;
+const unsigned int SCR_HEIGHT = 360;
 
 class MainScene{
 
@@ -66,7 +63,7 @@ class MainScene{
 
     }material;
     std::shared_ptr<GModelComponent> pCube;
-    std::shared_ptr<GCamComponent> pCam;
+    std::shared_ptr<GCameraComponent> pCam;
     
 public:
 
@@ -148,7 +145,7 @@ public:
 		glEnable(GL_DEPTH_TEST);
         
         pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne"));
-        pCam = GAssimpLoaderComponent::loadCamFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"), std::string("Camera"), glm::radians(45.0f), SCR_WIDTH, SCR_HEIGHT);
+        pCam = GAssimpLoaderComponent::loadCamFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"), std::string("Camera"), SCR_WIDTH, SCR_HEIGHT);
         
 		std::string vertexShaderResource=RES_DIR;
         vertexShaderResource+="Shaders/smb/vrtx.shdr";
@@ -163,7 +160,6 @@ public:
         
         // Color
         m_shaderProgram.use();
-        m_shaderProgram.setVec3("viewPos", cameraPos);
         
         m_shaderProgram.setVec3("diffuseColor",material.diffuse);
         m_shaderProgram.setFloat("ambientPower",material.ambientPower);
@@ -181,14 +177,6 @@ public:
         
         //Use specific shader
         m_shaderProgram.use();
-        
-
-        // Set Program Shader's Cam Projection & Viewport Model with m_pCam's. This should be made with Assign Program Renderer...
-        //glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        //m_shaderProgram.setMat4("camModel.pr", projection);
-        // camera/view transformation
-        //glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        //m_shaderProgram.setMat4("camModel.vw", view);
         
         //Set Specific Camera
         pCam->useCamera(m_shaderProgram);

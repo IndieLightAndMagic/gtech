@@ -17,13 +17,14 @@
 
 
 using namespace Assimp;
-class GCamComponent : public G::GItemComponent
+class GCameraComponent : public G::GItemComponent
 {
 
-
 	const std::string m_nodeName;
-
+    bool m_dirty;
+    
 	glm::vec3 m_locationVector;
+	
 	glm::vec3 m_lookAtVector;
 	glm::vec3 m_upVector;
 
@@ -38,17 +39,15 @@ class GCamComponent : public G::GItemComponent
 	struct {
 		unsigned int width, height;
 	}m_screen;
-
 public:
-	static std::shared_ptr<GCamComponent> createCamNodeUsingResource(const aiScene *pScene, const std::string &camName, float horizontalFieldOfView, unsigned int width, unsigned int height);
-	virtual ~GCamComponent(){};
+	static std::shared_ptr<GCameraComponent> createCamNodeUsingResource(const aiScene *pScene, const std::string &camName, unsigned int width, unsigned int height);
+	virtual ~GCameraComponent(){};
 
-	GCamComponent(const aiCamera *pCamera, const aiNode *pNode, float horizontalFieldOfView, unsigned int width, unsigned int height);
+	GCameraComponent(const aiCamera *pCamera, const aiNode *pNode, unsigned int width, unsigned int height);
 	void useCamera(Program &shaderProgram);
-	void setCamLocation(glm::vec3 &locationVector);
+	void setCameraLocation(glm::vec3 locationVector);
+    void setCameraOrientation(glm::vec3 lookAtVector, glm::vec3 upVector);
 
-
-	//void setComponentRotation(glm::vec3 &axisRotationVector, float rotationMagnitude_radians);
 };
 
 
