@@ -1,3 +1,5 @@
+//AUTHOR: JULIAN ANDRES GUARIN REYES.
+
 #include <stdlib.h>
 #include <time.h>
 
@@ -65,6 +67,45 @@ class MainScene{
     std::shared_ptr<GModelComponent> pCube;
     std::shared_ptr<GCameraComponent> pCam;
     
+    struct SceneController{
+        
+        static const Sint16 deadZoneAxisLowerLimit{-256};
+        static const Sint16 deadZoneAxisHigherLimit{256};
+        static const Sint16 axisHigherLimit{32767};
+        static const Sint16 axisLowerLimit{-32768};
+        
+        constexpr bool inDeadZone(Sint16 value) const
+        {
+            return value >= deadZoneAxisLowerLimit && value <= deadZoneAxisHigherLimit;
+        };
+        enum Ax {
+            HORIZONTAL_PS3_LEFTAXIS = 0,
+            VERTICAL_PS3_LEFTTAXIS = 1,
+            HORIZONTAL_PS3_RIGHTAXIS = 2,
+            VERTICAL_PS3_RIGHTAXIS = 3
+            
+        };
+        float m_axisSpan[4]{-1.0,1.0,-1.0,1.0}; //SDL PS3 LEFT JOY AXIS
+        float m_axisValues[4]{0.0f, 0.0f, 0.0f, 0.0f};
+        float getAxisValue(Ax index)
+        {
+            return m_axisValues[index];
+        };
+        void updateAxis(Ax index, Sint16 value)
+        {
+        	if(inDeadZone(value))
+            {
+                value = 0.0f;
+            }
+            float factor = (float)value / (float)axisLowerLimit;
+            factor *= m_axisSpan[index];
+        	m_axisValues[index] = factor;
+        	std::cout << m_axisValues[0] << " " << m_axisValues[1] << " " << m_axisValues[2] << " " << m_axisValues[3] << "\n";
+        }
+		        
+        
+    };
+    SceneController scontroller;
 public:
 
 	MainScene(OSWindowWrapperSDL * pSDL)
@@ -95,14 +136,18 @@ public:
 		int njoy = SDL_NumJoysticks();
 		if (njoy<1){
 			std::cout << " Warning: No Joysticks " << std::endl;
-		} else {
+		}
+		else 
+		{
 			std::cout << " Found " << njoy << " joysticks " << std::endl;
 			pGameController = SDL_JoystickOpen(0);
 			xGameControllerID = SDL_JoystickInstanceID(pGameController);
 			if (!pGameController)
 			{
 				std::cout << " Sorry Unable to init joysticks." << std::endl;
-			} else {
+			}
+			else 
+			{
 				std::cout << " Joystick Instance ID: [" << SDL_JoystickInstanceID(pGameController) << "] --  Cool." << std::endl;
 				std::cout << " Joystick name: " << SDL_JoystickName(pGameController) << std::endl;
 				std::cout << " Joystick num axis: " << SDL_JoystickNumAxes(pGameController) << std::endl;
@@ -115,16 +160,25 @@ public:
 		SDL_Event e;
 		if (SDL_PollEvent(&e)==0) return;
 
-		if ( e.type == SDL_QUIT) {
+		if ( e.type == SDL_QUIT) 
+		{
 			m_bRun = false;
-		} else if(e.type == SDL_KEYDOWN) {
+		} 
+		else if(e.type == SDL_KEYDOWN) 
+		{
 			
 			if (e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
 				m_bRun = false;
 			
-		} else if (e.type == SDL_JOYAXISMOTION){
-			if (e.jaxis.which == xGameControllerID){
-				std::cout << "Axis: " << (unsigned int)e.jaxis.axis << std::endl;
+		} 
+		else if (e.type == SDL_JOYAXISMOTION)
+		{
+			if (e.jaxis.which == xGameControllerID)
+			{
+				//std::cout << "Axis: " << (unsigned int)e.jaxis.axis << std::endl;
+                //auto axisvalue = scontroller.getAxisValue((SceneController::Ax)e.jaxis.axis, e.jaxis.value);
+                scontroller.updateAxis((SceneController::Ax)e.jaxis.axis, e.jaxis.value);
+                //std::cout<< "["<< (unsigned int)e.jaxis.axis << "] "<< scontroller.getAxisValue((SceneController::Ax)e.jaxis.axis)  << "\n";
 			}
 		} else if (e.type == SDL_JOYBUTTONUP || e.type == SDL_JOYBUTTONDOWN){
 			if (e.jbutton.which == xGameControllerID && e.type == SDL_JOYBUTTONUP){
@@ -132,11 +186,13 @@ public:
 				
 				if ((unsigned int)e.jbutton.button == 10 || (unsigned int)e.jbutton.button == 11){
 					if (e.jbutton.button == 10){
+        
 					} else if (e.jbutton.button == 11) {
 					} 
 				}
 			}
 		}
+
 	}
 	void sceneInit(){
 		
@@ -193,8 +249,8 @@ public:
 		sceneInit();
         //pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
 		for (;m_bRun;){
-			processInput();
 			renderScene();
+			processInput();
 		}
 		finishScene();
 		return 0;

@@ -22,11 +22,12 @@ class GCameraComponent : public G::GItemComponent
 
 	const std::string m_nodeName;
     bool m_dirty;
-    
+    public:
 	glm::vec3 m_locationVector;
-	
+	private:
 	glm::vec3 m_lookAtVector;
 	glm::vec3 m_upVector;
+	glm::vec3 m_rightVector;
 
 	glm::mat4 m_viewModelCamMatrix;
 	glm::mat4 m_projectionModelCamMatrix;
@@ -47,6 +48,26 @@ public:
 	void useCamera(Program &shaderProgram);
 	void setCameraLocation(glm::vec3 locationVector);
     void setCameraOrientation(glm::vec3 lookAtVector, glm::vec3 upVector);
+
+
+    // Camera Movements.
+    // Position Translation.
+    void moveCamera(glm::vec3 deltaPosition);
+    
+    // Move throughout camera's lookAtVector
+    void moveCameraForwardBackwards(float dt, float scalarSpeed);
+    void moveCameraForwardBackwards(float scalarDistance);
+
+    // Move throughout camera's right vector 
+    void moveCameraRightLeft(float dt, float scalarSpeed);
+    void moveCameraRightLeft(float scalarDistance);
+
+    // Move throughout camera's up vector
+    void moveCameraUpDown(float dt, float scalarSpeed);
+    void moveCameraUpDown(float scalarDistance);
+
+    
+
 
 };
 

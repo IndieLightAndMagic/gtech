@@ -67,6 +67,7 @@ void GCameraComponent::setCameraOrientation(glm::vec3 lookAtVector, glm::vec3 up
 {
     m_lookAtVector = lookAtVector;
     m_upVector = upVector;
+    m_rightVector = glm::cross(m_lookAtVector, m_upVector);
     m_dirty = true;
 }
 
