@@ -47,7 +47,7 @@ public:
 	 *
 	 * @return     On success this function returns a pointer to a model, a GModelComponent, on failure it will return a nullptr.
 	 */
-	static std::shared_ptr<GModelComponent> createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
+    static std::unique_ptr<GModelComponent> createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
 	virtual ~GModelComponent(){};
 
 	GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly=false);
@@ -63,8 +63,8 @@ class GAssimpLoaderComponent : public G::GItemComponent
 
 public:
 	static Importer importer;
-	static std::shared_ptr<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
-	static std::shared_ptr<GCameraComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height);
+	static std::unique_ptr<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
+	static std::unique_ptr<GCameraComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height);
 
 	static void printSceneGeneralInfo(const aiScene *pScene);
 	static const aiNode * getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);

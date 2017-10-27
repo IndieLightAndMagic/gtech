@@ -10,6 +10,39 @@
 #include <MESHCOMPONENT/GCamComponent.h>
 #include <MESHCOMPONENT/GMeshComponent.h>
 
+void GCameraComponent::moveCamera(glm::vec3 deltaPosition)
+{
+    m_locationVector += deltaPosition;
+    m_dirty = true;
+}
+void GCameraComponent::moveCameraForwardBackwards(float dt, float scalarSpeed)
+{
+    auto lookAtVector = glm::normalize(m_lookAtVector) * (dt * scalarSpeed);
+    moveCamera(lookAtVector);
+}
+void GCameraComponent::moveCameraForwardBackwards(float scalarDistance)
+{
+    moveCameraForwardBackwards(1.0f, scalarDistance);
+}
+
+void GCameraComponent::moveCameraRightLeft(float dt, float scalarSpeed)
+{
+    auto rightVector = glm::normalize(m_rightVector) * (dt*scalarSpeed);
+    moveCamera(rightVector);
+}
+void GCameraComponent::moveCameraRightLeft(float scalarDistance)
+{
+    moveCameraRightLeft(1.0f, scalarDistance);
+}
+void GCameraComponent::moveCameraUpDown(float dt, float scalarSpeed)
+{
+    auto upVector = glm::normalize(m_upVector) * (dt * scalarSpeed);
+    moveCamera(upVector);
+}
+void GCameraComponent::moveCameraUpDown(float scalarDistance)
+{
+    moveCameraUpDown(1.0f, scalarDistance);
+}
 struct GCameraDecomposer{
 
     aiQuaterniont<float> quat;
@@ -91,7 +124,7 @@ GCameraComponent::GCameraComponent(const aiCamera *pCamera, const aiNode *camera
 	std::cout << "Up:<" << m_upVector.x << " , " << m_upVector.y << " , " << m_upVector.z <<">\n";
 }
 
-std::shared_ptr<GCameraComponent> GCameraComponent::createCamNodeUsingResource(const aiScene *pScene, const std::string &meshName, unsigned int width, unsigned int height)
+std::unique_ptr<GCameraComponent> GCameraComponent::createCamNodeUsingResource(const aiScene *pScene, const std::string &meshName, unsigned int width, unsigned int height)
 {
     auto pCameraNode = GAssimpLoaderComponent::getMeshOnTheSceneByName(pScene->mRootNode, meshName);
     
@@ -101,17 +134,17 @@ std::shared_ptr<GCameraComponent> GCameraComponent::createCamNodeUsingResource(c
         auto cameraName = std::string{pCamera->mName.C_Str()};
         if (cameraName == meshName)
         {
-            auto pComponent = std::make_shared<GCameraComponent>(pCamera, pCameraNode, width, height);
+            auto pComponent = std::unique_ptr<GCameraComponent>(new GCameraComponent(pCamera, pCameraNode, width, height));
             return pComponent;
         }
     }
     return nullptr;
 }
-std::shared_ptr<GCameraComponent> GAssimpLoaderComponent::loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height)
+std::unique_ptr<GCameraComponent> GAssimpLoaderComponent::loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height)
 {
     Importer importer;
     const aiScene * pScene = importer.ReadFile(sceneResourceFileName, aiProcess_Triangulate);
     if (!pScene) return nullptr;
-    return GCameraComponent::createCamNodeUsingResource(pScene, camName, width, height);
+    return std::unique_ptr<GCameraComponent>(GCameraComponent::createCamNodeUsingResource(pScene, camName, width, height));
 
 }

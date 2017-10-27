@@ -15,7 +15,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
+/*
+ TODO:
+     + Improve camera movements through Matrix.
+     + Get A Generalization aka Better Abstraction.
+ 
+     + Better relation with shader, camModel is something hardcoded.
+ */
 using namespace Assimp;
 class GCameraComponent : public G::GItemComponent
 {
@@ -41,7 +47,7 @@ class GCameraComponent : public G::GItemComponent
 		unsigned int width, height;
 	}m_screen;
 public:
-	static std::shared_ptr<GCameraComponent> createCamNodeUsingResource(const aiScene *pScene, const std::string &camName, unsigned int width, unsigned int height);
+    static std::unique_ptr<GCameraComponent> createCamNodeUsingResource(const aiScene *pScene, const std::string &camName, unsigned int width, unsigned int height);
 	virtual ~GCameraComponent(){};
 
 	GCameraComponent(const aiCamera *pCamera, const aiNode *pNode, unsigned int width, unsigned int height);

@@ -3,6 +3,7 @@
 cmake_minimum_required(VERSION 3.9.0 FATAL_ERROR)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(TARGET_NAME MeshComponent)
+project(${TARGET_NAME})
 
 #DIRECTORIES
 get_filename_component(ROOT_DIR "../.." ABSOLUTE)

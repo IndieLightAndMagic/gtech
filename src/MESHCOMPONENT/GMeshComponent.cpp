@@ -125,18 +125,18 @@ GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode, b
     }
 }
 
-std::shared_ptr<GModelComponent> GModelComponent::createComponentNodeUsingResource(const aiScene * pScene, const std::string &meshName)
+std::unique_ptr<GModelComponent> GModelComponent::createComponentNodeUsingResource(const aiScene * pScene, const std::string &meshName)
 {
 	auto nodeToCreateComponent = GAssimpLoaderComponent::getMeshOnTheSceneByName(pScene->mRootNode,meshName);
-    std::shared_ptr<GModelComponent> pComponent = nullptr;
+    std::unique_ptr<GModelComponent> pComponent = nullptr;
     if (nodeToCreateComponent)
     {
-        pComponent = std::make_shared<GModelComponent>(pScene, nodeToCreateComponent);
+        pComponent = std::unique_ptr<GModelComponent>(new GModelComponent(pScene, nodeToCreateComponent));
     }
     return pComponent;
 }
 
-std::shared_ptr<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceFileName, const std::string &meshName)
+std::unique_ptr<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceFileName, const std::string &meshName)
 {
     Importer importer;
     const aiScene * pScene = importer.ReadFile(sceneResourceFileName, aiProcess_Triangulate);

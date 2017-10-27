@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 #Project Name and Resources 
-set(TARGET_NAME camsample)
+set(TARGET_NAME gamepadsample)
 
 
 project(${TARGET_NAME})
@@ -62,19 +62,19 @@ if (APPLE)
 endif()
 
 foreach(STANDARD_STATIC_LIB ${STANDARD_STATIC_LIBRARIES})
-	target_link_libraries(camsample "-l${STANDARD_STATIC_LIB}")
+	target_link_libraries(${TARGET_NAME} "-l${STANDARD_STATIC_LIB}")
 endforeach(STANDARD_STATIC_LIB)
 foreach(LIB ${STATIC_LIBRARIES})
 	message(STATUS "Static Lib: lib${LIB}.a")
 endforeach(LIB)
 foreach(G_STATIC_LIB ${G_STATIC_LIBRARIES})
-	target_link_libraries(camsample "${CMAKE_SOURCE_DIR}/../../lib/lib${G_STATIC_LIB}.a")
+	target_link_libraries(${TARGET_NAME} "${CMAKE_SOURCE_DIR}/../../lib/lib${G_STATIC_LIB}.a")
 	message(STATUS "${CMAKE_SOURCE_DIR}/../../lib/lib${G_STATIC_LIB}.a")
 endforeach(G_STATIC_LIB)
 
 if (APPLE)
 foreach(FMWK ${STATIC_FRAMEWORKS})
-	target_link_libraries(camsample "-framework ${FMWK}")
+	target_link_libraries(${TARGET_NAME} "-framework ${FMWK}")
 	message(STATUS "Framework: ${FMWK}")
 endforeach(FMWK)
 

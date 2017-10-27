@@ -2,7 +2,8 @@
 
 #include <stdlib.h>
 #include <time.h>
-
+#include <memory>
+#include <iostream>
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -17,7 +18,6 @@
 #include <UTIL/Util.h>
 #include <MESHCOMPONENT/GMeshComponent.h>
 #include <MESHCOMPONENT/GCamComponent.h>
-#include <iostream>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -62,7 +62,7 @@ class MainScene{
     	float shininess{32.0f};
 
     }material;
-    std::shared_ptr<GModelComponent> pCube;
+    std::vector<GModelComponent> pCubes;
     std::shared_ptr<GCameraComponent> pCam;
     
 public:
@@ -227,7 +227,10 @@ public:
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
         
-        pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne"));
+        std::unique_ptr<GModelComponent> aCubeUniquePtr = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne"));
+        GModelComponent * aCubePtr = aCubeUniquePtr.release();
+        pCubes.push_back(*aCubePtr);
+        
         pCam = GAssimpLoaderComponent::loadCamFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"), std::string("Camera"), SCR_WIDTH, SCR_HEIGHT);
         
 		std::string vertexShaderResource=RES_DIR;
@@ -265,7 +268,7 @@ public:
         pCam->useCamera(m_shaderProgram);
         
         //Draw Cube
-        pCube->drawComponent(m_shaderProgram);
+        pCubes[0].drawComponent(m_shaderProgram);
 		
 		SDL_GL_SwapWindow(pWindow);
 	}
@@ -274,7 +277,7 @@ public:
 	}
 	int mainLoop(){
 		sceneInit();
-        const float speedx = .10f;
+        const float speedx = .05f, speedz = -.05f;
         //pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
         
         
@@ -285,10 +288,8 @@ public:
             dt=timer.getIntervalInSeconds();
             
             //Update 
-            auto locationVector = pCam->m_locationVector;
-            locationVector.x += dt*speedx*scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_LEFTAXIS);
-            pCam->setCameraLocation(locationVector);
-            
+            auto controlVector = glm::vec3{speedx*scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_LEFTAXIS),0.0f,speedz*scontroller.getAxisValue(MainScene::SceneController::VERTICAL_PS3_LEFTTAXIS)};
+            pCam->moveCamera(dt*controlVector);
             
             //render
             renderScene();
