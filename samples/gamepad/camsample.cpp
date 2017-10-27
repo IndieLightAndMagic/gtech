@@ -43,7 +43,6 @@ class MainScene{
 	SDL_JoystickID xGameControllerID;
 	Program m_shaderProgram;
 	bool m_bRun{true};
-
 	struct {
 		
 		unsigned int vbo,vao;
@@ -52,7 +51,6 @@ class MainScene{
 		float rotationMagnitude;
 
 	}triangle;
-    
     struct {
         glm::vec3 direction{glm::vec3(1.0f,0.0f,-1.0f)};
         glm::vec3 diffuseColor{glm::vec3(WHITE)};
@@ -67,6 +65,36 @@ class MainScene{
     std::shared_ptr<GModelComponent> pCube;
     std::shared_ptr<GCameraComponent> pCam;
     
+public:
+#pragma TIMECONTROLLER
+    struct TimeController{
+        static Uint64 m_highPerformanceCounterFrequency;
+        Uint64 m_referenceTick;
+        static constexpr float secondsToMilliseconds(float s) {return s * 1000;}
+        inline void resetTimer()
+        {
+            m_referenceTick = SDL_GetPerformanceCounter();
+        }
+        TimeController()
+        {
+            if (!m_highPerformanceCounterFrequency) m_highPerformanceCounterFrequency = SDL_GetPerformanceFrequency();
+            resetTimer();
+        }
+        inline float getIntervalInSeconds(bool reset = true)
+        {
+            auto nowTick = SDL_GetPerformanceCounter();
+            auto interval = (float)((nowTick - m_referenceTick)*1000) / SDL_GetPerformanceFrequency();
+            if (reset)
+            {
+                m_referenceTick = nowTick;
+            }
+            return interval;
+        }
+        
+        
+    };
+    TimeController timer;
+#pragma SCENECONTROLLER
     struct SceneController{
         
         static const Sint16 deadZoneAxisLowerLimit{-256};
@@ -106,7 +134,6 @@ class MainScene{
         
     };
     SceneController scontroller;
-public:
 
 	MainScene(OSWindowWrapperSDL * pSDL)
 	{
@@ -157,7 +184,7 @@ public:
 		}
 	}
 	void processInput(){
-		SDL_Event e;
+        SDL_Event e;
 		if (SDL_PollEvent(&e)==0) return;
 
 		if ( e.type == SDL_QUIT) 
@@ -192,7 +219,7 @@ public:
 				}
 			}
 		}
-
+        
 	}
 	void sceneInit(){
 		
@@ -247,15 +274,33 @@ public:
 	}
 	int mainLoop(){
 		sceneInit();
+        const float speedx = .10f;
         //pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
-		for (;m_bRun;){
-			renderScene();
-			processInput();
+        
+        
+        for (auto dt = timer.getIntervalInSeconds(); m_bRun; ){
+			
+            processInput();
+            //This should go in the update of everyone
+            dt=timer.getIntervalInSeconds();
+            
+            //Update 
+            auto locationVector = pCam->m_locationVector;
+            locationVector.x += dt*speedx*scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_LEFTAXIS);
+            pCam->setCameraLocation(locationVector);
+            
+            
+            //render
+            renderScene();
+            
+            
 		}
 		finishScene();
 		return 0;
 	}
 };
+Uint64 MainScene::TimeController::m_highPerformanceCounterFrequency = 0;
+
 int main(int argc, char ** argv)
 {
 	
