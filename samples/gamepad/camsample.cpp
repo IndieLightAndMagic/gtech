@@ -62,7 +62,7 @@ class MainScene{
     	float shininess{32.0f};
 
     }material;
-    std::vector<GModelComponent> pCubes;
+    std::vector<GModelComponent*> pCubesPtr;
     std::shared_ptr<GCameraComponent> pCam;
     
 public:
@@ -128,7 +128,7 @@ public:
             float factor = (float)value / (float)axisLowerLimit;
             factor *= m_axisSpan[index];
         	m_axisValues[index] = factor;
-        	std::cout << m_axisValues[0] << " " << m_axisValues[1] << " " << m_axisValues[2] << " " << m_axisValues[3] << "\n";
+        	//std::cout << m_axisValues[0] << " " << m_axisValues[1] << " " << m_axisValues[2] << " " << m_axisValues[3] << "\n";
         }
 		        
         
@@ -145,7 +145,11 @@ public:
 
 	}
 	~MainScene(){
-
+        
+        for (auto pCube:pCubesPtr)
+        {
+            delete pCube;
+        }
 	}
 
 	void finishControllerHw(){
@@ -227,9 +231,10 @@ public:
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
         
-        std::unique_ptr<GModelComponent> aCubeUniquePtr = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne"));
-        GModelComponent * aCubePtr = aCubeUniquePtr.release();
-        pCubes.push_back(*aCubePtr);
+        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.000")).release());
+        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.001")).release());
+        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.002")).release());
+        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.003")).release());
         
         pCam = GAssimpLoaderComponent::loadCamFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"), std::string("Camera"), SCR_WIDTH, SCR_HEIGHT);
         
@@ -268,8 +273,11 @@ public:
         pCam->useCamera(m_shaderProgram);
         
         //Draw Cube
-        pCubes[0].drawComponent(m_shaderProgram);
-		
+        pCubesPtr[0]->drawComponent(m_shaderProgram);
+        pCubesPtr[1]->drawComponent(m_shaderProgram);
+        pCubesPtr[2]->drawComponent(m_shaderProgram);
+        pCubesPtr[3]->drawComponent(m_shaderProgram);
+        
 		SDL_GL_SwapWindow(pWindow);
 	}
 	void finishScene(){

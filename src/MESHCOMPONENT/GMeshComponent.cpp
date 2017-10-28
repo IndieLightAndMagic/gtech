@@ -38,7 +38,6 @@ void GModelComponent::setComponentRotation(glm::vec3 &rotationAxisVector, float 
     m_rotationMatrix = glm::mat4(1.0f);
     m_rotationMatrix = glm::rotate(m_rotationMatrix, float(rotationMagnitude_radians), rotationAxisVector);
 }
-
 GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly):
     m_nodeName(std::string(pNode->mName.C_Str())),
     m_locationVector(glm::vec3(0.0f)),

@@ -51,7 +51,12 @@ public:
 	virtual ~GModelComponent(){};
 
 	GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly=false);
-
+    GModelComponent(GModelComponent &&otherModelComponent) = default;
+    GModelComponent(GModelComponent &otherModelComponent) = default;
+    GModelComponent& operator=(GModelComponent &&otherModelComponent) = default;
+    GModelComponent& operator=(GModelComponent &otherModelComponent) = default;
+    
+    
 	void setComponentLocation(glm::vec3 &locationVector);
 	void setComponentRotation(glm::vec3 &rotationAxisVector, float rotationMagnitude_radians);
 	void drawComponent(Program &shaderProgram);

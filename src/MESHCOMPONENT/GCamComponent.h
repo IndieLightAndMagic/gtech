@@ -47,10 +47,12 @@ class GCameraComponent : public G::GItemComponent
 		unsigned int width, height;
 	}m_screen;
 public:
+
     static std::unique_ptr<GCameraComponent> createCamNodeUsingResource(const aiScene *pScene, const std::string &camName, unsigned int width, unsigned int height);
 	virtual ~GCameraComponent(){};
 
 	GCameraComponent(const aiCamera *pCamera, const aiNode *pNode, unsigned int width, unsigned int height);
+    GCameraComponent(GCameraComponent &other);
 	void useCamera(Program &shaderProgram);
 	void setCameraLocation(glm::vec3 locationVector);
     void setCameraOrientation(glm::vec3 lookAtVector, glm::vec3 upVector);
