@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <regex>
+
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -50,9 +52,10 @@ public:
     static std::unique_ptr<GModelComponent> createComponentNodeUsingResource(const aiScene *pScene, const std::string &meshName);
 	virtual ~GModelComponent(){};
 
+    GModelComponent() = default;
 	GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly=false);
     GModelComponent(GModelComponent &&otherModelComponent) = default;
-    GModelComponent(GModelComponent &otherModelComponent) = default;
+    GModelComponent(const GModelComponent &otherModelComponent) = default;
     GModelComponent& operator=(GModelComponent &&otherModelComponent) = default;
     GModelComponent& operator=(GModelComponent &otherModelComponent) = default;
     
@@ -69,16 +72,15 @@ class GAssimpLoaderComponent : public G::GItemComponent
 public:
 	static Importer importer;
 	
-	static std::vector<GModelComponent*> loadIndexedComponentsFromScene(const std::string &sceneResourceName, const std::string &meshName);
+    static std::vector<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::regex &regExpression);
 
 
 	static std::unique_ptr<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
 	static std::unique_ptr<GCameraComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height);
 
 	static void printSceneGeneralInfo(const aiScene *pScene);
-	static const aiNode * getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
-
-
+	static const aiNode* getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
+    static void getMeshesNodeNamesVectorOnTheSceneByRegExp(const aiNode *pNode, const std::regex &regularExpression, std::vector<std::string> &vec);
 };
 
 

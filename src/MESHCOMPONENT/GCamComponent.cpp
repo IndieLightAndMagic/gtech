@@ -103,11 +103,11 @@ void GCameraComponent::setCameraOrientation(glm::vec3 lookAtVector, glm::vec3 up
     m_rightVector = glm::cross(m_lookAtVector, m_upVector);
     m_dirty = true;
 }
-GCameraComponent::GCameraComponent(GCameraComponent &rOther)
+GCameraComponent::GCameraComponent(GCameraComponent &rOther):G::GItemComponent(rOther)
 {
     
 }
-GCameraComponent::GCameraComponent(const aiCamera *pCamera, const aiNode *cameraNode, unsigned int screenWidth, unsigned int screenHeight):
+GCameraComponent::GCameraComponent(const aiCamera *pCamera, const aiNode *cameraNode, unsigned int screenWidth, unsigned int screenHeight):G::GItemComponent(),
     m_nodeName(std::string(pCamera->mName.C_Str())),
     m_horizontalFieldOfViewRadians(pCamera->mHorizontalFOV*2),
     m_clipPlaneFar(pCamera->mClipPlaneFar),

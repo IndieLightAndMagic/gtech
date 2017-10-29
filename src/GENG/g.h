@@ -24,14 +24,15 @@ public:
 		std::cout << "[+]GIDBasedComponent @" << m_iId << std::endl; 
 
 	}
-	GIDBasedComponent(GIDBasedComponent & other){
+	GIDBasedComponent(const GIDBasedComponent &rOther){
 		m_iId = ++m_iIdCounter;
-		std::cout << "[+]GIDBasedComponent @" << m_iId << " copied from @" << other.getComponentId() << std::endl; 
+		std::cout << "[+]GIDBasedComponent @" << m_iId << " copied from @" << rOther.getComponentId() << std::endl;
 	}
+    GIDBasedComponent& operator=(GIDBasedComponent &rOther) = default;
 	virtual ~GIDBasedComponent();
 
 
-	int getComponentId()
+	int getComponentId() const
 	{
 		return m_iId;
 	}
@@ -45,9 +46,11 @@ class GItemComponent: public GIDBasedComponent
 
 	GItemComponent * m_pParent = 0;
 	std::map<int, GItemComponent*> m_mapComponents;
-
-
+    
 public:
+    GItemComponent() = default;
+    GItemComponent(const GItemComponent &other) = default;
+    GItemComponent& operator=(GItemComponent &other) = default;
 
 	void 	addComponent(GItemComponent * pChild);
 	void	removeComponentById(int id);

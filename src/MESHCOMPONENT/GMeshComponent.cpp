@@ -38,7 +38,7 @@ void GModelComponent::setComponentRotation(glm::vec3 &rotationAxisVector, float 
     m_rotationMatrix = glm::mat4(1.0f);
     m_rotationMatrix = glm::rotate(m_rotationMatrix, float(rotationMagnitude_radians), rotationAxisVector);
 }
-GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly):
+GModelComponent::GModelComponent(const aiScene * pScene, const aiNode * pNode, bool localOnly):G::GItemComponent(),
     m_nodeName(std::string(pNode->mName.C_Str())),
     m_locationVector(glm::vec3(0.0f)),
     m_rotationAxisVector(glm::vec3(0.0f,0.0f,1.0f)),
@@ -135,6 +135,24 @@ std::unique_ptr<GModelComponent> GModelComponent::createComponentNodeUsingResour
     return pComponent;
 }
 
+
+std::vector<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceName, const std::regex &regExpression)
+{
+    std::vector<GModelComponent> modelComponents;
+    Importer importer;
+    const aiScene *pScene = importer.ReadFile(sceneResourceName, aiProcess_Triangulate);
+    std::vector<std::string> meshesFoundNames;
+    getMeshesNodeNamesVectorOnTheSceneByRegExp(pScene->mRootNode, regExpression, meshesFoundNames);
+    for(auto meshName:meshesFoundNames)
+    {
+        auto upComponent = GModelComponent::createComponentNodeUsingResource(pScene, meshName);
+        auto pComponent = upComponent.release();
+        modelComponents.push_back(*pComponent);
+        
+        
+    }
+    return modelComponents;
+}
 std::unique_ptr<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceFileName, const std::string &meshName)
 {
     Importer importer;
@@ -230,5 +248,23 @@ const aiNode *GAssimpLoaderComponent::getMeshOnTheSceneByName(const aiNode *pNod
 	}
 	return nullptr;
 }
+void GAssimpLoaderComponent::getMeshesNodeNamesVectorOnTheSceneByRegExp(const aiNode *pNode, const std::regex &regularExpr, std::vector<std::string> &vec)
+{
+    std::string nodeName{pNode->mName.C_Str()};
+    if (std::regex_search(nodeName,regularExpr))
+    {
+        if (pNode->mMeshes)
+        {
+            vec.push_back(nodeName);
+        }
+    }
+    auto nChildren = pNode -> mNumChildren;
+    for (auto childrenIndex = 0; childrenIndex < nChildren; ++childrenIndex)
+    {
+        getMeshesNodeNamesVectorOnTheSceneByRegExp(pNode->mChildren[childrenIndex], regularExpr, vec);
+    }
+    
+}
+
 
 

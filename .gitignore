@@ -40,4 +40,6 @@ samples/*/cube.cpp
 
 
 !samples/Resources/Primitives/*.cpp
+x/
+m/
 
