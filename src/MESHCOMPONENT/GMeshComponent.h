@@ -68,6 +68,10 @@ class GAssimpLoaderComponent : public G::GItemComponent
 
 public:
 	static Importer importer;
+	
+	static std::vector<GModelComponent*> loadIndexedComponentsFromScene(const std::string &sceneResourceName, const std::string &meshName);
+
+
 	static std::unique_ptr<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
 	static std::unique_ptr<GCameraComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height);
 
