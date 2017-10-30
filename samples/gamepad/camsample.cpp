@@ -30,7 +30,7 @@
 const unsigned int SCR_WIDTH = 640;
 const unsigned int SCR_HEIGHT = 360;
 
-#pragma MAINSCENE
+#pragma mark MAINSCENE
 class MainScene{
 
 	SDL_Window * pWindow;
@@ -53,7 +53,7 @@ class MainScene{
     std::shared_ptr<GCameraComponent> pCam;
     
 public:
-#pragma TIMECONTROLLER
+#pragma mark TIMECONTROLLER
     struct TimeController{
         static Uint64 m_highPerformanceCounterFrequency;
         Uint64 m_referenceTick;
@@ -70,7 +70,7 @@ public:
         inline float getIntervalInSeconds(bool reset = true)
         {
             auto nowTick = SDL_GetPerformanceCounter();
-            auto interval = (float)((nowTick - m_referenceTick)*1000) / SDL_GetPerformanceFrequency();
+            auto interval = (float)((nowTick - m_referenceTick)) / SDL_GetPerformanceFrequency();
             if (reset)
             {
                 m_referenceTick = nowTick;
@@ -81,7 +81,7 @@ public:
         
     };
     TimeController timer;
-#pragma SCENECONTROLLER
+#pragma mark SCENECONTROLLER
     struct SceneController{
         
         static const Sint16 deadZoneAxisLowerLimit{-256};
@@ -100,7 +100,7 @@ public:
             VERTICAL_PS3_RIGHTAXIS = 3
             
         };
-        float m_axisSpan[4]{-1.0,1.0,-1.0,1.0}; //SDL PS3 LEFT JOY AXIS
+        float m_axisSpan[4]{1.0,-1.0,1.0,1.0}; //SDL PS3 LEFT JOY AXIS
         float m_axisValues[4]{0.0f, 0.0f, 0.0f, 0.0f};
         float getAxisValue(Ax index)
         {
@@ -115,13 +115,13 @@ public:
             float factor = (float)value / (float)axisLowerLimit;
             factor *= m_axisSpan[index];
         	m_axisValues[index] = factor;
-        	//std::cout << m_axisValues[0] << " " << m_axisValues[1] << " " << m_axisValues[2] << " " << m_axisValues[3] << "\n";
+        	std::cout << m_axisValues[0] << " " << m_axisValues[1] << " " << m_axisValues[2] << " " << m_axisValues[3] << "\n";
         }
 		        
         
     };
     SceneController scontroller;
-#pragma MAINSCENE_CTOR
+#pragma mark MAINSCENE_CTOR
 	MainScene(OSWindowWrapperSDL * pSDL)
 	{
 		/* The window the Scene is running in */
@@ -131,11 +131,11 @@ public:
 		initControllerHw();
 
 	}
-#pragma MAINSCENE_DTOR
+#pragma mark MAINSCENE_DTOR
 	~MainScene(){
         
 	}
-#pragma CONTROLLER_HW
+#pragma mark CONTROLLER_HW
 	void finishControllerHw(){
 		if (pGameController) {
 			SDL_JoystickClose(pGameController);
@@ -144,7 +144,7 @@ public:
 		pGameController = 0;
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 	}
-#pragma INITCONTROLLERHW
+#pragma mark INITCONTROLLERHW
 	void initControllerHw(){
 
 		/* Initialize Joystick */
@@ -172,7 +172,7 @@ public:
 			}
 		}
 	}
-#pragma PROCESSINPUT
+#pragma mark PROCESSINPUT
 	void processInput(){
         SDL_Event e;
 		if (SDL_PollEvent(&e)==0) return;
@@ -211,7 +211,7 @@ public:
 		}
         
 	}
-#pragma SCENEINIT
+#pragma mark SCENEINIT
 	void sceneInit(){
 		
 		// Resources Loading. Filename. 
@@ -267,7 +267,7 @@ public:
 		glEnable(GL_DEPTH_TEST);
 
 	}
-#pragma RENDERSCENE
+#pragma mark RENDERSCENE
 	void renderScene(){
 		
 		glClearColor(DARKSLATEBLUE, 1.0f);
@@ -293,8 +293,8 @@ public:
 	}
 	int mainLoop(){
 		sceneInit();
-        const float speedx = .05f, speedz = -.05f;
-        //pCube = GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/foxy.blend"),std::string("Cube"));
+        const float speedx = 5.0f, speedz = 5.0f;
+        const float speedyaw = 180.0f, speedpitch = 180.0f; // 1 degs / sec.
         
         
         for (auto dt = timer.getIntervalInSeconds(); m_bRun; ){
@@ -304,21 +304,25 @@ public:
             dt=timer.getIntervalInSeconds();
             
             //Update 
-            auto controlVector = glm::vec3{speedx*scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_LEFTAXIS),0.0f,speedz*scontroller.getAxisValue(MainScene::SceneController::VERTICAL_PS3_LEFTTAXIS)};
-            pCam->moveCamera(dt*controlVector);
+            auto controlVector = glm::vec3{speedx*scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_LEFTAXIS),0.0f,speedz*scontroller.getAxisValue(MainScene::SceneController::VERTICAL_PS3_LEFTTAXIS)}*dt;
+            pCam->moveCamera(controlVector);
             
+            auto rotationControl = glm::vec2{scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_RIGHTAXIS),scontroller.getAxisValue(MainScene::SceneController::VERTICAL_PS3_RIGHTAXIS)}*dt;
+            pCam->yawCameraRightLeft(glm::radians(speedyaw)*rotationControl.x);
+            pCam->pitchCameraUpDown(glm::radians(speedpitch)*rotationControl.y);
             //render
             renderScene();
             
             
 		}
 		finishScene();
+        
 		return 0;
 	}
 };
 Uint64 MainScene::TimeController::m_highPerformanceCounterFrequency = 0;
 
-#pragma MAIN
+#pragma mark MAIN
 int main(int argc, char ** argv)
 {
 	

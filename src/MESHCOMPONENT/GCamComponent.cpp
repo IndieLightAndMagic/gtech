@@ -10,11 +10,13 @@
 #include <MESHCOMPONENT/GCamComponent.h>
 #include <MESHCOMPONENT/GMeshComponent.h>
 
+#pragma mark MOVECAMERA
 void GCameraComponent::moveCamera(glm::vec3 deltaPosition)
 {
     m_locationVector += deltaPosition;
     m_dirty = true;
 }
+#pragma mark MOVECAMERA_FB
 void GCameraComponent::moveCameraForwardBackwards(float dt, float scalarSpeed)
 {
     auto lookAtVector = glm::normalize(m_lookAtVector) * (dt * scalarSpeed);
@@ -24,7 +26,7 @@ void GCameraComponent::moveCameraForwardBackwards(float scalarDistance)
 {
     moveCameraForwardBackwards(1.0f, scalarDistance);
 }
-
+#pragma mark MOVECAMERA_RL
 void GCameraComponent::moveCameraRightLeft(float dt, float scalarSpeed)
 {
     auto rightVector = glm::normalize(m_rightVector) * (dt*scalarSpeed);
@@ -34,6 +36,7 @@ void GCameraComponent::moveCameraRightLeft(float scalarDistance)
 {
     moveCameraRightLeft(1.0f, scalarDistance);
 }
+#pragma mark MOVECAMERA_UD
 void GCameraComponent::moveCameraUpDown(float dt, float scalarSpeed)
 {
     auto upVector = glm::normalize(m_upVector) * (dt * scalarSpeed);
@@ -43,6 +46,35 @@ void GCameraComponent::moveCameraUpDown(float scalarDistance)
 {
     moveCameraUpDown(1.0f, scalarDistance);
 }
+#pragma mark MOVECAMERA_PITCH
+void GCameraComponent::pitchCameraUpDown(float angle)
+{
+    auto right = glm::normalize(m_rightVector);
+    glm::mat4 rotMat(1.0f);
+    rotMat = glm::rotate(rotMat, angle, right);
+    m_lookAtVector = glm::vec3(rotMat * glm::vec4(m_lookAtVector, 1.0f));
+    m_upVector = glm::vec3(rotMat * glm::vec4(m_upVector, 1.0f));
+    m_dirty = true;   
+}
+void GCameraComponent::pitchCameraUpDown(float dt, float angularSpeed)
+{
+    pitchCameraUpDown(dt*angularSpeed);
+}
+#pragma mark MOVECAMERA_YAW
+void GCameraComponent::yawCameraRightLeft(float angle)
+{
+    auto up = glm::normalize(m_upVector);
+    glm::mat4 rotMat(1.0f);
+    rotMat = glm::rotate(rotMat, angle, up);
+    m_lookAtVector = glm::vec3(rotMat * glm::vec4(m_lookAtVector, 1.0f));
+    m_rightVector = glm::vec3(rotMat * glm::vec4(m_rightVector, 1.0f));
+    m_dirty = true;   
+}
+void GCameraComponent::yawCameraRightLeft(float dt, float angularSpeed)
+{
+    pitchCameraUpDown(dt*angularSpeed);
+}
+
 struct GCameraDecomposer{
 
     aiQuaterniont<float> quat;

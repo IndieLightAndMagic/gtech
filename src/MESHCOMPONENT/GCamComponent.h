@@ -74,9 +74,13 @@ public:
     void moveCameraUpDown(float dt, float scalarSpeed);
     void moveCameraUpDown(float scalarDistance);
 
-    
+    // Look Up (pitch)
+    void pitchCameraUpDown(float dt, float angularSpeed);
+    void pitchCameraUpDown(float angle);
 
-
+    // Look Up (yaw)
+    void yawCameraRightLeft(float dt, float angularSpeed);
+  	void yawCameraRightLeft(float angle);  
 };
 
 
