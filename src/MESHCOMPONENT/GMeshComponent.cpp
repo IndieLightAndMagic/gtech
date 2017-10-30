@@ -145,11 +145,7 @@ std::vector<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(cons
     getMeshesNodeNamesVectorOnTheSceneByRegExp(pScene->mRootNode, regExpression, meshesFoundNames);
     for(auto meshName:meshesFoundNames)
     {
-        auto upComponent = GModelComponent::createComponentNodeUsingResource(pScene, meshName);
-        auto pComponent = upComponent.release();
-        modelComponents.push_back(*pComponent);
-        
-        
+        modelComponents.emplace_back(*GModelComponent::createComponentNodeUsingResource(pScene, meshName));
     }
     return modelComponents;
 }
