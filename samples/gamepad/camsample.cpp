@@ -4,6 +4,7 @@
 #include <time.h>
 #include <memory>
 #include <iostream>
+#include <regex>
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -24,18 +25,12 @@
 #include <assimp/postprocess.h>
 
 
-constexpr float degrees_to_radians(float deg){ return (deg/180.0f)*glm::pi<float>(); }
-
-extern void getCubeData(unsigned int *, unsigned int *);
-extern void drawCube(Program &shaderProgram, unsigned int vao);
-extern void setCubeLocation(glm::vec3 &locationVector);
-extern void setCubeRotation(glm::vec3 &rotationalAxis, float &radians);
-
 
 
 const unsigned int SCR_WIDTH = 640;
 const unsigned int SCR_HEIGHT = 360;
 
+#pragma MAINSCENE
 class MainScene{
 
 	SDL_Window * pWindow;
@@ -43,14 +38,6 @@ class MainScene{
 	SDL_JoystickID xGameControllerID;
 	Program m_shaderProgram;
 	bool m_bRun{true};
-	struct {
-		
-		unsigned int vbo,vao;
-		glm::vec3 location;
-		glm::vec3 axisRotation;
-		float rotationMagnitude;
-
-	}triangle;
     struct {
         glm::vec3 direction{glm::vec3(1.0f,0.0f,-1.0f)};
         glm::vec3 diffuseColor{glm::vec3(WHITE)};
@@ -60,9 +47,9 @@ class MainScene{
     	glm::vec3 diffuse{glm::vec3(NAVY)};
     	float ambientPower{1.0f};
     	float shininess{32.0f};
-
     }material;
-    std::vector<GModelComponent*> pCubesPtr;
+
+    std::vector<GModelComponent> monkeys;
     std::shared_ptr<GCameraComponent> pCam;
     
 public:
@@ -134,7 +121,7 @@ public:
         
     };
     SceneController scontroller;
-
+#pragma MAINSCENE_CTOR
 	MainScene(OSWindowWrapperSDL * pSDL)
 	{
 		/* The window the Scene is running in */
@@ -144,14 +131,11 @@ public:
 		initControllerHw();
 
 	}
+#pragma MAINSCENE_DTOR
 	~MainScene(){
         
-        for (auto pCube:pCubesPtr)
-        {
-            delete pCube;
-        }
 	}
-
+#pragma CONTROLLER_HW
 	void finishControllerHw(){
 		if (pGameController) {
 			SDL_JoystickClose(pGameController);
@@ -160,6 +144,7 @@ public:
 		pGameController = 0;
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 	}
+#pragma INITCONTROLLERHW
 	void initControllerHw(){
 
 		/* Initialize Joystick */
@@ -187,6 +172,7 @@ public:
 			}
 		}
 	}
+#pragma PROCESSINPUT
 	void processInput(){
         SDL_Event e;
 		if (SDL_PollEvent(&e)==0) return;
@@ -225,16 +211,31 @@ public:
 		}
         
 	}
+#pragma SCENEINIT
 	void sceneInit(){
 		
-		// configure global opengl state
-		// -----------------------------
-		glEnable(GL_DEPTH_TEST);
+		// Resources Loading. Filename. 
+        std::string resourceFilename{std::string(RES_DIR)+std::string("Models/monkey.blend")};
+       	// Resources Loading. A particular resource name.
+       	std::string resourceName10{"Suzanne.010"};
+       	std::string resourceName11{"Suzanne.011"};
+       	// Resources Loading. A regulr expression to denote loading fo Suzanne.000
+       	std::regex regularExpressionForResource{"Suzanne\\.00[0-9]"};
+
         
-        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.000")).release());
-        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.001")).release());
-        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.002")).release());
-        pCubesPtr.push_back(GAssimpLoaderComponent::loadComponentFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"),std::string("Suzanne.003")).release());
+        // Get an Unique Ptr with resource.
+        auto monkeyVector = GAssimpLoaderComponent::loadComponentFromScene(resourceFilename,regularExpressionForResource);
+        //Move monkey vector: After this the whole monkeyVector is not reliable.
+        for (auto &&amonkey:monkeyVector)
+        {
+        	monkeys.emplace_back(std::move(amonkey));
+        }
+        //Emplace_back the other two monkeys (emplace_back is a rvalue )
+        monkeys.emplace_back(*GAssimpLoaderComponent::loadComponentFromScene(resourceFilename,resourceName10));
+        monkeys.emplace_back(*GAssimpLoaderComponent::loadComponentFromScene(resourceFilename,resourceName11));
+        
+
+
         
         pCam = GAssimpLoaderComponent::loadCamFromScene(std::string(RES_DIR)+std::string("Models/monkey.blend"), std::string("Camera"), SCR_WIDTH, SCR_HEIGHT);
         
@@ -260,7 +261,13 @@ public:
         m_shaderProgram.setVec3("directionalLight.diffuse",directionalLight.diffuseColor);
         m_shaderProgram.setVec3("directionalLight.specular", directionalLight.specularColor);
         
+
+        // configure global opengl state
+		// -----------------------------
+		glEnable(GL_DEPTH_TEST);
+
 	}
+#pragma RENDERSCENE
 	void renderScene(){
 		
 		glClearColor(DARKSLATEBLUE, 1.0f);
@@ -273,10 +280,11 @@ public:
         pCam->useCamera(m_shaderProgram);
         
         //Draw Cube
-        pCubesPtr[0]->drawComponent(m_shaderProgram);
-        pCubesPtr[1]->drawComponent(m_shaderProgram);
-        pCubesPtr[2]->drawComponent(m_shaderProgram);
-        pCubesPtr[3]->drawComponent(m_shaderProgram);
+        auto monkeysdata = monkeys.data();
+        for (auto index = 0; index < monkeys.size(); ++index)
+        {
+            monkeysdata[index].drawComponent(m_shaderProgram);
+        }
         
 		SDL_GL_SwapWindow(pWindow);
 	}
@@ -310,6 +318,7 @@ public:
 };
 Uint64 MainScene::TimeController::m_highPerformanceCounterFrequency = 0;
 
+#pragma MAIN
 int main(int argc, char ** argv)
 {
 	
