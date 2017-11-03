@@ -305,7 +305,7 @@ public:
             
             //Update 
             auto controlVector = glm::vec3{speedx*scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_LEFTAXIS),0.0f,speedz*scontroller.getAxisValue(MainScene::SceneController::VERTICAL_PS3_LEFTTAXIS)}*dt;
-            pCam->moveCamera(controlVector);
+            pCam->moveCameraForwardBackwards(controlVector.z);
             
             auto rotationControl = glm::vec2{scontroller.getAxisValue(MainScene::SceneController::HORIZONTAL_PS3_RIGHTAXIS),scontroller.getAxisValue(MainScene::SceneController::VERTICAL_PS3_RIGHTAXIS)}*dt;
             pCam->yawCameraRightLeft(glm::radians(speedyaw)*rotationControl.x);
