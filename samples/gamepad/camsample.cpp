@@ -100,7 +100,7 @@ public:
             VERTICAL_PS3_RIGHTAXIS = 3
             
         };
-        float m_axisSpan[4]{1.0,-1.0,1.0,1.0}; //SDL PS3 LEFT JOY AXIS
+        float m_axisSpan[4]{1.0,1.0,1.0,1.0}; //SDL PS3 LEFT JOY AXIS
         float m_axisValues[4]{0.0f, 0.0f, 0.0f, 0.0f};
         float getAxisValue(Ax index)
         {
