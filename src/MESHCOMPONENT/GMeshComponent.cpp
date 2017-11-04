@@ -11,6 +11,8 @@
 #include <MESHCOMPONENT/GMeshComponent.h>
 
 
+
+
 void GModelComponent::drawComponent(Program &shaderProgram)
 {
     shaderProgram.setMat4("objModel.tx", m_locationMatrix);
@@ -141,6 +143,7 @@ std::vector<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(cons
     std::vector<GModelComponent> modelComponents;
     Importer importer;
     const aiScene *pScene = importer.ReadFile(sceneResourceName, aiProcess_Triangulate);
+    printMaterialsInfo(pScene);
     std::vector<std::string> meshesFoundNames;
     getMeshesNodeNamesVectorOnTheSceneByRegExp(pScene->mRootNode, regExpression, meshesFoundNames);
     for(auto meshName:meshesFoundNames)
@@ -225,6 +228,72 @@ void GAssimpLoaderComponent::printSceneGeneralInfo(const aiScene * m_pScene)
     printer(m_pScene -> mRootNode, m_pScene, 0);
 }
 
+void GAssimpLoaderComponent::printMaterialsInfo(const aiScene *pScene)
+{
+    std::vector<std::string>sPropertyTypeInfo
+    {
+        "Invalid",
+        "aiPTI_Float",
+        "aiPTI_Double",
+        "aiPTI_String",
+        "aiPTI_Integer",
+        "aiPTI_Buffer"
+    };
+        
+    auto materialsCount = pScene->mNumMaterials;
+    std::cout << "Materials: " << materialsCount << "\n";
+    for (auto materialIndex = 0; materialIndex < materialsCount; ++materialIndex)
+    {
+        std::cout <<"\tMaterial "<< materialIndex << ":\n";
+        auto pMaterial = pScene -> mMaterials[materialIndex];
+        auto propertiesCount = pMaterial -> mNumProperties;
+        for (auto propertyIndex = 0; propertyIndex < propertiesCount; ++propertyIndex)
+        {
+            auto pProp = pMaterial->mProperties[propertyIndex];
+            auto key = pProp->mKey;
+            auto stype = sPropertyTypeInfo[pProp->mType];
+            auto uitype = pProp->mType;
+            
+            float fdata;
+            double ddata;
+            std::string sdata;
+            int idata;
+            std::cout << "\t\tKey: [" << stype <<"] " << key.C_Str() << " ";
+            
+            if (uitype==0 || uitype>=5)
+            {
+                std::cout << "\n";
+                continue;
+            }
+            auto keystring = key.C_Str();
+            switch(uitype)
+            {
+                case 1:
+                    pMaterial->Get(keystring, uitype, materialIndex, fdata);
+                    std::cout << fdata << "\n";
+                    break;
+                case 2:
+                    pMaterial->Get(keystring, uitype, materialIndex, ddata);
+                    std::cout << ddata << "\n";
+                    break;
+                case 3:
+                    pMaterial->Get(keystring, uitype, materialIndex, sdata);
+                    std::cout << sdata << "\n";
+                    break;
+                case 4:
+                    pMaterial->Get(keystring, uitype, materialIndex, idata);
+                    std::cout << std::hex << idata << "\n";
+                    break;
+                default:
+                    break;
+            }
+            
+            
+        }
+            
+    }
+    
+}
 const aiNode *GAssimpLoaderComponent::getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName)
 {
 	std::string nodeName{pNode -> mName.C_Str()};
@@ -259,7 +328,6 @@ void GAssimpLoaderComponent::getMeshesNodeNamesVectorOnTheSceneByRegExp(const ai
     {
         getMeshesNodeNamesVectorOnTheSceneByRegExp(pNode->mChildren[childrenIndex], regularExpr, vec);
     }
-    
 }
 
 

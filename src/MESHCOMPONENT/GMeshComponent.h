@@ -79,7 +79,8 @@ public:
 	static std::unique_ptr<GCameraComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height);
 
 	static void printSceneGeneralInfo(const aiScene *pScene);
-	static const aiNode* getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
+    static void printMaterialsInfo(const aiScene *pScene);
+    static const aiNode* getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
     static void getMeshesNodeNamesVectorOnTheSceneByRegExp(const aiNode *pNode, const std::regex &regularExpression, std::vector<std::string> &vec);
 };
 
