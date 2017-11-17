@@ -41,7 +41,7 @@ elseif(${CMAKE_GENERATOR} STREQUAL "Xcode")
 endif()
 
 #C++11
-set(CPP11 "-std=c++11")
+set(CPP11 "-std=c++14")
 #MACRO DEFINITIONS
 add_definitions(-DRES_DIR="${RES_DIR}")
 #HEADER FILES

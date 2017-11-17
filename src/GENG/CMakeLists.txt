@@ -27,7 +27,7 @@ foreach (x ${SOURCE_LIST})
 endforeach(x)
 
 add_library(${TARGET_NAME} STATIC ${SOURCE_LIST})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++14")
 include_directories(${INCLUDE_DIR})
 
 #COPY THIS STATIC LIBRARY TO LIB_DIR
