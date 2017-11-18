@@ -1,4 +1,6 @@
 #include <iostream>
+#include <memory>
+#include <map>
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -242,6 +244,10 @@ void GAssimpLoaderComponent::printMaterialsInfo(const aiScene *pScene)
         
     auto materialsCount = pScene->mNumMaterials;
     std::cout << "Materials: " << materialsCount << "\n";
+    
+    std::map<std::string, std::string> gproperties;
+    
+    
     for (auto materialIndex = 0; materialIndex < materialsCount; ++materialIndex)
     {
         std::cout <<"\tMaterial "<< materialIndex << ":\n";
@@ -254,10 +260,7 @@ void GAssimpLoaderComponent::printMaterialsInfo(const aiScene *pScene)
             auto stype = sPropertyTypeInfo[pProp->mType];
             auto uitype = pProp->mType;
             
-            float fdata;
-            double ddata;
             std::string sdata;
-            int idata;
             std::cout << "\t\tKey: [" << stype <<"] " << key.C_Str() << " ";
             
             if (uitype==0 || uitype>=5)
@@ -266,29 +269,50 @@ void GAssimpLoaderComponent::printMaterialsInfo(const aiScene *pScene)
                 continue;
             }
             auto keystring = key.C_Str();
-            switch(uitype)
-            {
-                case 1:
-                    pMaterial->Get(keystring, uitype, materialIndex, fdata);
-                    std::cout << fdata << "\n";
-                    break;
-                case 2:
-                    pMaterial->Get(keystring, uitype, materialIndex, ddata);
-                    std::cout << ddata << "\n";
-                    break;
-                case 3:
-                    pMaterial->Get(keystring, uitype, materialIndex, sdata);
-                    std::cout << sdata << "\n";
-                    break;
-                case 4:
-                    pMaterial->Get(keystring, uitype, materialIndex, idata);
-                    std::cout << std::hex << idata << "\n";
-                    break;
-                default:
-                    break;
+            auto szArray = [&](auto x) { return pProp->mDataLength/sizeof(decltype(x)); };
+            auto print_sprv = [](auto spRv, auto sz) {
+                std::cout << "[ ";
+                for (auto index = 0; index < sz; ++index){
+                    std::cout << spRv.get()[index];
+                    if (index+1 < sz) std::cout << ", ";
+                }
+                std::cout << " ]\n";
+            };
+            auto parse_realarray = [&](auto x, auto &nelem){
+                nelem = szArray(x);
+                std::shared_ptr<decltype(x)> pfdata(new decltype(x)[nelem]);
+                std::memcpy(pfdata.get(), reinterpret_cast<decltype(x)*>(pProp->mData), sizeof(decltype(x))*nelem);
+                return pfdata;
+            };
+            
+            if (pProp->mType == aiPTI_Float){
+
+                unsigned int nelem;
+                auto pfdata = parse_realarray(1.0f, nelem);
+                print_sprv(pfdata,nelem);
+                
+            } else if (pProp->mType == aiPTI_Double){
+                
+                unsigned int nelem;
+                auto pfdata = parse_realarray(1.0, nelem);
+                print_sprv(pfdata,nelem);
+
+            } else if (pProp->mType == aiPTI_String){
+                
+                auto aiPropKey = pProp->mKey;
+                auto propKey = aiPropKey.C_Str();
+                auto propData = &pProp->mData[4];
+                gproperties[propKey] = propData;
+                std::cout << gproperties[propKey] <<"\n";
+                
+            } else if (pProp->mType == aiPTI_Integer){
+
+                auto nelem = szArray(1);
+                std::shared_ptr<int> pint(new int[nelem]);
+                pMaterial->Get(keystring, aiPTI_Integer, propertyIndex, pint);
+
             }
-            
-            
+                        
         }
             
     }
