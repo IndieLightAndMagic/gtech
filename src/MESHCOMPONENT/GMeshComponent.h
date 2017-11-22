@@ -1,11 +1,12 @@
 #ifndef __MESHCOMPONENT_H__
 #define __MESHCOMPONENT_H__
 
-
+#include <cstddef>
 #include <vector>
 #include <string>
 #include <memory>
 #include <regex>
+#include <map>
 
 
 #include <assimp/Importer.hpp>
@@ -82,6 +83,47 @@ public:
     static void printMaterialsInfo(const aiScene *pScene);
     static const aiNode* getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
     static void getMeshesNodeNamesVectorOnTheSceneByRegExp(const aiNode *pNode, const std::regex &regularExpression, std::vector<std::string> &vec);
+};
+
+template <typename T>
+class GMaterialProperty
+{
+    std::string m_propertyName;
+    std::size_t m_sz;
+    unsigned int m_count;
+    std::unique_ptr<T> m_ptr;
+    
+    GMaterialProperty(const std::string &propertyName, T &value, size_t nelems=1, std::size_t sz=sizeof(T)):
+        m_propertyName(propertyName),
+        m_count(nelems),
+        m_sz(sz)
+    {
+        m_ptr = std::make_unique<T>(new T[nelems * sz]);
+    }
+};
+
+
+class GMaterialProperties : public G::GItemComponent
+{
+    std::map<std::string, float> m_fmap;
+    std::map<std::string, double> m_dmap;
+    std::map<std::string, std::string> m_smap;
+    std::map<std::string, int> m_imap;
+    std::map<std::string, std::unique_ptr<unsigned char>> m_ptrmap;
+    std::map<std::string, size_t> m_ptrsz_map;
+public:
+    GMaterialProperties() = default;
+    GMaterialProperties(GMaterialProperties &&otherMaterialProperty) = default;
+    GMaterialProperties(const GMaterialProperties &otherMaterialProperty) = default;
+    GMaterialProperties& operator=(GMaterialProperties &&otherMaterialProperty) = default;
+    GMaterialProperties& operator=(GMaterialProperties &otherMaterialProperty) = default;
+    
+    float fget(const std::string &key);
+    double dget(const std::string &key);
+    std::string sget(const std::string &key);
+    int iget(const std::string &key);
+    
+    
 };
 
 
