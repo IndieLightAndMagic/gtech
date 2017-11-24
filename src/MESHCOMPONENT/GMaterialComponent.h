@@ -18,22 +18,40 @@
 
 
 // using namespace Assimp;
-template <typename T>
-class GProperty
+// 
+
+
+using Ptr = unsigned char*;
+using Byte = unsigned char;
+class GPropertyValue
 {
 protected:
 	std::size_t m_sz;
-	unsigned int m_count;
-	std::unique_ptr<T> m_updata; 
+	Ptr m_ptr;
+	std::unique_ptr<Byte> m_uptr;
 
-	GProperty(T &r, unsigned int nelem)
+	/**
+	 * @brief      Create a value for the property.
+	 *
+	 * @param[in]  sz    The size
+	 * @param[in]  ptr   The pointer
+	 */
+	GPropertyValue(std::size_t sz, Ptr ptr = nullptr):
+	m_sz(sz)
 	{
-		m_updata = std::make_unique<T[]>(nelem);
+		m_uptr = std::make_unique<Byte>(sz);
+		m_ptr = m_uptr.get();
+		if (ptr)
+		{
+			//Copy if memory its being passed.
+			std::memcpy(m_ptr, ptr, m_sz);
+		}	
 	};
-	virtual ~GProperty(){};
+
+	virtual ~GPropertyValue(){}
 public:
-	virtual T getProperty() {return *m_updata;};
-	void setProperty(const T &data){ *m_updata = data;};
+	
+	virtual void setPropertyValue(Ptr propertyValueAddress, std::size_t sz) = 0;
 };
 
 
