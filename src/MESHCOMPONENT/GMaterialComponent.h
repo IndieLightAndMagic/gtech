@@ -21,13 +21,13 @@
 // 
 
 
-using Ptr = unsigned char*;
+using Ptr = const unsigned char*;
 using Byte = unsigned char;
 class GPropertyValue
 {
 protected:
 	std::size_t m_sz;
-	Ptr m_ptr;
+	volatile Ptr m_ptr;
 	std::unique_ptr<Byte> m_uptr;
 
 	/**
@@ -43,15 +43,29 @@ protected:
 		m_ptr = m_uptr.get();
 		if (ptr)
 		{
-			//Copy if memory its being passed.
-			std::memcpy(m_ptr, ptr, m_sz);
+			setPropertyValue(ptr,sz);
 		}	
+		std::cout << "Hello! @" << std::hex << this << "\n"; 
+
 	};
 
-	virtual ~GPropertyValue(){}
+	void *getPtr(){
+		return m_uptr.get();
+	}
 public:
+	std::size_t propertySize(){
+		return m_sz;
+	}
+	virtual void setPropertyValue(Ptr propertyValueAddress, std::size_t sz)
+	{
+		//Copy if memory its being passed.
+		std::memcpy((void*)m_ptr, propertyValueAddress, m_sz);
+	}
+	virtual ~GPropertyValue(){
+		std::cout << "Goodbye! @" << std::hex << this << "\n"; 
+	}
 	
-	virtual void setPropertyValue(Ptr propertyValueAddress, std::size_t sz) = 0;
+
 };
 
 
