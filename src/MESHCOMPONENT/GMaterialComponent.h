@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 #include <regex>
-
+#include <utility>
 
 // #include <assimp/Importer.hpp>
 // #include <assimp/scene.h>
@@ -44,16 +44,21 @@ protected:
 		{
 			setPropertyMemoryBuffer(ptr,sz);
 		}	
-		std::cout << "Hello! @" << std::hex << this << "\n"; 
+		std::cout << "Hello! @" << std::hex << this << std::dec << "\n"; 
 
 	};
 	void *getPtr(){
 		return m_uptr.get();
 	}
+	std::unique_ptr<Byte>& getUPtr()
+	{
+		return m_uptr;
+	}
+
     void setPropertyMemoryBuffer(Ptr propertyValueAddress, std::size_t sz)
     {
         //Copy if memory its being passed.
-        std::memcpy(getPtr(), propertyValueAddress, m_sz);
+        std::memcpy(getUPtr().get(), propertyValueAddress, m_sz);
     }
 
 public:
@@ -63,14 +68,14 @@ public:
 	template <typename T>
 	T getPropertyValue()
 	{
-		T *pt = reinterpret_cast<T*>(getPtr());
+		T *pt = reinterpret_cast<T*>(getUPtr().get());
 		return *pt;
 	} 
 	virtual ~IGPropertyValue(){
-		std::cout << "Goodbye! @" << std::hex << this << "\n"; 
+		std::cout << "Goodbye! @" << std::hex << this << std::dec << "\n"; 
 	}
+    
 	
-
 };
 template <typename T>
 class GPropertyValue : public IGPropertyValue
@@ -92,11 +97,11 @@ public:
 	{
 		setPropertyValue(&propertyValue);
 	}
-	T getPropertyValue()
+	void setPropertyValue(T &&propertyValue)
 	{
-		T *tptr = reinterpret_cast<T*>(getPtr());
-		return *tptr;
+        setPropertyValue(propertyValue);
 	}
+	
 };
 
 
