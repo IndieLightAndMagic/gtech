@@ -1,15 +1,24 @@
 
+#include <map>
+#include <string>
+#include <iostream> 
 
 #include <MESHCOMPONENT/GMaterialComponent.h>
-
 using namespace std;
 
 
 int main(void)
 {
-	//A 10 Bytes in Size Property.
-	std::unique_ptr<IGPropertyValue> pprop = std::make_unique<GPropertyValue<int>>();
+	//An integer property of size 10.
+	GPropertyValue<int> pprop;
+	pprop.setPropertyValue(105);
 
-	cout << "Test program for GMaterialComponent\n";
+	//A list of properties
+	std::map<std::string, IGPropertyValue*> properties;
+	properties["Edad"] = &pprop;
+    auto edad = properties["Edad"]->getPropertyValue<int>();
+
+    cout << "Test program for GMaterialComponent" << std::dec << std::endl;
+	cout << "Edad: " << edad << "\n";
 	return 0;
 }

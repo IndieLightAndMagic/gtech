@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <vector>
-#include <string>
 #include <memory>
 #include <regex>
 
@@ -43,24 +42,30 @@ protected:
 		m_ptr = m_uptr.get();
 		if (ptr)
 		{
-			setPropertyValue(ptr,sz);
+			setPropertyMemoryBuffer(ptr,sz);
 		}	
 		std::cout << "Hello! @" << std::hex << this << "\n"; 
 
 	};
-
 	void *getPtr(){
 		return m_uptr.get();
 	}
+    void setPropertyMemoryBuffer(Ptr propertyValueAddress, std::size_t sz)
+    {
+        //Copy if memory its being passed.
+        std::memcpy(getPtr(), propertyValueAddress, m_sz);
+    }
+
 public:
 	std::size_t propertySize(){
 		return m_sz;
 	}
-	virtual void setPropertyValue(Ptr propertyValueAddress, std::size_t sz)
+	template <typename T>
+	T getPropertyValue()
 	{
-		//Copy if memory its being passed.
-		std::memcpy((void*)m_ptr, propertyValueAddress, m_sz);
-	}
+		T *pt = reinterpret_cast<T*>(getPtr());
+		return *pt;
+	} 
 	virtual ~IGPropertyValue(){
 		std::cout << "Goodbye! @" << std::hex << this << "\n"; 
 	}
@@ -81,7 +86,7 @@ public:
 	void setPropertyValue(const T *propertyValueAddress)
 	{
 		Ptr ptr = reinterpret_cast<Ptr>(propertyValueAddress);
-		IGPropertyValue::setPropertyValue(ptr,sizeof(T));
+		setPropertyMemoryBuffer(ptr,sizeof(T));
 	}
 	void setPropertyValue(const T &propertyValue)
 	{
