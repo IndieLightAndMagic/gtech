@@ -6,7 +6,7 @@
 #include <memory>
 #include <regex>
 #include <utility>
-
+#include <map>
 // #include <assimp/Importer.hpp>
 // #include <assimp/scene.h>
 // #include <assimp/postprocess.h>
@@ -29,12 +29,6 @@ protected:
 	volatile Ptr m_ptr;
 	std::unique_ptr<Byte> m_uptr;
 
-	/**
-	 * @brief      Create a value for the property.
-	 *
-	 * @param[in]  sz    The size
-	 * @param[in]  ptr   The pointer
-	 */
 	IGPropertyValue(std::size_t sz, Ptr ptr = nullptr):
 	m_sz(sz)
 	{
@@ -104,5 +98,24 @@ public:
 	
 };
 
+class GMaterialComponent
+{
+
+	std::map<std::string, IGPropertyValue*> props;
+public:
+	const IGPropertyValue* getProperty(std::string propertyName)
+	{
+		auto search = props.find(propertyName);
+		if (search == props.end())
+		{
+			return nullptr;
+		}
+		return props[propertyName];		
+	}
+    void setProperty(std::string propertyName,IGPropertyValue* pProp)
+    {
+        props[propertyName] = pProp;
+    }
+};
 
 #endif /*__GMATERIALCOMPONENT_H__*/

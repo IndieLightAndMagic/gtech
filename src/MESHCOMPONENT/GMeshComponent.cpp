@@ -11,8 +11,7 @@
 
 #include <SHDR/shdr.h>
 #include <MESHCOMPONENT/GMeshComponent.h>
-
-
+#include <MESHCOMPONENT/GMaterialComponent.h>
 
 
 void GModelComponent::drawComponent(Program &shaderProgram)
@@ -302,8 +301,11 @@ void GAssimpLoaderComponent::printMaterialsInfo(const aiScene *pScene)
                 auto aiPropKey = pProp->mKey;
                 auto propKey = aiPropKey.C_Str();
                 auto propData = &pProp->mData[4];
+                auto propSz = pProp->mDataLength - 4;
                 gproperties[propKey] = propData;
                 std::cout << gproperties[propKey] <<"\n";
+                GPropertyValue<Byte> sprop(propSz,reinterpret_cast<unsigned char*>(propData));
+                
                 
             } else if (pProp->mType == aiPTI_Integer){
 
