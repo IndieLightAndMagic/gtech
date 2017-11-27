@@ -138,25 +138,33 @@ std::unique_ptr<GModelComponent> GModelComponent::createComponentNodeUsingResour
     return pComponent;
 }
 
+const aiScene* GAssimpLoaderComponent::loadScene(const std::string &sceneResourceName)
+{
+    return GAssimpLoaderComponent::importer.ReadFile(sceneResourceName, aiProcess_Triangulate);       
+}
 
 std::vector<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceName, const std::regex &regExpression)
 {
-    std::vector<GModelComponent> modelComponents;
-    Importer importer;
-    const aiScene *pScene = importer.ReadFile(sceneResourceName, aiProcess_Triangulate);
-    printMaterialsInfo(pScene);
+    const aiScene *pScene = loadScene(sceneResourceName);
+
+
+    std::vector<GMaterialComponent> materialComponents = loadMaterialsFromScene(sceneResourceName);
+    printMaterialsInfo(materialComponents);
+
     std::vector<std::string> meshesFoundNames;
     getMeshesNodeNamesVectorOnTheSceneByRegExp(pScene->mRootNode, regExpression, meshesFoundNames);
+    
+    std::vector<GModelComponent> modelComponents;
     for(auto meshName:meshesFoundNames)
     {
         modelComponents.emplace_back(*GModelComponent::createComponentNodeUsingResource(pScene, meshName));
     }
     return modelComponents;
 }
-std::unique_ptr<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceFileName, const std::string &meshName)
+std::unique_ptr<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName)
 {
     Importer importer;
-    const aiScene * pScene = importer.ReadFile(sceneResourceFileName, aiProcess_Triangulate);
+    const aiScene *pScene = loadScene(sceneResourceName);
     if (!pScene) return nullptr;
     return GModelComponent::createComponentNodeUsingResource(pScene, meshName);
 
@@ -229,95 +237,13 @@ void GAssimpLoaderComponent::printSceneGeneralInfo(const aiScene * m_pScene)
     printer(m_pScene -> mRootNode, m_pScene, 0);
 }
 
-void GAssimpLoaderComponent::printMaterialsInfo(const aiScene *pScene)
+void GAssimpLoaderComponent::printMaterialsInfo(std::vector<GMaterialComponent> &materialComponents)
 {
-    std::vector<std::string>sPropertyTypeInfo
+    for (auto materialComponent:materialComponents)
     {
-        "Invalid",
-        "aiPTI_Float",
-        "aiPTI_Double",
-        "aiPTI_String",
-        "aiPTI_Integer",
-        "aiPTI_Buffer"
-    };
-        
-    auto materialsCount = pScene->mNumMaterials;
-    std::cout << "Materials: " << materialsCount << "\n";
-    
-    std::map<std::string, std::string> gproperties;
-    
-    
-    for (auto materialIndex = 0; materialIndex < materialsCount; ++materialIndex)
-    {
-        std::cout <<"\tMaterial "<< materialIndex << ":\n";
-        auto pMaterial = pScene -> mMaterials[materialIndex];
-        auto propertiesCount = pMaterial -> mNumProperties;
-        for (auto propertyIndex = 0; propertyIndex < propertiesCount; ++propertyIndex)
-        {
-            auto pProp = pMaterial->mProperties[propertyIndex];
-            auto key = pProp->mKey;
-            auto stype = sPropertyTypeInfo[pProp->mType];
-            auto uitype = pProp->mType;
-            
-            std::string sdata;
-            std::cout << "\t\tKey: [" << stype <<"] " << key.C_Str() << " ";
-            
-            if (uitype==0 || uitype>=5)
-            {
-                std::cout << "\n";
-                continue;
-            }
-            auto keystring = key.C_Str();
-            auto szArray = [&](auto x) { return pProp->mDataLength/sizeof(decltype(x)); };
-            auto print_sprv = [](auto spRv, auto sz) {
-                std::cout << "[ ";
-                for (auto index = 0; index < sz; ++index){
-                    std::cout << spRv.get()[index];
-                    if (index+1 < sz) std::cout << ", ";
-                }
-                std::cout << " ]\n";
-            };
-            auto parse_realarray = [&](auto x, auto &nelem){
-                nelem = szArray(x);
-                std::shared_ptr<decltype(x)> pfdata(new decltype(x)[nelem]);
-                std::memcpy(pfdata.get(), reinterpret_cast<decltype(x)*>(pProp->mData), sizeof(decltype(x))*nelem);
-                return pfdata;
-            };
-            
-            if (pProp->mType == aiPTI_Float){
 
-                unsigned int nelem;
-                auto pfdata = parse_realarray(1.0f, nelem);
-                print_sprv(pfdata,nelem);
-                
-            } else if (pProp->mType == aiPTI_Double){
-                
-                unsigned int nelem;
-                auto pfdata = parse_realarray(1.0, nelem);
-                print_sprv(pfdata,nelem);
-
-            } else if (pProp->mType == aiPTI_String){
-                
-                auto aiPropKey = pProp->mKey;
-                auto propKey = aiPropKey.C_Str();
-                auto propData = &pProp->mData[4];
-                auto propSz = pProp->mDataLength - 4;
-                gproperties[propKey] = propData;
-                std::cout << gproperties[propKey] <<"\n";
-                GPropertyValue<Byte> sprop(propSz,reinterpret_cast<unsigned char*>(propData));
-                
-                
-            } else if (pProp->mType == aiPTI_Integer){
-
-                auto nelem = szArray(1);
-                std::shared_ptr<int> pint(new int[nelem]);
-                pMaterial->Get(keystring, aiPTI_Integer, propertyIndex, pint);
-
-            }
-                        
-        }
-            
     }
+    
     
 }
 const aiNode *GAssimpLoaderComponent::getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName)
@@ -355,6 +281,55 @@ void GAssimpLoaderComponent::getMeshesNodeNamesVectorOnTheSceneByRegExp(const ai
         getMeshesNodeNamesVectorOnTheSceneByRegExp(pNode->mChildren[childrenIndex], regularExpr, vec);
     }
 }
-
+std::vector<GMaterialComponent> GAssimpLoaderComponent::loadMaterialsFromScene(const std::string &sceneResourceName)
+{
+    
+    std::vector<GMaterialComponent> materialComponents;
+    const aiScene *pScene = loadScene(sceneResourceName);
+    if (!pScene)
+    {
+        return materialComponents;
+    }
+    
+    unsigned int materialsCount = pScene->mNumMaterials;
+    aiMaterial ** materials = pScene->mMaterials;  
+    
+    
+    for (auto materialIndex = 0; materialIndex < materialsCount; ++materialIndex)
+    {
+        auto propertiesCount = materials[materialIndex]->mNumProperties;
+        auto properties = materials[materialIndex]->mProperties;
+        GMaterialComponent materialComponent;
+        for (auto propertyIndex = 0; propertyIndex<propertiesCount; ++propertyIndex)
+        {
+            auto property = properties[propertyIndex];
+            auto key  = std::string(reinterpret_cast<const char*>(property->mKey.C_Str()));
+            if (materialComponent.find(key))
+            {
+                //policy: on found discard. 
+                continue;
+            }
+            IGPropertyValue *ptrValue = nullptr;
+            if (property->mType == aiPTI_Float){
+                ptrValue =  new GPropertyValue<float>(sizeof(float),reinterpret_cast<float*>(property->mData));
+            } else if (property->mType == aiPTI_Double){
+                ptrValue =  new GPropertyValue<double>(sizeof(double),reinterpret_cast<double*>(property->mData));
+            } else if (property->mType == aiPTI_String){
+                auto propData = &property->mData[4];
+                auto propSz = property->mDataLength - 4;
+                ptrValue = new GPropertyValue<Byte>(propSz,reinterpret_cast<unsigned char*>(&property->mData[4]));
+            } else if (property->mType == aiPTI_Integer){
+                ptrValue =  new GPropertyValue<int>(sizeof(int),reinterpret_cast<int*>(property->mData));
+            }
+            materialComponent.setProperty(key, ptrValue);
+        }
+        if (materialComponent.empty())
+        {
+            continue;
+        }
+        materialComponents.push_back(materialComponent);
+    }
+    return materialComponents; 
+}
 
 

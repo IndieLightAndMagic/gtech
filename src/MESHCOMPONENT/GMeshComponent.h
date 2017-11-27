@@ -14,6 +14,7 @@
 #include <assimp/postprocess.h>
 
 #include <GENG/g.h>
+#include <MESHCOMPONENT/GMaterialComponent.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -69,12 +70,12 @@ public:
 class GCameraComponent;
 class GAssimpLoaderComponent : public G::GItemComponent
 {
-
+    static const aiScene *loadScene(const std::string &sceneResourceName);
 public:
 	static Importer importer;
 	
     static std::vector<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::regex &regExpression);
-
+    static std::vector<GMaterialComponent> loadMaterialsFromScene(const std::string &sceneResourceName);
 
 	static std::unique_ptr<GModelComponent> loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName);
 	static std::unique_ptr<GCameraComponent> loadCamFromScene(const std::string &sceneResourceFileName, const std::string &camName, unsigned int width, unsigned int height);
@@ -82,51 +83,14 @@ public:
     
     
 	static void printSceneGeneralInfo(const aiScene *pScene);
-    static void printMaterialsInfo(const aiScene *pScene);
+    static void printMaterialsInfo(std::vector<GMaterialComponent>&);
     static const aiNode* getMeshOnTheSceneByName(const aiNode *pNode,const std::string &meshName);
     static void getMeshesNodeNamesVectorOnTheSceneByRegExp(const aiNode *pNode, const std::regex &regularExpression, std::vector<std::string> &vec);
 };
 
-template <typename T>
-class GMaterialProperty
+class GSceneComponent : public G::GItemComponent
 {
-    std::string m_propertyName;
-    std::size_t m_sz;
-    unsigned int m_count;
-    std::unique_ptr<T> m_ptr;
-    
-    GMaterialProperty(const std::string &propertyName, T &value, size_t nelems=1, std::size_t sz=sizeof(T)):
-        m_propertyName(propertyName),
-        m_count(nelems),
-        m_sz(sz)
-    {
-        m_ptr = std::make_unique<T>(new T[nelems * sz]);
-    }
+    /* Here we have to start using the child node logic */
 };
-
-
-class GMaterialProperties : public G::GItemComponent
-{
-    std::map<std::string, float> m_fmap;
-    std::map<std::string, double> m_dmap;
-    std::map<std::string, std::string> m_smap;
-    std::map<std::string, int> m_imap;
-    std::map<std::string, std::unique_ptr<unsigned char>> m_ptrmap;
-    std::map<std::string, size_t> m_ptrsz_map;
-public:
-    GMaterialProperties() = default;
-    GMaterialProperties(GMaterialProperties &&otherMaterialProperty) = default;
-    GMaterialProperties(const GMaterialProperties &otherMaterialProperty) = default;
-    GMaterialProperties& operator=(GMaterialProperties &&otherMaterialProperty) = default;
-    GMaterialProperties& operator=(GMaterialProperties &otherMaterialProperty) = default;
-    
-    float fget(const std::string &key);
-    double dget(const std::string &key);
-    std::string sget(const std::string &key);
-    int iget(const std::string &key);
-    
-    
-};
-
 
 #endif /*__MESHCOMPONENT_H__*/

@@ -24,12 +24,30 @@ using Ptr = const unsigned char*;
 using Byte = unsigned char;
 class IGPropertyValue
 {
+public:
+		enum class PropertyType{
+		_8B,			//BYTE
+		_8nB,			//BYTE ARRAY
+		U8B,			//Unsigned BYTE
+		U8nB,			//Unsigned BYTE ARRAY
+		_I32I,			//INTEGER
+		_I32nI,			//INTEGER ARRAY
+		UI32I,			//UNSIGNED INTEGER
+		UI32nI,			//UNSIGNED INTEGER ARRAY
+		F32,			//FLOAT 
+		F32Array,		//FLOAT ARRAY
+		D32,			//DOUBLE
+		D32Array,		//DOUBLE ARRAY
+		FColor,			//COLOR (array of floats (x3) normalized to 0.0-1.0) RGB
+		FColorArray		//COLOR ARRAY
+	};
+
 protected:
 	std::size_t m_sz;
 	volatile Ptr m_ptr;
 	std::unique_ptr<Byte> m_uptr;
 
-	IGPropertyValue(std::size_t sz, Ptr ptr = nullptr):
+	IGPropertyValue(std::size_t sz, Ptr ptr = nullptr, PropertyType type = PropertyType::_8nB):
 	m_sz(sz)
 	{
 		m_uptr = std::make_unique<Byte>(sz);
@@ -98,12 +116,12 @@ public:
 	
 };
 
-class GMaterialComponent
+class GMaterialComponent : public G::GItemComponent
 {
 
 	std::map<std::string, IGPropertyValue*> props;
 public:
-	const IGPropertyValue* getProperty(std::string propertyName)
+	const IGPropertyValue* getProperty(const std::string &propertyName)
 	{
 		auto search = props.find(propertyName);
 		if (search == props.end())
@@ -112,9 +130,18 @@ public:
 		}
 		return props[propertyName];		
 	}
-    void setProperty(std::string propertyName,IGPropertyValue* pProp)
+    void setProperty(const std::string &propertyName,IGPropertyValue* pProp)
     {
         props[propertyName] = pProp;
+    }
+    bool find(const std::string &propertyName)
+    {
+    	auto search = props.find(propertyName);
+    	return search != props.end() ? false : true; 	
+    }
+    bool empty()
+    {
+    	return props.empty();
     }
 };
 
