@@ -163,7 +163,6 @@ std::vector<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(cons
 }
 std::unique_ptr<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName)
 {
-    Importer importer;
     const aiScene *pScene = loadScene(sceneResourceName);
     if (!pScene) return nullptr;
     return GModelComponent::createComponentNodeUsingResource(pScene, meshName);
