@@ -39,16 +39,23 @@ public:
 		D32,			//DOUBLE
 		D32Array,		//DOUBLE ARRAY
 		FColor,			//COLOR (array of floats (x3) normalized to 0.0-1.0) RGB
-		FColorArray		//COLOR ARRAY
+		FColorArray,	//COLOR ARRAY (array of colors)
+		FColor4,		//COLOR (array of floats (x4) normalized to 0.0-1.0) RGBA		
+		FColor4Array,	//COLOR ARRAY (array of colors with opacity)
+		BColor,			//COLOR (Array of bytes (x3) normalized to 0-255) RGB
+		BColoraRRAY,	//COLOR ARRAY (array of colors)
+		BColor4,		//COLOR (array of floats (x4) normalized to 0-255) RGBA		
+		BColor4Array,	//COLOR ARRAY (array of colors with opacity)
 	};
 
 protected:
 	std::size_t m_sz;
 	volatile Ptr m_ptr;
 	std::unique_ptr<Byte> m_uptr;
-
+	PropertyType m_type;
 	IGPropertyValue(std::size_t sz, Ptr ptr = nullptr, PropertyType type = PropertyType::_8nB):
-	m_sz(sz)
+	m_sz(sz),
+	m_type(type)
 	{
 		m_uptr = std::make_unique<Byte>(sz);
 		m_ptr = m_uptr.get();
@@ -70,7 +77,8 @@ protected:
     void setPropertyMemoryBuffer(Ptr propertyValueAddress, std::size_t sz)
     {
         //Copy if memory its being passed.
-        std::memcpy(getUPtr().get(), propertyValueAddress, m_sz);
+        auto dest = getUPtr().get();
+        std::memcpy(dest, propertyValueAddress, m_sz);
     }
 
 public:
@@ -93,8 +101,8 @@ template <typename T>
 class GPropertyValue : public IGPropertyValue
 {
 public:
-	GPropertyValue(std::size_t sz = sizeof(T), T *tptr = nullptr):
-	IGPropertyValue(sz,reinterpret_cast<Ptr>(tptr))
+	GPropertyValue(std::size_t sz = sizeof(T), T *tptr = nullptr, IGPropertyValue::PropertyType type = IGPropertyValue::PropertyType::_8nB):
+	IGPropertyValue(sz, reinterpret_cast<Ptr>(tptr), type)
 	{
 		std::cout << "Derived::\n";
 	}
@@ -113,9 +121,49 @@ public:
 	{
         setPropertyValue(propertyValue);
 	}
-	
+	T& operator[](std::size_t idx)
+	{
+		T* bufferData = reinterpret_cast<T*>(getUPtr().get());
+		return bufferData[idx];
+	}
 };
+class GPropertyColorRGB : public GPropertyValue<float>
+{
+public:
+	explicit GPropertyColorRGB(void * ptr):
+	GPropertyValue<float>(sizeof(float)*3, reinterpret_cast<float*>(ptr), IGPropertyValue::PropertyType::FColor)
+	{
+        
+	}
+    enum class ColorIndex : std::size_t
+    {
+        RED = 0,
+        GREEN = 1,
+        BLUE = 2
+    };
+    float& getColor(ColorIndex color)
+    {
+    	return this->operator[](static_cast<std::size_t>(color));
+    }
 
+};
+class GPropertyColorRGBA : public GPropertyValue<float>
+{
+public:
+	explicit GPropertyColorRGBA(void * ptr):
+	GPropertyValue<float>(sizeof(float)*4, reinterpret_cast<float*>(ptr), IGPropertyValue::PropertyType::FColor4)
+	{
+		
+	}
+	enum class ColorIndex : std::size_t
+	{
+		RED = 0,
+		GREEN = 1,
+		BLUE = 2, 
+		OPACITY = 3
+	};
+
+};
 class GMaterialComponent : public G::GItemComponent
 {
 
@@ -136,8 +184,7 @@ public:
     }
     bool find(const std::string &propertyName)
     {
-    	auto search = props.find(propertyName);
-    	return search != props.end() ? false : true; 	
+    	return props.find(propertyName) != props.end() ? true : false;
     }
     bool empty()
     {

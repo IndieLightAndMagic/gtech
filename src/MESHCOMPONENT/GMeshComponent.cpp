@@ -138,22 +138,15 @@ std::unique_ptr<GModelComponent> GModelComponent::createComponentNodeUsingResour
     return pComponent;
 }
 
-const aiScene* GAssimpLoaderComponent::loadScene(const std::string &sceneResourceName)
-{
-    return GAssimpLoaderComponent::importer.ReadFile(sceneResourceName, aiProcess_Triangulate);       
-}
 
 std::vector<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceName, const std::regex &regExpression)
 {
-    const aiScene *pScene = loadScene(sceneResourceName);
-
-
-    std::vector<GMaterialComponent> materialComponents = loadMaterialsFromScene(sceneResourceName);
+    Importer importer;
+    const aiScene *pScene = importer.ReadFile(sceneResourceName, aiProcess_Triangulate);
+    std::vector<GMaterialComponent> materialComponents = loadMaterialsFromScene(pScene);
     printMaterialsInfo(materialComponents);
-
     std::vector<std::string> meshesFoundNames;
     getMeshesNodeNamesVectorOnTheSceneByRegExp(pScene->mRootNode, regExpression, meshesFoundNames);
-    
     std::vector<GModelComponent> modelComponents;
     for(auto meshName:meshesFoundNames)
     {
@@ -163,7 +156,8 @@ std::vector<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(cons
 }
 std::unique_ptr<GModelComponent> GAssimpLoaderComponent::loadComponentFromScene(const std::string &sceneResourceName, const std::string &meshName)
 {
-    const aiScene *pScene = loadScene(sceneResourceName);
+    Importer importer;
+    const aiScene *pScene = importer.ReadFile(sceneResourceName, aiProcess_Triangulate);
     if (!pScene) return nullptr;
     return GModelComponent::createComponentNodeUsingResource(pScene, meshName);
 
@@ -280,18 +274,17 @@ void GAssimpLoaderComponent::getMeshesNodeNamesVectorOnTheSceneByRegExp(const ai
         getMeshesNodeNamesVectorOnTheSceneByRegExp(pNode->mChildren[childrenIndex], regularExpr, vec);
     }
 }
-std::vector<GMaterialComponent> GAssimpLoaderComponent::loadMaterialsFromScene(const std::string &sceneResourceName)
+std::vector<GMaterialComponent> GAssimpLoaderComponent::loadMaterialsFromScene(const aiScene *pScene)
 {
-    
     std::vector<GMaterialComponent> materialComponents;
-    const aiScene *pScene = loadScene(sceneResourceName);
+    
     if (!pScene)
     {
         return materialComponents;
     }
     
     unsigned int materialsCount = pScene->mNumMaterials;
-    aiMaterial ** materials = pScene->mMaterials;  
+    aiMaterial ** materials = pScene->mMaterials;
     
     
     for (auto materialIndex = 0; materialIndex < materialsCount; ++materialIndex)
@@ -305,16 +298,22 @@ std::vector<GMaterialComponent> GAssimpLoaderComponent::loadMaterialsFromScene(c
             auto key  = std::string(reinterpret_cast<const char*>(property->mKey.C_Str()));
             if (materialComponent.find(key))
             {
-                //policy: on found discard. 
+                //policy: on found discard.
                 continue;
             }
             IGPropertyValue *ptrValue = nullptr;
             if (property->mType == aiPTI_Float){
-                ptrValue =  new GPropertyValue<float>(sizeof(float),reinterpret_cast<float*>(property->mData));
+                if (key == "$clr.diffuse")
+                {
+                    ptrValue = new GPropertyColorRGB(property->mData);
+                } 
+                else
+                {
+                    ptrValue =  new GPropertyValue<float>(sizeof(float),reinterpret_cast<float*>(property->mData));
+                }
             } else if (property->mType == aiPTI_Double){
                 ptrValue =  new GPropertyValue<double>(sizeof(double),reinterpret_cast<double*>(property->mData));
             } else if (property->mType == aiPTI_String){
-                auto propData = &property->mData[4];
                 auto propSz = property->mDataLength - 4;
                 ptrValue = new GPropertyValue<Byte>(propSz,reinterpret_cast<unsigned char*>(&property->mData[4]));
             } else if (property->mType == aiPTI_Integer){
@@ -328,7 +327,14 @@ std::vector<GMaterialComponent> GAssimpLoaderComponent::loadMaterialsFromScene(c
         }
         materialComponents.push_back(materialComponent);
     }
-    return materialComponents; 
+    return materialComponents;
+
+}
+std::vector<GMaterialComponent> GAssimpLoaderComponent::loadMaterialsFromScene(const std::string &sceneResourceName)
+{
+    Importer importer;
+    const aiScene *pScene = importer.ReadFile(sceneResourceName, aiProcess_Triangulate);
+    return loadMaterialsFromScene(pScene);
 }
 
 
