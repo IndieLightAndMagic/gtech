@@ -137,9 +137,9 @@ public:
 	}
     enum class ColorIndex : std::size_t
     {
-        RED = 0,
-        GREEN = 1,
-        BLUE = 2
+        RED_COMPONENT_IDX = 0,
+        GREEN_COMPONENT_IDX = 1,
+        BLUE_COMPONENT_IDX = 2
     };
     float& getColor(ColorIndex color)
     {
@@ -157,10 +157,10 @@ public:
 	}
 	enum class ColorIndex : std::size_t
 	{
-		RED = 0,
-		GREEN = 1,
-		BLUE = 2, 
-		OPACITY = 3
+		RED_COMPONENT_IDX = 0,
+		GREEN_COMPONENT_IDX = 1,
+		BLUE_COMPONENT_IDX = 2, 
+		OPACITY_COMPONENT_IDX = 3
 	};
 
 };
