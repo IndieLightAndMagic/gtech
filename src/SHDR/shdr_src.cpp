@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
 static std::string getShaderCode(const GLchar *shdrPath)
 {
 	std::ifstream shaderFile;
@@ -27,7 +28,8 @@ static std::string getShaderCode(const GLchar *shdrPath)
 	// Return the code
 	return shaderStream.str();
 } 
-ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr) {
+
+GTech::ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr) {
 	
 
 	// Set stream into strings
@@ -49,7 +51,8 @@ ShaderSource::ShaderSource(const GLchar*shdrPath):m_state(SOURCE_STATE_INVALID),
 	} 
 
 }
-ShaderSource::ShaderSource(const std::string &shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr)
+
+GTech::ShaderSource::ShaderSource(const std::string &shdrPath):m_state(SOURCE_STATE_INVALID),m_shdrPath(new std::string(shdrPath)),m_shdrSrc(nullptr)
 {
 	m_shaderCode = getShaderCode(shdrPath.c_str());
 	if (!m_shaderCode.empty())
@@ -62,8 +65,14 @@ ShaderSource::ShaderSource(const std::string &shdrPath):m_state(SOURCE_STATE_INV
 		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
 	}
 }
-const GLchar * ShaderSource::operator()(){ return m_shdrSrc; }
-ShaderSource::ShaderSourceState ShaderSource::state(){ return m_state; }
+
+const GLchar * GTech::ShaderSource::operator()(){ 
+	return m_shdrSrc; 
+}
+
+GTech::ShaderSource::ShaderSourceState GTech::ShaderSource::state(){ 
+	return m_state;
+}
 
 
 #ifdef TEST_BENCH
@@ -72,7 +81,7 @@ unsigned int shaderSourceTest(const GLchar*shdrPath){
 
 	ShaderSource ss(shdrPath);
 
-	if (ss.state()==ShaderSource::SOURCE_STATE_VALID){
+	if (ss.state()==GTech::ShaderSource::SOURCE_STATE_VALID){
 	
 		std::cout << ss() << std::endl; 
 		return UINT_TEST_OK;
