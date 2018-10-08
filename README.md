@@ -1,10 +1,10 @@
-============
-INSTALLATION
-============
+GTECH: A collection of utilities by me (Guarin) to make an open source based engine. 
 
-Get and install glew (the tgz version):
 
-wget sourceforge.net/projects/glew/files/glew/snapshots/glew-20170423.tgz
-https://sourceforge.net/projects/glew/files/latest/download?source=files
-tar -zxvf glew-20170423.tgz	
 
+
+Version	+	Description
+=======		=====================================
+0.0.1		+ Shaders are usable. Check include/ShaderMan/shdr.h && lib/libShaderMan.a
+
+ 
