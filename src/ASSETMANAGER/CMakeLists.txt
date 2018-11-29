@@ -1,14 +1,14 @@
 #CMAKE TO MAKE A STATIC LIBRARY
 cmake_minimum_required(VERSION 3.9.0 FATAL_ERROR)
-set(CMAKE_VERBOSE_MAKEFILE ON)
-set(TARGET_NAME ShaderMan)
+set(TARGET_NAME AssetManager)
 project(${TARGET_NAME})
 set(CMAKE_CXX_STANDARD 17)
 
 #Installation directory 
 get_filename_component(GTECH_DIR $ENV{GTECH_ROOT} ABSOLUTE)
 set(GTECH_DIR_LIB ${GTECH_DIR}/3rd/lib/)
-set(GTECH_DIR_INC ${GTECH_DIR}/3rd/include/${TARGET_NAME})
+set(GTECH_DIR_INC ${GTECH_DIR}/3rd/include/)
+set(GTECH_DIR_INC_TARGET ${GTECH_DIR}/3rd/include/${TARGET_NAME})
 
 #DIRECTORIES
 get_filename_component(ROOT_DIR ${CMAKE_SOURCE_DIR} ABSOLUTE)
@@ -30,12 +30,13 @@ message(STATUS "GLM_DIR: ${GLM_DIR}" )
 
 add_library(${TARGET_NAME} STATIC
  
-	prgrm.cpp
-	shdr.cpp
-	shdr_src.cpp 
+	assetmanager.cpp
+	meshvaoarraymap.cpp
 	
 )
-target_include_directories(${TARGET_NAME} PUBLIC ${GLM_DIR})
+target_include_directories(${TARGET_NAME} PUBLIC ${GTECH_DIR_INC})
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
+set(CMAKE_BUILD_TYPE Debug)
 
 file(MAKE_DIRECTORY ${GTECH_DIR})
 file(MAKE_DIRECTORY ${GTECH_DIR_LIB})
@@ -46,6 +47,6 @@ file(MAKE_DIRECTORY ${GTECH_DIR_INC})
 #POST BUILD COMMANDS 
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy lib${TARGET_NAME}.a ${GTECH_DIR_LIB}
-	COMMAND ${CMAKE_COMMAND} -E copy ${ROOT_DIR}/*.h ${GTECH_DIR_INC}
+	COMMAND ${CMAKE_COMMAND} -E copy ${ROOT_DIR}/*.h ${GTECH_DIR_INC_TARGET}
     ) 
 
