@@ -1,6 +1,5 @@
 #CMAKE TO MAKE A STATIC LIBRARY
 cmake_minimum_required(VERSION 3.9.0 FATAL_ERROR)
-set(CMAKE_VERBOSE_MAKEFILE ON)
 set(TARGET_NAME ShaderMan)
 project(${TARGET_NAME})
 set(CMAKE_CXX_STANDARD 17)
@@ -35,6 +34,7 @@ add_library(${TARGET_NAME} STATIC
 	shdr_src.cpp 
 	
 )
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
 target_include_directories(${TARGET_NAME} PUBLIC ${GLM_DIR})
 
 file(MAKE_DIRECTORY ${GTECH_DIR})
