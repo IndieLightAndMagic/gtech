@@ -1,5 +1,13 @@
 #include "meshvaoarraymap.h"
 
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+#include <OpenGL/glext.h>
+#else 
+#include <OpenGL/gl.h>
+#endif /*__APPLE__*/
+
+
 void UnbindVertexArray(){
 
     glBindVertexArray(0);
@@ -69,7 +77,7 @@ std::shared_ptr<unsigned int> GTech::MeshVaoArrayMap::LoadVaoArrayForMeshNode(st
 
 
     //Allocate memory. If no memory return nullptr.
-    auto ptr             = std::shared_ptr<unsigned int>(new unsigned int[trianglearraysz], std::default_delete<unsigned int[]>());
+    auto ptr = std::shared_ptr<unsigned int>(new unsigned int[trianglearraysz], std::default_delete<unsigned int[]>());
     if (!ptr) return nullptr;
 
     //OPENGL
@@ -95,7 +103,13 @@ std::shared_ptr<unsigned int> GTech::MeshVaoArrayMap::LoadVaoArrayForMeshNode(st
     return ptr;
 
 }
+bool GTech::MeshVaoArrayMap::SetScenePtr(std::shared_ptr<GTech::Scene> pscene){
+    
+    if (pscene) return false;
+    sp_context = pscene;
+    return true;
 
+}
 GTech::MeshVaoArrayMap::MeshVaoArrayMap(std::shared_ptr<GTech::Scene> pscene){
 
     sp_context  = pscene;

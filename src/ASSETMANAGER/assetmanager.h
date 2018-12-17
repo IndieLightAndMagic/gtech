@@ -3,7 +3,6 @@
 #include <memory>
 
 #include <collader/collader.h>
-#include <ECS/Component/componentmanager.h>
 #include <GTechUtils/weakmap.h>
 
 
@@ -18,16 +17,18 @@ namespace GTech{
      * @return     { description_of_the_return_value }
      */
     std::tuple<std::shared_ptr<GTech::Mesh>, int> MeshDataTuple(std::string resourcename, GTech::Scene& scene);
-	
+    
 
-    class SceneResourceManagerMap : public GTech::WeakMap<const GTech::Scene, std::string, tinyxml2::XMLDocument>{
+    class SceneNameMap : public GTech::WeakMap<const GTech::Scene, std::string, tinyxml2::XMLDocument>{
 
-		static std::shared_ptr<const GTech::Scene> LoadColladaVisitor(std::string filename, tinyxml2::XMLDocument& doc);
-	public:
-		SceneResourceManagerMap();
-	
-	};
-	
+        static std::shared_ptr<const GTech::Scene> LoadColladaVisitor(std::string filename, tinyxml2::XMLDocument& doc);
+        
+       
+    public:
+        SceneNameMap();
+    
+    };
+    
 }
 
 

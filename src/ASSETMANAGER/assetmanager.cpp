@@ -5,7 +5,7 @@
 #include <FS/path.h>
 #include <FS/resolver.h>
 
-std::shared_ptr<const GTech::Scene> GTech::SceneResourceManagerMap::LoadColladaVisitor(std::string filename, tinyxml2::XMLDocument& doc){
+std::shared_ptr<const GTech::Scene> GTech::SceneNameMap::LoadColladaVisitor(std::string filename, tinyxml2::XMLDocument& doc){
 
     auto result = doc.LoadFile(filename.c_str());
 
@@ -26,7 +26,7 @@ std::shared_ptr<const GTech::Scene> GTech::SceneResourceManagerMap::LoadColladaV
     return nullptr;
 }
 
-GTech::SceneResourceManagerMap::SceneResourceManagerMap(){
+GTech::SceneNameMap::SceneNameMap(){
 
     sp_context  = std::make_shared<tinyxml2::XMLDocument>();
     fresolution = LoadColladaVisitor;
