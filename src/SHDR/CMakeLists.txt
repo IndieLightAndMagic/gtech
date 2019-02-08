@@ -6,15 +6,16 @@ set(CMAKE_CXX_STANDARD 17)
 
 #Installation directory 
 get_filename_component(GTECH_DIR $ENV{GTECH_ROOT} ABSOLUTE)
+set(GTECH_DIR_SRC ${GTECH_DIR}/3rd/src/)
 set(GTECH_DIR_LIB ${GTECH_DIR}/3rd/lib/)
-set(GTECH_DIR_INC ${GTECH_DIR}/3rd/include/${TARGET_NAME})
+set(GTECH_DIR_INC ${GTECH_DIR}/3rd/include/)
 
 #DIRECTORIES
 get_filename_component(ROOT_DIR ${CMAKE_SOURCE_DIR} ABSOLUTE)
 message(STATUS "-----------------------------")
 message(STATUS "GTECH_DIR: ${GTECH_DIR}" )
 message(STATUS "GTECH_DIR_LIB: ${GTECH_DIR_LIB}" )
-message(STATUS "GTEC_DIR_INC + TARGET: ${GTECH_DIR_INC}" )
+message(STATUS "GTEC_DIR_INC + TARGET: ${GTECH_DIR_INC}/${TARGET_NAME}" )
 message(STATUS "-----------------------------")
 message(STATUS "SYSTEM NAME: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "ROOT_DIR: ${ROOT_DIR}")
@@ -31,21 +32,22 @@ add_library(${TARGET_NAME} STATIC
  
 	prgrm.cpp
 	shdr.cpp
-	shdr_src.cpp 
+	shdr_src.cpp
+	${GTECH_DIR_SRC}/glad.c
 	
 )
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
-target_include_directories(${TARGET_NAME} PUBLIC ${GLM_DIR})
+target_include_directories(${TARGET_NAME} PUBLIC ${GLM_DIR} ${GTECH_DIR_INC})
 
 file(MAKE_DIRECTORY ${GTECH_DIR})
 file(MAKE_DIRECTORY ${GTECH_DIR_LIB})
-file(MAKE_DIRECTORY ${GTECH_DIR_INC})
+file(MAKE_DIRECTORY ${GTECH_DIR_INC}/${TARGET_NAME})
 
 
 
 #POST BUILD COMMANDS 
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy lib${TARGET_NAME}.a ${GTECH_DIR_LIB}
-	COMMAND ${CMAKE_COMMAND} -E copy ${ROOT_DIR}/*.h ${GTECH_DIR_INC}
+	COMMAND ${CMAKE_COMMAND} -E copy ${ROOT_DIR}/*.h ${GTECH_DIR_INC}/${TARGET_NAME}
     ) 
 

@@ -4,8 +4,7 @@
 #include <iostream>
 
 #ifdef __APPLE__
-#include <OpenGL/gl3.h>
-#include <OpenGL/glext.h>
+#include <glad/glad.h>
 #else
 #include <OpenGL/gl.h>
 #endif
